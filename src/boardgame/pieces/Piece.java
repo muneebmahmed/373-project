@@ -4,20 +4,22 @@ import java.lang.*;
 import java.util.*;
 
 public abstract class Piece {
-	private Color color;
-	private Square square;
-	private String name;
-	//Board board; //<- We might need to have a reference to the board for getValidMoves() to work
+	protected Color color;
+	protected Square square;
+	protected char symbol;
+	protected String name;
+	protected int value;
+	//protected Board board; //<- We might need to have a reference to the board for getValidMoves() to work
 	//other fields
 	
 	public Piece() {
 		color = Color.WHITE;
 		square = null;
+		symbol = ' ';
 		name = "unknown";
 	}
 	
 	public Piece(Square square) {
-		color = square.color;
 		this.square = square;
 		name = "unknown";
 	}

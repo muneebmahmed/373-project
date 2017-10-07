@@ -12,6 +12,7 @@ public class Square {
 	private Piece piece;
 	private String name;
 	
+	public int isProtected; //set and reset each turn, useful for computer moves
 	public final String alphabet = "abcdefgh";
 	
 	public Square() {
