@@ -9,6 +9,7 @@ public abstract class Piece {
 	protected char symbol;
 	protected String name;
 	protected int value;
+	protected int moveCount;
 	//protected Board board; //<- We might need to have a reference to the board for getValidMoves() to work
 	//other fields
 	
@@ -16,13 +17,22 @@ public abstract class Piece {
 		color = Color.WHITE;
 		square = null;
 		symbol = ' ';
+		value = 0;
 		name = "unknown";
+		moveCount = 0;
 	}
 	
 	public Piece(Square square) {
+		this();
 		this.square = square;
-		name = "unknown";
 	}
+	
+	public Piece(Color c) {
+		this();
+		color = c;
+	}
+	
+	//setters and getters
 	
 	/*
 	 * Returns ArrayList of all squares in piece's range, regardless
@@ -42,4 +52,8 @@ public abstract class Piece {
 	 * @return ArrayList of squares that can be moved to
 	 */
 	public abstract ArrayList<Square> getValidMoves();
+	
+	public String toString() {
+		return name;
+	}
 }

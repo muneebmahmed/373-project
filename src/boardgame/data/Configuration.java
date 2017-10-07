@@ -1,6 +1,7 @@
 package boardgame.data;
 
 import java.util.*;
+import boardgame.pieces.*;
 
 /*
  * Represents the state of the board at any given time
@@ -37,4 +38,16 @@ public class Configuration {
 	/*
 	 * Pawns can also promote to other pieces
 	 */
+	
+	public Configuration() {
+		//initialize arraylists
+	}
+	
+	/*
+	 * Generates configuration based on board
+	 */
+	public Configuration(Board b) {
+		this();
+		//TODO create configuration
+	}
 }
