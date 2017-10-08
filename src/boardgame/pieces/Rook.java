@@ -47,5 +47,10 @@ public class Rook extends Piece {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public boolean isRook() {
+		return true;
+	}
 
 }

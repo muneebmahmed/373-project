@@ -7,7 +7,7 @@ public class Pawn extends Piece {
 	
 	public Pawn() {
 		super();
-		symbol = ' ';
+		symbol = ' ';	//unnecessary since line is in superclass
 		name = "pawn";
 		value = 1;
 		enPassantFlag = false;
@@ -40,6 +40,11 @@ public class Pawn extends Piece {
 	public ArrayList<Square> getValidMoves() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public boolean isPawn() {
+		return true;
 	}
 
 }

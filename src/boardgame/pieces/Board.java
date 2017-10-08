@@ -11,18 +11,18 @@ public class Board {
 	ArrayList<Piece> pieces;
 	HashMap<String, Square> squares;	//easy access to squares
 	private Square board[][];
-	int mateFlag; //0 = game running, 1 = white wins, 2 = black wins, 3 = stalemate
+	private int mateFlag; //0 = game running, 1 = white wins, 2 = black wins, 3 = stalemate
 	ArrayList<Square> captured; //possible arrayLists to have squares with only captured pieces
-	King king_white, king_black;
-	Queen queen_white, queen_black;
+	private King king_white, king_black;
+	private Queen queen_white, queen_black;
 	/*
-	 * Kings
-	 * Queens
 	 * Rooks
 	 * Bishops
 	 * Knights
-	 * pawns
+	 * Use ArrayList?
 	 */
+	private ArrayList<Pawn> pawns_white, pawns_black;
+
 	ArrayList<Piece> promotedPieces; //pawn promotes to queen, rook, etc.
 	
 	//Constructor
@@ -31,7 +31,10 @@ public class Board {
 		pieces = new ArrayList<Piece>();
 		history = new ArrayList<Configuration>();
 		moves = new ArrayList<String>();
+		pawns_white = new ArrayList<Pawn>();
+		pawns_black = new ArrayList<Pawn>();
 		mateFlag = 0;
+		board = new Square[8][8];
 		//create board
 		Color colors[] = {Color.BLACK, Color.WHITE};
 		int i = 0;
@@ -73,7 +76,8 @@ public class Board {
 			fchar += Square.alphabet.charAt(f);
 			Pawn w_pawn = new Pawn(Color.WHITE, squares.get(fchar + Integer.toString(2)));
 			Pawn b_pawn = new Pawn(Color.BLACK, squares.get(fchar + Integer.toString(7)));
-			//add to arraylist of pawns
+			pawns_white.add(w_pawn);
+			pawns_black.add(b_pawn);
 		}
 	}
 	
@@ -86,6 +90,12 @@ public class Board {
 		loadConfiguration(state);
 		
 	}
+	
+	//setters and getters
+	public HashMap<String, Square> getSquares(){
+		return squares;
+	}
+	//TODO add other setters and getters
 	
 	/*
 	 * Moves a single piece

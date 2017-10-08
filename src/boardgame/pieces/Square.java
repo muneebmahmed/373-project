@@ -52,7 +52,7 @@ public class Square {
 			this.piece.setSquare(null); //haven't implemented in Piece yet
 		}
 		this.piece = piece;
-		if (piece != null && !(piece.getSquare().equals(this))){
+		if (piece != null && !(this.equals(piece.getSquare()))){
 			this.piece.setSquare(this);
 		}
 	}

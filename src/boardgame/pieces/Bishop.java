@@ -3,7 +3,8 @@ package boardgame.pieces;
 import java.util.ArrayList;
 
 public class Bishop extends Piece {
-
+	private Color diagonals;
+	
 	public Bishop() {
 		super();
 		symbol = 'B';
@@ -38,6 +39,11 @@ public class Bishop extends Piece {
 	public ArrayList<Square> getValidMoves() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public boolean isBishop() {
+		return true;
 	}
 
 }

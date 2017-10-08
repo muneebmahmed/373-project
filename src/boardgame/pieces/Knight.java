@@ -40,5 +40,10 @@ public class Knight extends Piece {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public boolean isKnight() {
+		return true;
+	}
 
 }
