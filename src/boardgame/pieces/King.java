@@ -16,8 +16,19 @@ public class King extends Piece {
 	public King(Square s) {
 		this();
 		square = s;
+		s.setPiece(this);
 	}
-	//other constructor with Color as argument
+	
+	public King(Color c) {
+		this();
+		color = c;
+	}
+	
+	public King(Color c, Square s) {
+		this(c);
+		square = s;
+		s.setPiece(this);
+	}
 	
 	
 	@Override
@@ -30,6 +41,11 @@ public class King extends Piece {
 	public ArrayList<Square> getValidMoves() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public boolean isKing() {
+		return true;
 	}
 
 }

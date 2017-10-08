@@ -32,7 +32,21 @@ public abstract class Piece {
 		color = c;
 	}
 	
+	public Piece(Color c, Square s) {
+		this();
+		color = c;
+		square = s;
+		s.setPiece(this); //Only ok in constructor, otherwise square always sets piece
+	}
+	
 	//setters and getters
+	public void setSquare(Square s) {
+		square = s;
+	}
+	public Square getSquare() {
+		return square;
+	}
+	//other setters and getters
 	
 	/*
 	 * Returns ArrayList of all squares in piece's range, regardless
@@ -52,6 +66,30 @@ public abstract class Piece {
 	 * @return ArrayList of squares that can be moved to
 	 */
 	public abstract ArrayList<Square> getValidMoves();
+	
+	/*
+	 * The following are functions to identify each piece
+	 * Each child class overrides their respective method to return true
+	 * @return true if that piece, else false
+	 */
+	public boolean isKing() {
+		return false;
+	}
+	public boolean isQueen() {
+		return false;
+	}
+	public boolean isRook() {
+		return false;
+	}
+	public boolean isBishop() {
+		return false;
+	}
+	public boolean isKnight() {
+		return false;
+	}
+	public boolean isPawn() {
+		return false;
+	}
 	
 	public String toString() {
 		return name;

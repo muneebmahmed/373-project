@@ -21,7 +21,12 @@ public class Knight extends Piece {
 	public Knight(Color c) {
 		this();
 		color = c;
-		// TODO Auto-generated constructor stub
+	}
+	
+	public Knight(Color c, Square s) {
+		this(c);
+		square = s;
+		s.setPiece(this);
 	}
 
 	@Override

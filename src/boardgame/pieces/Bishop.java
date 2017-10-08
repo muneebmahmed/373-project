@@ -18,8 +18,14 @@ public class Bishop extends Piece {
 	}
 
 	public Bishop(Color c) {
-		super(c);
-		// TODO Auto-generated constructor stub
+		this();
+		color = c;
+	}
+	
+	public Bishop(Color c, Square s) {
+		this(c);
+		square = s;
+		s.setPiece(this);
 	}
 
 	@Override

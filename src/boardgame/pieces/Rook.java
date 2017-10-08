@@ -19,21 +19,21 @@ public class Rook extends Piece {
 		castleFlag = true;
 	}
 
-	/**
-	 * @param square
-	 */
 	public Rook(Square square) {
 		this();
 		this.square = square;
-		// TODO Auto-generated constructor stub
+		square.setPiece(this);
 	}
 
-	/**
-	 * @param c
-	 */
 	public Rook(Color c) {
-		super(c);
-		// TODO Auto-generated constructor stub
+		this();
+		color = c;
+	}
+	
+	public Rook(Color c, Square s) {
+		this(c);
+		square = s;
+		s.setPiece(this);
 	}
 
 	@Override

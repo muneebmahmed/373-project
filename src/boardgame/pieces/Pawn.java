@@ -3,7 +3,7 @@ package boardgame.pieces;
 import java.util.ArrayList;
 
 public class Pawn extends Piece {
-	protected boolean enPassantFlag;
+	protected boolean enPassantFlag; //whether or not can capture en passant next turn
 	
 	public Pawn() {
 		super();
@@ -22,7 +22,12 @@ public class Pawn extends Piece {
 	public Pawn(Color c) {
 		this();
 		color = c;
-		// TODO Auto-generated constructor stub
+	}
+	
+	public Pawn(Color c, Square s) {
+		this(c);
+		square = s;
+		s.setPiece(this);
 	}
 
 	@Override

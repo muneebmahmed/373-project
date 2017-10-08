@@ -8,12 +8,14 @@ import boardgame.pieces.Color;
 public class Square {
 	Color color;
 	private char file;
-	private int rank, row, column;
+	private int rank;
+	private int row;
+	private int column;
 	private Piece piece;
 	private String name;
 	
 	public int isProtected; //set and reset each turn, useful for computer moves
-	public final String alphabet = "abcdefgh";
+	public static final String alphabet = "abcdefgh";
 	
 	public Square() {
 		color = Color.WHITE;
@@ -46,7 +48,13 @@ public class Square {
 	}
 	
 	public void setPiece(Piece piece) {
+		if (this.piece != null) {
+			this.piece.setSquare(null); //haven't implemented in Piece yet
+		}
 		this.piece = piece;
+		if (piece != null && !(piece.getSquare().equals(this))){
+			this.piece.setSquare(this);
+		}
 	}
 	
 	public Piece getPiece() {
@@ -69,7 +77,7 @@ public class Square {
 		if (name.equals(square.name)){
 			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	@Override

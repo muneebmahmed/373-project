@@ -15,6 +15,17 @@ public class Queen extends Piece {
 		this();
 		this.square = square;
 	}
+	
+	public Queen(Color c) {
+		this();
+		color = c;
+	}
+	
+	public Queen(Color c, Square s) {
+		this(c);
+		square = s;
+		s.setPiece(this);
+	}
 
 	@Override
 	public ArrayList<Square> getRange() {
