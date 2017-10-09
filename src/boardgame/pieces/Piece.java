@@ -2,6 +2,9 @@ package boardgame.pieces;
 
 import java.lang.*;
 import java.util.*;
+import boardgame.data.*;
+import boardgame.data.Configuration.ConfigElement;
+import boardgame.play.*;
 
 public abstract class Piece {
 	protected Color color;
@@ -42,6 +45,12 @@ public abstract class Piece {
 		s.setPiece(this); //Only ok in constructor, otherwise square always sets piece
 	}
 	
+	//create a piece for a given board given a ConfigElement and Board
+	public Piece(ConfigElement element, Board b) {
+		this(element.getColor(), b.getSquares().get(element.getSquare()));
+		this.board = b;
+	}
+	
 	//setters and getters
 	public void setSquare(Square s) {
 		square = s;
@@ -66,13 +75,18 @@ public abstract class Piece {
 	public void setSymbol(char symbol) {
 		this.symbol = symbol;
 	}
+	
+	public PieceName getPieceName() {
+		return pName;
+	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setName(PieceName name) {
+		this.pName = name;
+		this.name = name.toString();
 	}
 
 	public int getValue() {
@@ -98,6 +112,15 @@ public abstract class Piece {
 	public void setBoard(Board board) {
 		this.board = board;
 	}
+	
+	public boolean getSpecialFlags() {
+		return false;
+	}
+	//Rooks, Kings, and pawns will override
+	public void setSpecialFlags(boolean flag) {
+		return;	//don't do anything except if special piece
+	}
+	
 
 	/*
 	 * Returns ArrayList of all squares in piece's range, regardless
@@ -117,5 +140,9 @@ public abstract class Piece {
 	 * @return ArrayList of squares that can be moved to
 	 */
 	public abstract ArrayList<Square> getValidMoves();
+	
+	public String toString() {
+		return color.toString() + ' ' + pName.toString();
+	}
 	
 }

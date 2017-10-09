@@ -2,6 +2,9 @@ package boardgame.pieces;
 
 import java.util.ArrayList;
 
+import boardgame.data.*;
+import boardgame.data.Configuration.ConfigElement;
+
 public class King extends Piece {
 	protected boolean castleFlag;
 	
@@ -31,6 +34,12 @@ public class King extends Piece {
 		s.setPiece(this);
 	}
 	
+	public King(ConfigElement element, Board b) {
+		this(element.getColor(), b.getSquares().get(element.getSquare()));
+		this.board = b;
+		castleFlag = element.isFlags();
+	}
+	
 	
 	@Override
 	public ArrayList<Square> getRange() {
@@ -42,6 +51,16 @@ public class King extends Piece {
 	public ArrayList<Square> getValidMoves() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public boolean getSpecialFlags() {
+		return castleFlag;
+	}
+	
+	@Override
+	public void setSpecialFlags(boolean flag) {
+		castleFlag = flag;
 	}
 
 }

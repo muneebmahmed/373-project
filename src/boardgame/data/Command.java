@@ -35,7 +35,7 @@ public class Command {
 	 * 
 	 * Board is used to obtain references to pieces
 	 */
-	public Command(String input, Board b) {
+	public Command(Color color, String input, Board b) {
 		//TODO write constructor to parse input string given board
 	}
 	

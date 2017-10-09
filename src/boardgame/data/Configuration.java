@@ -7,9 +7,9 @@ import boardgame.pieces.*;
  * Represents the state of the board at any given time
  * ArrayLists for pieces detailing square, color, and other flags and data
  */
-public class Configuration {
-	//TODO Delete all fields below and create a new class ConfigurationElement instead:
-	
+public class Configuration implements Cloneable {
+
+	public ArrayList<ConfigElement> elements;
 	/*
 	 * New class will have data:
 	 * PieceName pieceName (which piece)
@@ -18,40 +18,71 @@ public class Configuration {
 	 * Other flags for castlers and pawns?
 	 * Should Kings and Rooks implement a Castler interface?
 	 */
-	
-	/*
-	 * ArrayList for pieces that can castle:
-	 * King, 2 x Rook for each side
-	 * Contains strings of squares each piece is on
-	 * Order is:
-	 * White King, White Rook, White Rook, Black King, Black Rook x 2
-	 * If piece is captured, set to default square
-	 */
-	ArrayList<String> castleSquares;
-	ArrayList<Integer> castleFlags; //whether or not they can castle, same order as above
-	
-	/*
-	 * ArrayList for other back rank pieces
-	 * ArrayList only has squares
-	 * Order is:
-	 * White: Queen, Bishop x 2, Knight x 2; Black
-	 */
-	ArrayList<String> pieceSquares;
-	
-	/*
-	 * ArrayList for pawns
-	 * Order is white then black
-	 * pawns can also have en passant flags
-	 */
-	ArrayList<String> pawnSquares;
-	ArrayList<Integer> enPassantFlags;
-	
-	/*
-	 * Pawns can also promote to other pieces
-	 */
+
+	public class ConfigElement {
+		private PieceName name;
+		private Color color;
+		private String square;
+		private boolean flags;	//castling and en passant
+		
+		public ConfigElement() {
+			name = PieceName.PAWN;
+			color = Color.WHITE;
+			square = "a1";
+			flags = false;
+		}
+		
+		public ConfigElement(Piece p) {
+			name = p.getPieceName();
+			color = p.getColor();
+			square = p.getSquare().toString();
+			flags = p.getSpecialFlags();
+		}
+		
+		public ConfigElement(ConfigElement element) {
+			name = element.getName();
+			color = element.getColor();
+			square = element.getSquare();
+			flags = element.isFlags();
+		}
+
+		public PieceName getName() {
+			return name;
+		}
+
+		public void setName(PieceName name) {
+			this.name = name;
+		}
+
+		public Color getColor() {
+			return color;
+		}
+
+		public void setColor(Color color) {
+			this.color = color;
+		}
+
+		public String getSquare() {
+			return square;
+		}
+
+		public void setSquare(String square) {
+			this.square = square;
+		}
+
+		public boolean isFlags() {
+			return flags;
+		}
+
+		public void setFlags(boolean flags) {
+			this.flags = flags;
+		}
+
+	}
+
 	
 	public Configuration() {
-		//initialize arraylists
+		elements = new ArrayList<ConfigElement>();
 	}
 	
 	/*
@@ -59,6 +90,31 @@ public class Configuration {
 	 */
 	public Configuration(Board b) {
 		this();
-		//TODO create configuration
+		ArrayList<Piece> pieces = b.getPieces();
+		for (Piece p : pieces) {
+			elements.add(new ConfigElement(p));
+		}
 	}
+	
+	public void setNewConfig(Board b) {
+		elements.clear();
+		ArrayList<Piece> pieces = b.getPieces();
+		for (Piece p : pieces) {
+			elements.add(new ConfigElement(p));
+		}
+	}
+	
+	public ArrayList<ConfigElement> getElements(){
+		return elements;
+	}
+	
+	@Override
+	public Configuration clone() {
+		Configuration config = new Configuration();
+		for (ConfigElement e : elements) {
+			config.elements.add(new ConfigElement(e));
+		}
+		return config;
+	}
+	
 }

@@ -18,15 +18,13 @@ public class CLIRunner {
 		//ChessGame game = new ChessGame();
 		//do stuff
 		Board testBoard = new Board();
-		ArrayList<String> testSquareStrings = new ArrayList<String>(Arrays.asList("a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"));
-		for (int i = 0; i < 8; i++) {
+		ArrayList<String> testSquareStrings = new ArrayList<String>(Arrays.asList("a1", "b1", "c1", "d1", "e1", "f1",
+				"g1", "h1", "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2"));
+		for (int i = 0; i < 16; i++) {
 			Square testSquare = testBoard.getSquares().get(testSquareStrings.get(i));
 			System.out.println(testSquare + " has a " + testSquare.getPiece());
 		}
-		for (int i = 0; i < 8; i++) {
-			Square testSquare = testBoard.getSquares().get(Square.alphabet.charAt(i) + Integer.toString(2));
-			System.out.println(testSquare + " has a " + testSquare.getPiece());
-		}
+		testBoard.printBoard();
 	}
 
 }

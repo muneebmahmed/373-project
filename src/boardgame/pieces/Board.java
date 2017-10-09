@@ -2,6 +2,7 @@ package boardgame.pieces;
 
 import java.util.*;
 import boardgame.data.*;
+import boardgame.data.Configuration.ConfigElement;
 
 public class Board {
 	private Configuration currentState;
@@ -15,12 +16,7 @@ public class Board {
 	private int mateFlag; //0 = game running, 1 = white wins, 2 = black wins, 3 = stalemate
 	private ArrayList<Square> captured; //possible arrayLists to have squares with only captured pieces
 	private ArrayList<Piece> capturedPieces;
-	/*
-	 * Rooks
-	 * Bishops
-	 * Knights
-	 * Use ArrayList?
-	 */
+	//Are separate lists for pawns necessary?
 	private ArrayList<Pawn> pawns_white, pawns_black;
 	
 	//Constructor
@@ -96,6 +92,8 @@ public class Board {
 		for (Piece piece : pieces) {
 			piece.setBoard(this);
 		}
+		
+		currentState = new Configuration(this);
 	}
 	
 	/*
@@ -105,7 +103,7 @@ public class Board {
 	public Board(Configuration state) {
 		this();
 		loadConfiguration(state);
-		
+		currentState = state.clone();
 	}
 	
 	//setters and getters
@@ -119,6 +117,7 @@ public class Board {
 	}
 
 	public void setCurrentState(Configuration currentState) {
+		//loadConfiguration()?
 		this.currentState = currentState;
 	}
 
@@ -175,7 +174,71 @@ public class Board {
 	 * @param state new configuration to be loaded
 	 */
 	public void loadConfiguration(Configuration state) {
-		//TODO
+		clearSquares();
+		ArrayList<ConfigElement> elements = state.getElements();
+		for (ConfigElement element : elements) {
+			switch (element.getName()) {
+			case KING:
+				King k = new King(element, this);
+				pieces.add(k);
+				break;
+			case QUEEN:
+				Queen q = new Queen(element, this);
+				pieces.add(q);
+				break;
+			case ROOK:
+				Rook r = new Rook(element, this);
+				pieces.add(r);
+				break;
+			case KNIGHT:
+				Knight n = new Knight(element, this);
+				pieces.add(n);
+				break;
+			case BISHOP:
+				Bishop b = new Bishop(element, this);
+				pieces.add(b);
+				break;
+			case PAWN:
+				Pawn p = new Pawn(element, this);
+				pieces.add(p);
+				break;
+			default:
+				break;
+			}
+			for (Piece p : pieces) {
+				if (p.getColor() == Color.WHITE) {
+					whitePieces.add(p);
+					if (p.getPieceName() == PieceName.PAWN) {
+						pawns_white.add((Pawn)p);
+					}
+				}
+				else {
+					blackPieces.add(p);
+					if (p.getPieceName() == PieceName.PAWN) {
+						pawns_black.add((Pawn)p);
+					}
+				}
+			}
+		}
+		return;
+	}
+	
+	/*
+	 * Removes all pieces from board
+	 */
+	public void clearSquares() {
+		for (int row = 0; row < 8; row++) {
+			for (int col = 0; col < 8; col++) {
+				board[row][col].setPiece(null);
+			}
+		}
+		//setPiece(null) already calls Piece.setSquare(null);
+		pieces.clear();
+		whitePieces.clear();
+		blackPieces.clear();
+		pawns_white.clear();
+		pawns_black.clear();
+		capturedPieces.clear();
 		return;
 	}
 	
@@ -219,6 +282,31 @@ public class Board {
 	public ArrayList<Square> getFile(char file){
 		//TODO
 		return new ArrayList<Square>();
+	}
+	
+	public void printBoard() {
+	    String top =  "\t _____ _____ _____ _____ _____ _____ _____ _____";
+		String row =  "\t|     |     |     |     |     |     |     |     |";
+		String both =  "\t|_____|_____|_____|_____|_____|_____|_____|_____";
+		System.out.println(top);
+		for (int i = 7; i >= 0; i--) {
+			System.out.println(row);
+			System.out.print("\t"+ (i+1));
+			for (int j = 0; j < 8; j++) {
+				System.out.print("  ");
+				if (board[i][j].hasPiece()) {
+					System.out.print(board[i][j].getPiece().getSymbol());
+				}
+				else {
+					System.out.print(' ');
+				}
+				System.out.print("   ");
+			}
+			System.out.println(" ");
+			System.out.println(both);
+		}
+		System.out.println("\t   a     b     c     d     e     f     g     h  ");
+		return;
 	}
 	
 }

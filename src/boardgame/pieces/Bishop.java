@@ -2,6 +2,8 @@ package boardgame.pieces;
 
 import java.util.ArrayList;
 
+import boardgame.data.Configuration.ConfigElement;
+
 public class Bishop extends Piece {
 	private Color diagonals;
 	
@@ -28,6 +30,11 @@ public class Bishop extends Piece {
 		this(c);
 		square = s;
 		s.setPiece(this);
+	}
+	
+	public Bishop(ConfigElement element, Board b) {
+		this(element.getColor(), b.getSquares().get(element.getSquare()));
+		this.board = b;
 	}
 
 	@Override

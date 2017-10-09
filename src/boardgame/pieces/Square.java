@@ -6,7 +6,7 @@ import java.util.*;
 import boardgame.pieces.Color;
 
 public class Square {
-	Color color;
+	private Color color;
 	private char file;
 	private int rank;
 	private int row;
@@ -61,10 +61,56 @@ public class Square {
 		return piece;
 	}
 	
-	//more setters and getters
-	
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
+	public char getFile() {
+		return file;
+	}
+
+	public void setFile(char file) {
+		this.file = file;
+	}
+
+	public int getRank() {
+		return rank;
+	}
+
+	public void setRank(int rank) {
+		this.rank = rank;
+	}
+
+	public int getRow() {
+		return row;
+	}
+
+	public void setRow(int row) {
+		this.row = row;
+	}
+
+	public int getColumn() {
+		return column;
+	}
+
+	public void setColumn(int column) {
+		this.column = column;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public boolean hasPiece() {
-		return false;
+		return (piece != null);
 	}
 	
 	

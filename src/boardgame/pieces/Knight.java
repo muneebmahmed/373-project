@@ -2,6 +2,8 @@ package boardgame.pieces;
 
 import java.util.ArrayList;
 
+import boardgame.data.Configuration.ConfigElement;
+
 public class Knight extends Piece {
 
 	public Knight() {
@@ -26,6 +28,11 @@ public class Knight extends Piece {
 		this(c);
 		square = s;
 		s.setPiece(this);
+	}
+	
+	public Knight(ConfigElement element, Board b) {
+		this(element.getColor(), b.getSquares().get(element.getSquare()));
+		this.board = b;
 	}
 
 	@Override
