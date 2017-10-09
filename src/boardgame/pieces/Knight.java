@@ -9,13 +9,12 @@ public class Knight extends Piece {
 		symbol = 'N';
 		name = "Knight";
 		value = 3;
-		// TODO Auto-generated constructor stub
+		pName = PieceName.KNIGHT;
 	}
 
 	public Knight(Square square) {
 		this();
 		this.square = square;
-		// TODO Auto-generated constructor stub
 	}
 
 	public Knight(Color c) {
@@ -39,11 +38,6 @@ public class Knight extends Piece {
 	public ArrayList<Square> getValidMoves() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	@Override
-	public boolean isKnight() {
-		return true;
 	}
 
 }

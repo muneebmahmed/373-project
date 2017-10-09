@@ -17,6 +17,7 @@ public class Rook extends Piece {
 		name = "Rook";
 		value = 5;
 		castleFlag = true;
+		pName = PieceName.ROOK;
 	}
 
 	public Rook(Square square) {
@@ -46,11 +47,6 @@ public class Rook extends Piece {
 	public ArrayList<Square> getValidMoves() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	@Override
-	public boolean isRook() {
-		return true;
 	}
 
 }

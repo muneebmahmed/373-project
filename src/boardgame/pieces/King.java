@@ -11,6 +11,7 @@ public class King extends Piece {
 		name = "King";
 		value = 69;
 		castleFlag = true;
+		pName = PieceName.KING;
 	}
 	
 	public King(Square s) {
@@ -41,11 +42,6 @@ public class King extends Piece {
 	public ArrayList<Square> getValidMoves() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	@Override
-	public boolean isKing() {
-		return true;
 	}
 
 }

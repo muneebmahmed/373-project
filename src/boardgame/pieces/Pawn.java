@@ -11,12 +11,12 @@ public class Pawn extends Piece {
 		name = "pawn";
 		value = 1;
 		enPassantFlag = false;
+		pName = PieceName.PAWN;
 	}
 
 	public Pawn(Square square) {
 		this();
 		this.square = square;
-		// TODO Auto-generated constructor stub
 	}
 
 	public Pawn(Color c) {
@@ -40,11 +40,6 @@ public class Pawn extends Piece {
 	public ArrayList<Square> getValidMoves() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	@Override
-	public boolean isPawn() {
-		return true;
 	}
 
 }

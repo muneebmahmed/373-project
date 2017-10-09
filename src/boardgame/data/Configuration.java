@@ -8,6 +8,17 @@ import boardgame.pieces.*;
  * ArrayLists for pieces detailing square, color, and other flags and data
  */
 public class Configuration {
+	//TODO Delete all fields below and create a new class ConfigurationElement instead:
+	
+	/*
+	 * New class will have data:
+	 * PieceName pieceName (which piece)
+	 * Color color (which side)
+	 * String square (string representation of square);
+	 * Other flags for castlers and pawns?
+	 * Should Kings and Rooks implement a Castler interface?
+	 */
+	
 	/*
 	 * ArrayList for pieces that can castle:
 	 * King, 2 x Rook for each side

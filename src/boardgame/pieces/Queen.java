@@ -9,6 +9,7 @@ public class Queen extends Piece {
 		symbol = 'Q';
 		name = "Queen";
 		value = 9;
+		pName = PieceName.QUEEN;
 	}
 
 	public Queen(Square square) {
@@ -37,11 +38,6 @@ public class Queen extends Piece {
 	public ArrayList<Square> getValidMoves() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	@Override
-	public boolean isQueen() {
-		return true;
 	}
 
 }

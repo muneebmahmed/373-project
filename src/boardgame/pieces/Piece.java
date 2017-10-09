@@ -10,7 +10,8 @@ public abstract class Piece {
 	protected String name;
 	protected int value;
 	protected int moveCount;
-	//protected Board board; //<- We might need to have a reference to the board for getValidMoves() to work
+	protected Board board; //We need to have a reference to the board for getValidMoves() to work
+	protected PieceName pName;
 	//other fields
 	
 	public Piece() {
@@ -20,6 +21,8 @@ public abstract class Piece {
 		value = 0;
 		name = "unknown";
 		moveCount = 0;
+		board = null;
+		pName = PieceName.KING;
 	}
 	
 	public Piece(Square square) {
@@ -43,11 +46,59 @@ public abstract class Piece {
 	public void setSquare(Square s) {
 		square = s;
 	}
+	
 	public Square getSquare() {
 		return square;
 	}
-	//other setters and getters
 	
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
+	public char getSymbol() {
+		return symbol;
+	}
+
+	public void setSymbol(char symbol) {
+		this.symbol = symbol;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getValue() {
+		return value;
+	}
+
+	public void setValue(int value) {
+		this.value = value;
+	}
+
+	public int getMoveCount() {
+		return moveCount;
+	}
+
+	public void setMoveCount(int moveCount) {
+		this.moveCount = moveCount;
+	}
+
+	public Board getBoard() {
+		return board;
+	}
+
+	public void setBoard(Board board) {
+		this.board = board;
+	}
+
 	/*
 	 * Returns ArrayList of all squares in piece's range, regardless
 	 * of whether or not it can actually move there
@@ -67,31 +118,4 @@ public abstract class Piece {
 	 */
 	public abstract ArrayList<Square> getValidMoves();
 	
-	/*
-	 * The following are functions to identify each piece
-	 * Each child class overrides their respective method to return true
-	 * @return true if that piece, else false
-	 */
-	public boolean isKing() {
-		return false;
-	}
-	public boolean isQueen() {
-		return false;
-	}
-	public boolean isRook() {
-		return false;
-	}
-	public boolean isBishop() {
-		return false;
-	}
-	public boolean isKnight() {
-		return false;
-	}
-	public boolean isPawn() {
-		return false;
-	}
-	
-	public String toString() {
-		return name;
-	}
 }

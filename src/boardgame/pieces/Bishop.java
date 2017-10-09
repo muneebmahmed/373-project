@@ -10,6 +10,7 @@ public class Bishop extends Piece {
 		symbol = 'B';
 		name = "Bishop";
 		value = 3;
+		pName = PieceName.BISHOP;
 	}
 
 	public Bishop(Square square) {
@@ -39,11 +40,6 @@ public class Bishop extends Piece {
 	public ArrayList<Square> getValidMoves() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	@Override
-	public boolean isBishop() {
-		return true;
 	}
 
 }
