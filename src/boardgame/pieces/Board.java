@@ -6,8 +6,11 @@ import boardgame.data.Configuration.ConfigElement;
 
 public class Board {
 	private Configuration currentState;
-	private ArrayList<Configuration> history;
-	private ArrayList<String> moves;
+	private ArrayList<Configuration> history;	//use stack instead?
+	private ArrayList<String> moves;		//maybe should be of Commands instead of String
+	//ArrayLists for future moves if move is undone?
+	Stack<Configuration> future;
+	Stack<Command> undoneMoves;
 	private Square[][] board;
 	ArrayList<Piece> pieces;
 	private ArrayList<Piece> whitePieces, blackPieces;
@@ -27,6 +30,8 @@ public class Board {
 		pieces = new ArrayList<Piece>();
 		history = new ArrayList<Configuration>();
 		moves = new ArrayList<String>();
+		future = new Stack<Configuration>();
+		undoneMoves = new Stack<Command>();
 		pawns_white = new ArrayList<Pawn>();
 		pawns_black = new ArrayList<Pawn>();
 		capturedPieces = new ArrayList<Piece>();
@@ -296,7 +301,7 @@ public class Board {
 	public void printBoard() {
 	    String top =  "\t _____ _____ _____ _____ _____ _____ _____ _____";
 		String row =  "\t|     |     |     |     |     |     |     |     |";
-		String both =  "\t|_____|_____|_____|_____|_____|_____|_____|_____";
+		String both =  "\t|_____|_____|_____|_____|_____|_____|_____|_____|";
 		System.out.println(top);
 		for (int i = 7; i >= 0; i--) {
 			System.out.println(row);

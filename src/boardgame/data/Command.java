@@ -15,6 +15,9 @@ public class Command {
 	public Square origin;
 	public Square destination;
 	public boolean capture; //flag if capture takes place
+	public boolean promotion;	//flag if pawn promotion
+	public PieceName promotionPiece;
+	public byte castleMode;	//0 if not castling, 1 if kingside, 2 if queenside
 	public Piece capturePiece;	//piece that's captured, if any
 	public char pieceSymbol;
 	//fields for piece color or piece name? If piece can't be found
@@ -24,12 +27,27 @@ public class Command {
 		origin = null;
 		destination = null;
 		capturePiece = null;
+		promotion = false;
+		capture = false;
+		castleMode = 0;
+		
 	}
 	
 	public Command(Piece piece, Square origin, Square destination) {
+		this();
 		this.piece = piece;
 		this.origin = origin;
 		this.destination = destination;
+		pieceSymbol = piece.getSymbol();
+		if (destination.hasPiece()) {
+			capture = true;
+		}
+	}
+	
+	public Command(Pawn pawn, Square destination, PieceName promote) {
+		this(pawn, pawn.getSquare(), destination);
+		promotionPiece = promote;
+		promotion = true;
 	}
 	
 	/*
@@ -59,11 +77,80 @@ public class Command {
 	 * En passant captures can be represented as:
 	 * exd6 e.p. or exd6		
 	 * both denote a white pawn on e5 capturing a black pawn on d5 en passant while moving to d6
+	 * 
+	 * Promotion is represented as:
+	 * e8=Q or exf1=B+
 	 *
 	 * Moves can also end with a '+' denoting check, and '#' denoting checkmate
+	 * 
+	 * You can assume the input string has already been split so only
+	 * contains commands for one side rather than both
 	 */
 	public Command(Color color, String input, Board b) {
 		//TODO write constructor to parse input string given board
+		
+		/*char fileDest, fileOrigin;
+		int rankDest, rankOrigin;
+		String destSquare, originSquare;		//will be used by squares.get()
+		char currChar;
+		String buffer = input;
+		String temp = "";
+		boolean done = false;
+		
+		//We can start by checking for castling
+		//Only castling uses 'O' (capital letter not number)
+		//Kingside will have 2 O, Queenside will have 3
+		
+		//We can continue by searching for 'x' and '='
+		
+		//Let's handle the 'x' and '=' cases here so we don't
+		//have to worry about them later
+		
+		//The rest of this code should probably be in an else branch
+		//since we don't want it to keep running
+		
+		//Suggestion: Have multiple helper functions so this code doesn't
+		//become too long
+		
+		//We can start parsing from the end:
+		currChar = input.charAt(input.length()-1);
+		buffer = input.substring(0, input.length()-1);
+		//the following code may help determine once an int is reached
+		while (!done) {
+			try {
+				temp += currChar;
+				rankDest = Integer.parseInt(temp);
+				done = true;
+			}catch (NumberFormatException e) {
+				//what if it's a pawn promotion?
+				//check for that as well
+				currChar = buffer.charAt(buffer.length()-1);
+				buffer = buffer.substring(0, buffer.length()-1);
+				temp = "";
+				done = false;
+			}
+		}
+		*/
+		//Now pull off a char from the string to get the destination file
+		
+		//Assign destination square using fileDest and rankDest
+		
+		//check the size of the buffer to see if 0 (pawns don't have symbols)
+		//if it's a pawn that doesn't capture, then fileDest = fileOrigin
+		
+		//Next char you pull off can be an x, a file, a rank, or a piece
+		
+		/*if (currChar == 'x'){
+			capture = true;
+			currChar = buffer.charAt(buffer.length()-1);
+			buffer = buffer.substring(0, buffer.length()-1);
+		}
+		else {
+			capture = false;
+		}*/
+		
+		//Now the char will be a rank, a file, or a piece
+		
 	}
 	
 	public static Command parseToCommand(String input) {
@@ -72,5 +159,11 @@ public class Command {
 	
 	public static Command parseToCommand(Color color, String input, Board b) {
 		return new Command(color, input, b);
+	}
+	
+	@Override
+	public String toString() {
+		//TODO write toString() method
+		return null;
 	}
 }
