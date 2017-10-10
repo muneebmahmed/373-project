@@ -8,13 +8,13 @@ import boardgame.play.*;
 
 public abstract class Piece {
 	protected Color color;
+	protected PieceName pName;
 	protected Square square;
 	protected char symbol;
 	protected String name;
 	protected int value;
 	protected int moveCount;
 	protected Board board; //We need to have a reference to the board for getValidMoves() to work
-	protected PieceName pName;
 	//other fields
 	
 	public Piece() {
@@ -116,7 +116,11 @@ public abstract class Piece {
 	public boolean getSpecialFlags() {
 		return false;
 	}
-	//Rooks, Kings, and pawns will override
+	/*
+	 * Rooks, Kings, and pawns will override
+	 * SpecialFlags is used for generating configurations
+	 * Rooks, Kings, and pawns have boolean flags that other pieces don't
+	 */
 	public void setSpecialFlags(boolean flag) {
 		return;	//don't do anything except if special piece
 	}
@@ -133,7 +137,7 @@ public abstract class Piece {
 	/*
 	 * Returns ArrayList of squares that can be moved to
 	 * 
-	 * Calls getRange() to get squares in range
+	 * Can getRange() to get squares in range
 	 * Checks of piece can actually move there
 	 * Does NOT check if King will be left in check
 	 * 

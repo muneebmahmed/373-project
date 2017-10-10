@@ -160,6 +160,15 @@ public class Board {
 	 */
 	public void Move(Command move) {
 		//TODO
+		
+		//the following is very simplified code for testing purposes only
+		//it does not cover all the possibilities
+		Piece moving = move.piece;
+		Square origin = move.origin;
+		Square destination = move.destination;
+		origin.setPiece(null);
+		destination.setPiece(moving);
+		
 		return;
 	}
 	/*

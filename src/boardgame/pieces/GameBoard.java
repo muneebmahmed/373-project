@@ -10,7 +10,7 @@ import boardgame.data.*;
  */
 public class GameBoard {
 	ArrayList<Piece> pieces;
-	protected Square[] board;
+	protected Square[][] board;
 	HashMap<String, Square> squares;
 	
 	public GameBoard() {

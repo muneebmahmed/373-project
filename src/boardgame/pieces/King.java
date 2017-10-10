@@ -43,14 +43,39 @@ public class King extends Piece {
 	
 	@Override
 	public ArrayList<Square> getRange() {
-		// TODO Auto-generated method stub
-		return null;
+		char file = square.getFile();
+		int rank = square.getRank();
+		int fileIndex = Square.alphabet.indexOf(file);
+		ArrayList<Square> range = new ArrayList<Square>();
+		Square sq;
+		String accesser = "";
+		for (int row = rank-1; row <= rank+1; row++) {
+			for (int col = fileIndex-1; col <= fileIndex + 1; col++) {
+				if (row >= 1 && row <= 8 && col >= 0 && col <= 7) {
+					accesser = Square.alphabet.charAt(col) + Integer.toString(row);
+					if (row != rank || col != fileIndex) {
+						sq = board.getSquares().get(accesser);
+						range.add(sq);
+					}
+				}
+			}
+		}
+		//TODO add castling squares to range
+		return range;
 	}
 
 	@Override
 	public ArrayList<Square> getValidMoves() {
 		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Square> range = getRange();
+		ArrayList<Square> moves = new ArrayList<Square>();
+		for (Square s : range) {
+			if (!s.hasPiece() || s.getPiece().color != color) {
+				moves.add(s);
+			}
+		}
+		//TODO add castling
+		return moves;
 	}
 	
 	@Override

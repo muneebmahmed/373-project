@@ -25,6 +25,17 @@ public class CLIRunner {
 			System.out.println(testSquare + " has a " + testSquare.getPiece());
 		}
 		testBoard.printBoard();
+		Piece king = testBoard.getSquares().get("e1").getPiece();
+		ArrayList<Square> range = king.getRange();
+		System.out.println("King on e1's range is:");
+		for (Square s : range) {
+			System.out.println(s);
+		}
+		Square origin = testBoard.getSquares().get("e2");
+		Piece pawn = origin.getPiece();
+		Square destination = testBoard.getSquares().get("e4");
+		testBoard.Move(new Command(pawn, origin, destination));
+		testBoard.printBoard();
 	}
 
 }

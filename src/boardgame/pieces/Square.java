@@ -113,6 +113,10 @@ public class Square {
 		return (piece != null);
 	}
 	
+	public boolean isEdge() {
+		return (file == 'a' || file == 'h' || rank == 1 || rank == 8);
+	}
+	
 	
 	@Override
 	public boolean equals(Object s) {
