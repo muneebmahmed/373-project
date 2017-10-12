@@ -35,6 +35,10 @@ public class Knight extends Piece {
 		this.board = b;
 	}
 
+	public Knight(Piece p) {
+		super(p);
+	}
+
 	@Override
 	public ArrayList<Square> getRange() {
 		// TODO Auto-generated method stub

@@ -36,6 +36,13 @@ public class CLIRunner {
 		Square destination = testBoard.getSquares().get("e4");
 		testBoard.Move(new Command(pawn, origin, destination));
 		testBoard.printBoard();
+		System.out.println(testBoard.getSquares().get("d1").getPiece().getValidMoves());
+		origin = testBoard.getSquares().get("d1");
+		Piece rook = origin.getPiece();
+		destination = testBoard.getSquares().get("h5");
+		testBoard.Move(new Command(rook, origin, destination));
+		testBoard.printBoard();
+		System.out.println(rook.getValidMoves());
 	}
 
 }

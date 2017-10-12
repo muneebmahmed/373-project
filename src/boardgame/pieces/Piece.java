@@ -51,6 +51,17 @@ public abstract class Piece {
 		this.board = b;
 	}
 	
+	public Piece(Piece p) {
+		color = p.color;
+		pName = p.pName;
+		square = p.square;
+		symbol = p.symbol;
+		name = p.name;
+		value = p.value;
+		moveCount = p.value;
+		board = p.board;
+	}
+	
 	//setters and getters
 	public void setSquare(Square s) {
 		square = s;
@@ -144,6 +155,26 @@ public abstract class Piece {
 	 * @return ArrayList of squares that can be moved to
 	 */
 	public abstract ArrayList<Square> getValidMoves();
+	
+	/*
+	 * Helper function for getValidMoves()
+	 * 
+	 * @param file of the destination square
+	 * @param rank of the destination square
+	 * @param moves ArrayList of squares to add a move to
+	 * @return true if move added, false if not
+	 */
+	protected boolean validMovesHelper(char file, int rank, ArrayList<Square> moves) {
+		Square s = board.getSquares().get(file + Integer.toString(rank));
+		if (!s.hasPiece()) {
+			moves.add(s);
+			return true;
+		}
+		else if (s.getPiece().color != color) {
+			moves.add(s);
+		}
+		return false;
+	}
 	
 	public String toString() {
 		return color.toString() + ' ' + pName.toString();

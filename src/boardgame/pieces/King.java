@@ -41,6 +41,10 @@ public class King extends Piece {
 	}
 	
 	
+	public King(Piece p) {
+		super(p);
+	}
+
 	@Override
 	public ArrayList<Square> getRange() {
 		char file = square.getFile();

@@ -42,6 +42,25 @@ public class Command {
 		if (destination.hasPiece()) {
 			capture = true;
 		}
+		castleMode = 0;
+		if (piece.getPieceName() == PieceName.KING && piece.getMoveCount() == 0) {
+			char row;
+			if (piece.getColor() == Color.WHITE){
+				row = '1';
+			}
+			else {
+				row = '8';
+			}
+			if (destination.getName().equals("g" + row)) {
+				castleMode = 1;
+				capturePiece = piece.getBoard().getSquares().get("h" + row).getPiece();
+				//use capturePiece for the rook instead of creating a new field
+			}
+			else if (destination.getName().equals("c" + row)) {
+				castleMode = 2;
+				capturePiece = piece.getBoard().getSquares().get("a" + row).getPiece();
+			}
+		}
 	}
 	
 	public Command(Pawn pawn, Square destination, PieceName promote) {
@@ -159,6 +178,31 @@ public class Command {
 	
 	public static Command parseToCommand(Color color, String input, Board b) {
 		return new Command(color, input, b);
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		//TODO
+		if (o == null || !(o instanceof Command)) {
+			return false;
+		}
+		Command command = (Command)o;
+		if (command.piece.getPieceName() == piece.getPieceName() && command.origin.equals(origin) && command.destination.equals(destination)) {
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		//TODO write hashCode()
+		int c = 0, result = 0;
+		c = piece.getPieceName().hashCode();
+		result = 31*result + c;
+		c = origin.hashCode();
+		result = 31*result + c;
+		c = destination.hashCode();
+		return 31*result + c;
 	}
 	
 	@Override

@@ -166,6 +166,11 @@ public class Board {
 	public void Move(Command move) {
 		//TODO
 		
+		//write code to test for:
+		//castling
+		//en passant
+		//capture
+		
 		//the following is very simplified code for testing purposes only
 		//it does not cover all the possibilities
 		Piece moving = move.piece;
@@ -175,6 +180,21 @@ public class Board {
 		destination.setPiece(moving);
 		
 		return;
+	}
+	
+	/*
+	 * Returns an ArrayList of Commands given Square strings
+	 * 
+	 * @param piece Piece to move
+	 * @param squares ArrayList of destination squares
+	 * @return ArrayList of Commands
+	 */
+	public ArrayList<Command> GenerateMoves(Piece piece, ArrayList<Square> destSquares){
+		ArrayList<Command> commands = new ArrayList<Command>();
+		for (Square s : destSquares) {
+			commands.add(new Command(piece, piece.getSquare(), s));
+		}
+		return commands;
 	}
 	/*
 	 * Loads a new configuration to the board (i.e. moves)
@@ -254,6 +274,65 @@ public class Board {
 		pawns_black.clear();
 		capturedPieces.clear();
 		return;
+	}
+	
+	/*
+	 * Checks if king is not in check
+	 * 
+	 * Ignores opponent's King
+	 * 
+	 * @param color Color of player who just moved
+	 * 
+	 * @return true if player's King is in check
+	 */
+	public boolean KingInCheck(Color color) {
+		King k = new King();
+		if (color == Color.WHITE) {
+			for (Piece p : whitePieces) {
+				if (p.getPieceName() == PieceName.KING) {
+					k = (King)p;
+					break;
+				}
+			}
+		}
+		else {
+			for (Piece p : blackPieces) {
+				if (p.getPieceName() == PieceName.KING) {
+					k = (King)p;
+					break;
+				}
+			}
+		}
+		
+		return squareUnderAttack(color, k.getSquare());
+	}
+	
+	/*
+	 * Checks if square is under attack by the other side
+	 * 
+	 * @param color of Player who's being attacked
+	 * @param s Square to check
+	 * 
+	 * @return boolean true if under attack, else false
+	 */
+	public boolean squareUnderAttack(Color color, Square s) {
+		ArrayList<Square> moves = new ArrayList<Square>();
+		ArrayList<Piece> opponents;
+		if (color == Color.WHITE) {
+			opponents = this.blackPieces;
+		}
+		else {
+			opponents = this.whitePieces;
+		}
+		for (Piece p : opponents) {
+			moves.addAll(p.getValidMoves());
+		}
+		for (Square square : moves) {
+			if (square.equals(s)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/*

@@ -6,6 +6,7 @@ import boardgame.data.Configuration.ConfigElement;
 
 public class Pawn extends Piece {
 	protected boolean enPassantFlag; //whether or not can capture en passant next turn
+	protected Pawn enPassantCapture;
 	
 	public Pawn() {
 		super();
@@ -14,6 +15,7 @@ public class Pawn extends Piece {
 		value = 1;
 		enPassantFlag = false;
 		pName = PieceName.PAWN;
+		enPassantCapture = null;
 	}
 
 	public Pawn(Square square) {
@@ -36,6 +38,11 @@ public class Pawn extends Piece {
 		this(element.getColor(), b.getSquares().get(element.getSquare()));
 		this.board = b;
 		enPassantFlag = element.isFlags();
+	}
+
+	public Pawn(Piece p) {
+		super(p);
+		enPassantFlag = false;
 	}
 
 	@Override

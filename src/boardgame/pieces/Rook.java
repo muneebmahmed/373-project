@@ -45,6 +45,11 @@ public class Rook extends Piece {
 		castleFlag = element.isFlags();
 	}
 
+	public Rook(Piece p) {
+		super(p);
+		castleFlag = false;
+	}
+
 	@Override
 	public ArrayList<Square> getRange() {
 		// TODO Auto-generated method stub
@@ -53,9 +58,39 @@ public class Rook extends Piece {
 
 	@Override
 	public ArrayList<Square> getValidMoves() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Square> moves = new ArrayList<Square>();
+		//test file
+		int rank = square.getRank();
+		char file = square.getFile();
+		//squares above rook
+		for (int i = rank + 1; i <= 8; i++) {
+			if (!validMovesHelper(file, i, moves)) {
+				break;
+			}
+		}
+		//squares below rook
+		for (int i = rank -1; i >= 1; i--) {
+			if (!validMovesHelper(file, i, moves)) {
+				break;
+			}
+		}
+		//test rank
+		int index = Square.alphabet.indexOf(file);
+		//squares right of rook
+		for (int j = index + 1; j < 8; j++) {
+			if (!validMovesHelper(Square.alphabet.charAt(j), rank, moves)) {
+				break;
+			}
+		}
+		//squares left of rook
+		for (int j = index -1; j >= 0; j--) {
+			if (!validMovesHelper(Square.alphabet.charAt(j), rank, moves)) {
+				break;
+			}
+		}
+		return moves;
 	}
+	
 	
 	@Override
 	public boolean getSpecialFlags() {

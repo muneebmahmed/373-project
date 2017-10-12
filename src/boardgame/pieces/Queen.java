@@ -35,16 +35,28 @@ public class Queen extends Piece {
 		this.board = b;
 	}
 
+	public Queen(Piece p) {
+		super(p);
+	}
+
 	@Override
 	public ArrayList<Square> getRange() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Square> range = new ArrayList<Square>();
+		range.addAll(this.board.getRank(square));
+		range.addAll(this.board.getFile(square));
+		//TODO add Bishop squares
+		return range;
 	}
 
 	@Override
 	public ArrayList<Square> getValidMoves() {
-		// TODO Auto-generated method stub
-		return null;
+		Rook r = new Rook(this);
+		Bishop b = new Bishop(this);
+		ArrayList<Square> moves = new ArrayList<Square>();
+		moves.addAll(r.getValidMoves());
+		moves.addAll(b.getValidMoves());
+		
+		return moves;
 	}
 
 }
