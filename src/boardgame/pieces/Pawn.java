@@ -54,7 +54,7 @@ public class Pawn extends Piece {
 	@Override
 	public ArrayList<Square> getValidMoves() {
 		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<Square>();
 	}
 	
 	@Override

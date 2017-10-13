@@ -36,13 +36,40 @@ public class CLIRunner {
 		Square destination = testBoard.getSquares().get("e4");
 		testBoard.Move(new Command(pawn, origin, destination));
 		testBoard.printBoard();
+		System.out.print("White Queen's valid moves are: ");
 		System.out.println(testBoard.getSquares().get("d1").getPiece().getValidMoves());
 		origin = testBoard.getSquares().get("d1");
-		Piece rook = origin.getPiece();
+		Piece queen = origin.getPiece();
 		destination = testBoard.getSquares().get("h5");
-		testBoard.Move(new Command(rook, origin, destination));
+		testBoard.Move(new Command(queen, origin, destination));
 		testBoard.printBoard();
-		System.out.println(rook.getValidMoves());
+		System.out.print(queen + "'s valid moves are: ");
+		System.out.println(queen.getValidMoves());
+		Scanner scanner = new Scanner(System.in);
+		String input = "";
+		Piece moving;
+		
+		//This is for general testing purposes
+		while(!input.equals("quit")) {
+			System.out.println("Choose an origin square, or 'quit' to quit: ");
+			input = scanner.nextLine();
+			if (input.equals("quit")) {
+				break;
+			}
+			origin = testBoard.getSquares().get(input);
+			moving = origin.getPiece();
+			System.out.println(moving + "'s valid moves are "+ moving.getValidMoves());
+			System.out.println("Choose a destination square: ");
+			input = scanner.nextLine();
+			if (input.equals("quit")) {
+				break;
+			}
+			destination = testBoard.getSquares().get(input);
+			testBoard.Move(new Command(moving, origin, destination));
+			testBoard.printBoard();
+		}
+		System.out.println("Goodbye");
+		scanner.close();
 	}
 
 }

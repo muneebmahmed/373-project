@@ -79,6 +79,36 @@ public class King extends Piece {
 			}
 		}
 		//TODO add castling
+		if (this.moveCount == 0 || castleFlag) {
+			Piece leftRook, rightRook;
+			int rank;
+			if (color == Color.WHITE) {
+				rank = 1;
+			}
+			else {
+				rank = 8;
+			}
+			leftRook = board.getSquares().get('a' + Integer.toString(rank)).getPiece();
+			rightRook = board.getSquares().get('h' + Integer.toString(rank)).getPiece();
+			Square s1, s2, s3;
+			if (leftRook != null && (leftRook instanceof Rook) && ((Rook)leftRook).castleFlag) {
+				s1 = board.getSquares().get('b' + Integer.toString(rank));
+				s2 = board.getSquares().get('c' + Integer.toString(rank));
+				s3 = board.getSquares().get('d' + Integer.toString(rank));
+				if (!s1.hasPiece() && !s2.hasPiece() && !s3.hasPiece() && !board.squareUnderAttack(color, s1)) {
+					if (!board.squareUnderAttack(color, s2) && !board.squareUnderAttack(color,  s3)) {
+						moves.add(s2);
+					}
+				}
+			}
+			if (rightRook != null && (rightRook instanceof Rook) && ((Rook)rightRook).castleFlag) {
+				s1 = board.getSquares().get('f' + Integer.toString(rank));
+				s2 = board.getSquares().get('g' + Integer.toString(rank));
+				if (!s1.hasPiece() && !s2.hasPiece() && !board.squareUnderAttack(color, s1) && !board.squareUnderAttack(color,  s2)) {
+					moves.add(s2);
+				}
+			}
+		}
 		return moves;
 	}
 	
