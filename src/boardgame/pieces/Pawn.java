@@ -53,10 +53,50 @@ public class Pawn extends Piece {
 
 	@Override
 	public ArrayList<Square> getValidMoves() {
-		// TODO Auto-generated method stub
-		return new ArrayList<Square>();
+		//TODO add en passant
+		ArrayList<Square> moves = new ArrayList<Square>();
+		int rank = square.getRank();
+		char file = square.getFile();
+		int direction = (color == Color.WHITE)? 1 : -1;
+		int fileIndex = Square.alphabet.indexOf(file), tempRank = rank+direction;
+		boolean front = false;
+		for (int i = fileIndex -1; i <= fileIndex + 1; i++) {
+			if (i >= 0 && i <= 7 && tempRank <= 8 && tempRank >= 1) {
+				if (validMovesHelper(Square.alphabet.charAt(i), tempRank, moves)) {
+					front = true;
+				}
+			}
+		}
+		if (moveCount == 0 && front) {
+			tempRank += direction;
+			validMovesHelper(file, tempRank, moves);
+		}
+		//en passant?
+		tempRank = rank + direction;
+		if (enPassantCapture != null) {
+			Square s = board.getSquares().get(enPassantCapture.square.getFile() + Integer.toString(tempRank));
+			moves.add(s);
+		}
+		return moves;
 	}
 	
+	@Override
+	protected boolean validMovesHelper(char file, int rank, ArrayList<Square> moves) {
+		Square s = board.getSquares().get(file + Integer.toString(rank));
+		if (!s.hasPiece() && file == square.getFile()) {
+			moves.add(s);
+			return true;
+		}
+		else if (s.hasPiece() && s.getPiece().color != color && file != square.getFile()) {
+			moves.add(s);
+		}
+		return false;
+	}
+	
+	public void setEnPassant(Pawn p) {
+		enPassantCapture = p;
+	}
+
 	@Override
 	public boolean getSpecialFlags() {
 		return enPassantFlag;

@@ -51,8 +51,14 @@ public class CLIRunner {
 		
 		//This is for general testing purposes
 		while(!input.equals("quit")) {
-			System.out.println("Choose an origin square, or 'quit' to quit: ");
+			System.out.println("Choose an origin square, 'u' to undo, or 'quit' to quit: ");
 			input = scanner.nextLine();
+			while (input.equals("u")) {
+				testBoard.undoMove();
+				testBoard.printBoard();
+				System.out.println("Choose an origin square, 'u' to undo, or 'quit' to quit:");
+				input = scanner.nextLine();
+			}
 			if (input.equals("quit")) {
 				break;
 			}

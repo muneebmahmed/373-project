@@ -79,7 +79,7 @@ public class King extends Piece {
 			}
 		}
 		//TODO add castling
-		if (this.moveCount == 0 || castleFlag) {
+		if (this.moveCount == 0 || castleFlag && !board.squareUnderAttack(color, square)) {
 			Piece leftRook, rightRook;
 			int rank;
 			if (color == Color.WHITE) {

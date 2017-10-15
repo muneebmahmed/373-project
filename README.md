@@ -33,4 +33,6 @@ A Player is the human or computer that is playing the game. The overall Game cla
 
 The graphical interface will show the board in two dimensions, and will allow movement of pieces via point and click.
 
+Try running the CLIRunner to see our progress!
+
 ![Chess board](https://github.com/muneebmahmed/373-project/blob/master/images/Chess%20Board.png)

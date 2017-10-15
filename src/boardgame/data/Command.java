@@ -41,6 +41,17 @@ public class Command {
 		pieceSymbol = piece.getSymbol();
 		if (destination.hasPiece()) {
 			capture = true;
+			capturePiece = destination.getPiece();
+		}
+		else if (piece.getPieceName() == PieceName.PAWN && piece.getSpecialFlags() && (origin.getFile() != destination.getFile())) {
+			capture = true;
+			char file = destination.getFile();
+			int rank = origin.getRank();
+			capturePiece = piece.getBoard().getSquares().get(file + Integer.toString(rank)).getPiece();
+			//check to make sure you're not capturing your own piece
+			if (capturePiece.getColor() == piece.getColor()) {
+				capture = false;
+			}
 		}
 		castleMode = 0;
 		if (piece.getPieceName() == PieceName.KING && piece.getMoveCount() == 0) {
@@ -67,6 +78,18 @@ public class Command {
 		this(pawn, pawn.getSquare(), destination);
 		promotionPiece = promote;
 		promotion = true;
+	}
+	
+	public Command(Command copy, Board b) {
+		origin = b.getSquares().get(copy.origin.getName());
+		piece = origin.getPiece();
+		destination = b.getSquares().get(copy.destination.getName());
+		capturePiece = destination.getPiece();
+		promotion = copy.promotion;
+		capture = copy.capture;
+		castleMode = copy.castleMode;
+		pieceSymbol = copy.pieceSymbol;
+		promotionPiece = copy.promotionPiece;
 	}
 	
 	/*
@@ -208,6 +231,6 @@ public class Command {
 	@Override
 	public String toString() {
 		//TODO write toString() method
-		return null;
+		return new String();
 	}
 }

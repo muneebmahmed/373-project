@@ -136,6 +136,11 @@ public abstract class Piece {
 		return;	//don't do anything except if special piece
 	}
 	
+	public void incrementMoveCount() {
+		moveCount++;
+		setSpecialFlags(false);	//calls overridden child method (tested in debug)
+	}
+	
 
 	/*
 	 * Returns ArrayList of all squares in piece's range, regardless

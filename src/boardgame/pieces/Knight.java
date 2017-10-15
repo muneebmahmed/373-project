@@ -52,6 +52,7 @@ public class Knight extends Piece {
 		char file = square.getFile(), tempFile;
 		int fileIndex = Square.alphabet.indexOf(file);
 		int delta1 = 1, delta2 = 2, temp = 0, tempRank, tempIndex;
+		/*
 		for (short i = 0; i < 4; i++) {
 			tempRank = rank+delta1;
 			tempIndex = fileIndex+delta2;
@@ -68,6 +69,24 @@ public class Knight extends Piece {
 			temp = delta1;
 			delta1 = delta2;
 			delta2 = temp*-1;
+		}*/
+		//which algorithm is better?
+		for (short i = 0; i < 8; i++) {
+			tempRank = rank+delta1;
+			tempIndex = fileIndex+delta2;
+			if (tempRank <= 8 && tempRank >= 1 && tempIndex <= 7 && tempIndex >= 0) {
+				tempFile = Square.alphabet.charAt(tempIndex);
+				validMovesHelper(tempFile, tempRank, moves);
+			}
+			//swap
+			if (i%2 == 1) {
+				temp = delta1;
+				delta1 = delta2;
+				delta2 = temp;
+			}
+			else {
+				delta1 *= -1;
+			}
 		}
 		return moves;
 	}
