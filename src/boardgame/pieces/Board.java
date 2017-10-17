@@ -351,18 +351,18 @@ public class Board {
 			default:
 				break;
 			}
-			for (Piece p : pieces) {
-				if (p.getColor() == Color.WHITE) {
-					whitePieces.add(p);
-					if (p.getPieceName() == PieceName.PAWN) {
-						pawns_white.add((Pawn)p);
-					}
+		}
+		for (Piece p : pieces) {
+			if (p.getColor() == Color.WHITE) {
+				whitePieces.add(p);
+				if (p.getPieceName() == PieceName.PAWN) {
+					pawns_white.add((Pawn)p);
 				}
-				else {
-					blackPieces.add(p);
-					if (p.getPieceName() == PieceName.PAWN) {
-						pawns_black.add((Pawn)p);
-					}
+			}
+			else {
+				blackPieces.add(p);
+				if (p.getPieceName() == PieceName.PAWN) {
+					pawns_black.add((Pawn)p);
 				}
 			}
 		}
@@ -487,31 +487,6 @@ public class Board {
 	public ArrayList<Square> getFile(char file){
 		//TODO
 		return new ArrayList<Square>();
-	}
-	
-	public void printBoard() {
-	    String top =  "\t _____ _____ _____ _____ _____ _____ _____ _____";
-		String row =  "\t|     |     |     |     |     |     |     |     |";
-		String both =  "\t|_____|_____|_____|_____|_____|_____|_____|_____|";
-		System.out.println(top);
-		for (int i = 7; i >= 0; i--) {
-			System.out.println(row);
-			System.out.print("\t"+ (i+1));
-			for (int j = 0; j < 8; j++) {
-				System.out.print("  ");
-				if (board[i][j].hasPiece()) {
-					System.out.print(board[i][j].getPiece().getSymbol());
-				}
-				else {
-					System.out.print(' ');
-				}
-				System.out.print("   ");
-			}
-			System.out.println(" ");
-			System.out.println(both);
-		}
-		System.out.println("\t   a     b     c     d     e     f     g     h  ");
-		return;
 	}
 	
 }

@@ -24,6 +24,7 @@ public class Configuration implements Cloneable {
 		private Color color;
 		private String square;
 		private boolean flags;	//castling and en passant
+		//move count? En passant piece?
 		
 		public ConfigElement() {
 			name = PieceName.PAWN;

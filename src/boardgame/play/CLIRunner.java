@@ -13,49 +13,165 @@ public class CLIRunner {
 	public CLIRunner() {
 		// TODO Auto-generated constructor stub
 	}
+	
+	public static StringBuilder printBoard(Board b) {
+		StringBuilder builder = new StringBuilder(450);
+	    String top =  "\t _____ _____ _____ _____ _____ _____ _____ _____";
+		String row =  "\t|     |     |     |     |     |     |     |     |";
+		String both =  "\t|_____|_____|_____|_____|_____|_____|_____|_____|";
+		builder.append(top + "\n");
+		for (int i = 7; i >= 0; i--) {
+			builder.append(row);
+			builder.append("\n\t" + (i+1));
+			for (int j = 0; j < 8; j++) {
+				builder.append("  ");
+				if (b.getBoard()[i][j].hasPiece()) {
+					Piece p = b.getBoard()[i][j].getPiece();
+					switch (p.getSymbol()) {
+					case 'K':
+						if (p.getColor() == Color.WHITE) {
+							builder.append('\u2654');
+						}
+						else {
+							builder.append("♚");
+						}
+						break;
+					case 'Q':
+						if (p.getColor() == Color.WHITE) {
+							builder.append('\u2655');
+						}
+						else {
+							builder.append("♛");
+						}
+						break;
+					case 'R':
+						if (p.getColor() == Color.WHITE) {
+							builder.append('\u2656');
+						}
+						else {
+							builder.append('\u265C');
+						}
+						break;
+					case 'B':
+						if (p.getColor() == Color.WHITE) {
+							builder.append('\u2657');
+						}
+						else {
+							builder.append('\u265D');
+						}
+						break;
+					case 'N':
+						if (p.getColor() == Color.WHITE) {
+							builder.append('\u2658');
+						}
+						else {
+							builder.append('\u265E');
+						}
+						break;
+					default:
+						if (p.getColor() == Color.WHITE) {
+							builder.append('\u2659');
+						}
+						else {
+							builder.append('\u265F');
+						}
+					}
+				}
+				else {
+					builder.append(" ");
+				}
+				builder.append("  "); //removed space
+				if (j%2 == 1) {	//for spacing in the terminal
+					builder.append(' ');
+				}
+			}
+			builder.append('\n');
+			builder.append(both);
+			builder.append('\n');
+		}
+		builder.append("\t   a     b     c     d     e     f     g     h  \n");
+		return builder;
+	}
 
 	public static void main(String[] args) {
 		//ChessGame game = new ChessGame();
 		//do stuff
 		Board testBoard = new Board();
-		ArrayList<String> testSquareStrings = new ArrayList<String>(Arrays.asList("a1", "b1", "c1", "d1", "e1", "f1",
-				"g1", "h1", "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2"));
-		for (int i = 0; i < 16; i++) {
-			Square testSquare = testBoard.getSquares().get(testSquareStrings.get(i));
-			System.out.println(testSquare + " has a " + testSquare.getPiece());
-		}
-		testBoard.printBoard();
-		Piece king = testBoard.getSquares().get("e1").getPiece();
-		ArrayList<Square> range = king.getRange();
-		System.out.println("King on e1's range is:");
-		for (Square s : range) {
-			System.out.println(s);
-		}
-		Square origin = testBoard.getSquares().get("e2");
-		Piece pawn = origin.getPiece();
-		Square destination = testBoard.getSquares().get("e4");
-		testBoard.Move(new Command(pawn, origin, destination));
-		testBoard.printBoard();
-		System.out.print("White Queen's valid moves are: ");
-		System.out.println(testBoard.getSquares().get("d1").getPiece().getValidMoves());
-		origin = testBoard.getSquares().get("d1");
-		Piece queen = origin.getPiece();
-		destination = testBoard.getSquares().get("h5");
-		testBoard.Move(new Command(queen, origin, destination));
-		testBoard.printBoard();
-		System.out.print(queen + "'s valid moves are: ");
-		System.out.println(queen.getValidMoves());
+		System.out.print(printBoard(testBoard));
+		Square origin, destination;
 		Scanner scanner = new Scanner(System.in);
 		String input = "";
 		Piece moving;
+		System.out.println("Enter the name for white: ");
+		input = scanner.nextLine();
+		Player white = new Human(input, Color.WHITE);
+		System.out.println("Enter the name for black: ");
+		input = scanner.nextLine();
+		Player black = new Human(input, Color.BLACK), current;
+		Player players[] = {white, black};
+		ArrayList<Square> validMoves = new ArrayList<Square>();
+		int i = 0;
 		
 		//This is for general testing purposes
+		while(!input.equals("quit")) {
+			current = players[i%2];
+			System.out.println(current.getName() + ", choose an origin square, 'u' to undo, or 'quit' to quit: ");
+			input = scanner.nextLine();
+			while (input.equals("u")) {
+				if (testBoard.getHistory().size() != 0) {
+					testBoard.undoMove();
+					System.out.print(printBoard(testBoard));
+					i--;
+					current = players[i%2];
+				}
+				System.out.println("Choose an origin square, 'u' to undo, or 'quit' to quit:");
+				input = scanner.nextLine();
+			}
+			if (input.equals("quit") || input.equals("checkmate")) {
+				break;
+			}
+			origin = testBoard.getSquares().get(input);
+			while (!origin.hasPiece() || origin.getPiece().getColor() != current.getColor() || origin.getPiece().getValidMoves().size() == 0) {
+				System.out.println("Choose a square with one of your pieces: ");
+				input = scanner.nextLine();
+				origin = testBoard.getSquares().get(input);
+			}
+			moving = origin.getPiece();
+			validMoves = moving.getValidMoves();
+			System.out.println(moving + "'s valid moves are "+ validMoves);
+			System.out.println("Choose a destination square: ");
+			input = scanner.nextLine();
+			if (input.equals("quit")) {
+				break;
+			}
+			destination = testBoard.getSquares().get(input);
+			while (!validMoves.contains(destination)) {
+				System.out.println("Choose a valid move: " + validMoves);
+				input = scanner.nextLine();
+				destination = testBoard.getSquares().get(input);
+			}
+			//testBoard.Move(new Command(moving, origin, destination));
+			current.Move(testBoard, new Command(moving, origin, destination));
+			if (testBoard.KingInCheck(current.getColor())) {
+				System.out.println("Error! King cannot be in check! ");
+				testBoard.undoMove();
+				i--;
+			}
+			else {
+				System.out.print(printBoard(testBoard));
+			}
+			i++;
+		}
+		System.out.println("Goodbye, " + players[0].getName() + " and " + players[1].getName());
+		scanner.close();
+		
+		/*
 		while(!input.equals("quit")) {
 			System.out.println("Choose an origin square, 'u' to undo, or 'quit' to quit: ");
 			input = scanner.nextLine();
 			while (input.equals("u")) {
 				testBoard.undoMove();
-				testBoard.printBoard();
+				System.out.print(printBoard(testBoard));
 				System.out.println("Choose an origin square, 'u' to undo, or 'quit' to quit:");
 				input = scanner.nextLine();
 			}
@@ -72,10 +188,11 @@ public class CLIRunner {
 			}
 			destination = testBoard.getSquares().get(input);
 			testBoard.Move(new Command(moving, origin, destination));
-			testBoard.printBoard();
+			System.out.print(printBoard(testBoard));
 		}
 		System.out.println("Goodbye");
 		scanner.close();
+		*/
 	}
 
 }
