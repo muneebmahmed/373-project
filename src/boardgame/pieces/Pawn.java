@@ -6,11 +6,11 @@ import boardgame.data.Configuration.ConfigElement;
 
 public class Pawn extends Piece {
 	protected boolean enPassantFlag; //whether or not can capture en passant next turn
-	protected Pawn enPassantCapture;
+	protected Square enPassantCapture;
 	
 	public Pawn() {
 		super();
-		symbol = 'p';	//unnecessary since line is in superclass
+		symbol = ' ';
 		name = "pawn";
 		value = 1;
 		enPassantFlag = false;
@@ -36,13 +36,49 @@ public class Pawn extends Piece {
 	
 	public Pawn(ConfigElement element, Board b) {
 		this(element.getColor(), b.getSquares().get(element.getSquare()));
+		this.moveCount = element.getMoveCount();
 		this.board = b;
 		enPassantFlag = element.isFlags();
+		if (element.getEnPassantSquare() != null) {
+			enPassantCapture = board.getSquares().get(element.getEnPassantSquare());
+		}
 	}
 
 	public Pawn(Piece p) {
 		super(p);
+		symbol = ' ';
+		name = "pawn";
+		value = 1;
+		pName = PieceName.PAWN;
 		enPassantFlag = false;
+		enPassantCapture = null;
+	}
+	
+	@Override
+	public String getEnPassant() {
+		if (enPassantCapture == null) {
+			return null;
+		}
+		return enPassantCapture.toString();
+	}
+	
+	@Override
+	public void setEnPassant(String s) {
+		if (s == null) {
+			enPassantCapture = null;
+			return;
+		}
+		enPassantCapture = board.getSquares().get(s);
+	}
+
+	@Override
+	public boolean getSpecialFlags() {
+		return enPassantFlag;
+	}
+	
+	@Override
+	public void setSpecialFlags(boolean flag) {
+		enPassantFlag = flag;
 	}
 
 	@Override
@@ -53,7 +89,6 @@ public class Pawn extends Piece {
 
 	@Override
 	public ArrayList<Square> getValidMoves() {
-		//TODO add en passant
 		ArrayList<Square> moves = new ArrayList<Square>();
 		int rank = square.getRank();
 		char file = square.getFile();
@@ -71,10 +106,10 @@ public class Pawn extends Piece {
 			tempRank += direction;
 			validMovesHelper(file, tempRank, moves);
 		}
-		//en passant?
+		
 		tempRank = rank + direction;
-		if (enPassantCapture != null) {
-			Square s = board.getSquares().get(enPassantCapture.square.getFile() + Integer.toString(tempRank));
+		if (enPassantFlag && enPassantCapture != null) {
+			Square s = board.getSquares().get(enPassantCapture.getFile() + Integer.toString(tempRank));
 			moves.add(s);
 		}
 		return moves;
@@ -91,20 +126,6 @@ public class Pawn extends Piece {
 			moves.add(s);
 		}
 		return false;
-	}
-	
-	public void setEnPassant(Pawn p) {
-		enPassantCapture = p;
-	}
-
-	@Override
-	public boolean getSpecialFlags() {
-		return enPassantFlag;
-	}
-	
-	@Override
-	public void setSpecialFlags(boolean flag) {
-		enPassantFlag = flag;
 	}
 
 }

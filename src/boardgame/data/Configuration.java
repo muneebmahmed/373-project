@@ -3,13 +3,16 @@ package boardgame.data;
 import java.util.*;
 import boardgame.pieces.*;
 
-/*
- * Represents the state of the board at any given time
+/**
+ * @author Muneeb Ahmed
+ * <p>
+ * Represents the state of the board at any given time<br>
  * ArrayLists for pieces detailing square, color, and other flags and data
  */
 public class Configuration implements Cloneable {
 
 	public ArrayList<ConfigElement> elements;
+	
 	/*
 	 * New class will have data:
 	 * PieceName pieceName (which piece)
@@ -18,19 +21,21 @@ public class Configuration implements Cloneable {
 	 * Other flags for castlers and pawns?
 	 * Should Kings and Rooks implement a Castler interface?
 	 */
-
 	public class ConfigElement {
 		private PieceName name;
 		private Color color;
 		private String square;
 		private boolean flags;	//castling and en passant
-		//move count? En passant piece?
+		private int moveCount;
+		private String enPassantSquare;
 		
 		public ConfigElement() {
 			name = PieceName.PAWN;
 			color = Color.WHITE;
 			square = "a1";
 			flags = false;
+			moveCount = 0;
+			enPassantSquare = null;
 		}
 		
 		public ConfigElement(Piece p) {
@@ -38,6 +43,8 @@ public class Configuration implements Cloneable {
 			color = p.getColor();
 			square = p.getSquare().toString();
 			flags = p.getSpecialFlags();
+			moveCount = p.getMoveCount();
+			enPassantSquare = p.getEnPassant();
 		}
 		
 		public ConfigElement(ConfigElement element) {
@@ -45,6 +52,15 @@ public class Configuration implements Cloneable {
 			color = element.getColor();
 			square = element.getSquare();
 			flags = element.isFlags();
+			moveCount = element.getMoveCount();
+			enPassantSquare = element.getEnPassantSquare();
+		}
+		
+		public ConfigElement(Color color, PieceName name, String square) {
+			this();
+			this.color = color;
+			this.name = name;
+			this.square = square;
 		}
 
 		public PieceName getName() {
@@ -77,6 +93,22 @@ public class Configuration implements Cloneable {
 
 		public void setFlags(boolean flags) {
 			this.flags = flags;
+		}
+
+		public int getMoveCount() {
+			return moveCount;
+		}
+
+		public void setMoveCount(int moveCount) {
+			this.moveCount = moveCount;
+		}
+
+		public String getEnPassantSquare() {
+			return enPassantSquare;
+		}
+
+		public void setEnPassantSquare(String enPassantSquare) {
+			this.enPassantSquare = enPassantSquare;
 		}
 
 	}

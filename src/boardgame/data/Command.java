@@ -3,11 +3,15 @@ package boardgame.data;
 import java.util.*;
 import boardgame.pieces.*;
 import boardgame.play.*;
-/*
+/**
+ * @author Brock Berube
+ * @author Jeremy Sears
+ * <p>
  * Represents a single move in the game
+ * <br>
  * Data includes:
- * Piece to be moved, origin square, new square, if it's a capture
- * Will have methods to parse a command from the command line
+ * Piece to be moved, origin square, new square, if it's a capture<br>
+ * Will have methods to parse a command from the command line<br>
  * Also will have methods to parse from graphical interface, once implemented
  */
 public class Command {
@@ -33,6 +37,9 @@ public class Command {
 		
 	}
 	
+	/*
+	 * Generates the Command to move a piece from an origin to a destination
+	 */
 	public Command(Piece piece, Square origin, Square destination) {
 		this();
 		this.piece = piece;
@@ -56,16 +63,12 @@ public class Command {
 		castleMode = 0;
 		if (piece.getPieceName() == PieceName.KING && piece.getMoveCount() == 0) {
 			char row;
-			if (piece.getColor() == Color.WHITE){
-				row = '1';
-			}
-			else {
-				row = '8';
-			}
+			//replaced if else with conditional assignment
+			row = (piece.getColor() == Color.WHITE)? '1' : '8';
 			if (destination.getName().equals("g" + row)) {
 				castleMode = 1;
 				capturePiece = piece.getBoard().getSquares().get("h" + row).getPiece();
-				//use capturePiece for the rook instead of creating a new field
+				//reuses capturePiece to store the rook instead of creating a new field
 			}
 			else if (destination.getName().equals("c" + row)) {
 				castleMode = 2;
@@ -92,41 +95,48 @@ public class Command {
 		promotionPiece = copy.promotionPiece;
 	}
 	
-	/*
+	/**
 	 * Parses string to Command
+	 * 
+	 * @param input String to be parsed to Command
 	 */
 	public Command(String input) {
 		//TODO write constructor to parse input string
 	}
 	
-	/*
+	/**
 	 * Parses string to command
+	 * <p>
 	 * Board is used to obtain references to pieces
-	 * 
-	 * Input string can be formatted in any of the following ways:
-	 * Qe1-f1	(Queen e1 to f1)						Qe1xf1	(Queen e1 captures on f1)
-	 * Qf1		(Queen to f1)						Qxf1		(Queen captures on f1)
-	 * Qef1		(Queen on e-file moves to f1)		Qexf1	(e-file Queen captures on f1)
-	 * Q2f1		(Queen on 2nd rank moves to f1)		Q2xf1	(2nd rank Queen captures on f1)
-	 * 
-	 * A pawn has no symbol, e.g.:
+	 * <p>
+	 * Input string can be formatted in any of the following ways:<br>
+	 * Qe1-f1	(Queen e1 to f1)<br>						Qe1xf1	(Queen e1 captures on f1)<br>
+	 * Qf1		(Queen to f1)<br>						Qxf1		(Queen captures on f1)<br>
+	 * Qef1		(Queen on e-file moves to f1)<br>		Qexf1	(e-file Queen captures on f1)<br>
+	 * Q2f1		(Queen on 2nd rank moves to f1)<br>		Q2xf1	(2nd rank Queen captures on f1)<br>
+	 * <p>
+	 * A pawn has no symbol, e.g.:<br>
 	 * e4, e2-e4 both denoted a pawn moving to e4
-	 * 
-	 * Castling is denoted with:
-	 * O-O	Kingside castling; King on e-file moves to g-file, Rook on h-file moves to f-file
-	 * O-O-O		Queenside; King on e-file moves to c-file, Rook on a-file moves to d-file
-	 * 
-	 * En passant captures can be represented as:
-	 * exd6 e.p. or exd6		
-	 * both denote a white pawn on e5 capturing a black pawn on d5 en passant while moving to d6
-	 * 
-	 * Promotion is represented as:
-	 * e8=Q or exf1=B+
+	 * <p>
+	 * Castling is denoted with:<br>
+	 * O-O	Kingside castling; King on e-file moves to g-file, Rook on h-file moves to f-file<br>
+	 * O-O-O		Queenside; King on e-file moves to c-file, Rook on a-file moves to d-file<br>
+	 * <p>
+	 * En passant captures can be represented as:<br>
+	 * exd6 e.p. or exd6		<br>
+	 * both denote a white pawn on e5 capturing a black pawn on d5 en passant while moving to d6<br>
+	 * <p>
+	 * Promotion is represented as:<br>
+	 * e8=Q or exf1=B+<br>
 	 *
-	 * Moves can also end with a '+' denoting check, and '#' denoting checkmate
+	 * Moves can also end with a '+' denoting check, and '#' denoting checkmate<br>
 	 * 
 	 * You can assume the input string has already been split so only
 	 * contains commands for one side rather than both
+	 * 
+	 * @param color Color of piece to be moved
+	 * @param input String formatted as above
+	 * @param b Board on which to move
 	 */
 	public Command(Color color, String input, Board b) {
 		//TODO write constructor to parse input string given board
@@ -231,6 +241,39 @@ public class Command {
 	@Override
 	public String toString() {
 		//TODO write toString() method
-		return new String();
+		StringBuilder builder = new StringBuilder();
+		if (castleMode == 1) {
+			return "O-O";
+		}
+		if (castleMode == 2) {
+			return "O-O-O";
+		}
+		builder.append(pieceSymbol);
+		builder.append(origin.getName());
+		if (capture) {
+			builder.append('x');
+		}
+		else {
+			builder.append('-');
+		}
+		builder.append(destination.getName());
+		if (promotion) {
+			builder.append('=');
+			switch (promotionPiece) {
+			case ROOK:
+				builder.append('R');
+				break;
+			case BISHOP:
+				builder.append('B');
+				break;
+			case KNIGHT:
+				builder.append('N');
+				break;
+			default:
+				builder.append('Q');
+				break;
+			}
+		}
+		return builder.toString();
 	}
 }

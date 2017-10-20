@@ -18,7 +18,6 @@ public class Bishop extends Piece {
 	public Bishop(Square square) {
 		this();
 		this.square = square;
-		// TODO Auto-generated constructor stub
 	}
 
 	public Bishop(Color c) {
@@ -34,11 +33,16 @@ public class Bishop extends Piece {
 	
 	public Bishop(ConfigElement element, Board b) {
 		this(element.getColor(), b.getSquares().get(element.getSquare()));
+		this.moveCount = element.getMoveCount();
 		this.board = b;
 	}
 
 	public Bishop(Piece p) {
 		super(p);
+		symbol = 'B';
+		name = "Bishop";
+		value = 3;
+		pName = PieceName.BISHOP;
 	}
 
 	@Override

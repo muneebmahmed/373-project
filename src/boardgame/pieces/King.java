@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import boardgame.data.*;
 import boardgame.data.Configuration.ConfigElement;
 
+/**
+ * 
+ * @author Muneeb Ahmed
+ *
+ */
 public class King extends Piece {
 	protected boolean castleFlag;
 	
@@ -36,6 +41,7 @@ public class King extends Piece {
 	
 	public King(ConfigElement element, Board b) {
 		this(element.getColor(), b.getSquares().get(element.getSquare()));
+		this.moveCount = element.getMoveCount();
 		this.board = b;
 		castleFlag = element.isFlags();
 	}
@@ -43,6 +49,11 @@ public class King extends Piece {
 	
 	public King(Piece p) {
 		super(p);
+		symbol = 'K';
+		name = "King";
+		value = 69;
+		castleFlag = true;
+		pName = PieceName.KING;
 	}
 
 	@Override
@@ -70,7 +81,6 @@ public class King extends Piece {
 
 	@Override
 	public ArrayList<Square> getValidMoves() {
-		// TODO Auto-generated method stub
 		ArrayList<Square> range = getRange();
 		ArrayList<Square> moves = new ArrayList<Square>();
 		for (Square s : range) {
@@ -78,7 +88,7 @@ public class King extends Piece {
 				moves.add(s);
 			}
 		}
-		//TODO add castling
+		//TODO castling is done, but could it be better? @Brock @Jeremy
 		if (this.moveCount == 0 || castleFlag && !board.squareUnderAttack(color, square)) {
 			Piece leftRook, rightRook;
 			int rank;
@@ -95,10 +105,8 @@ public class King extends Piece {
 				s1 = board.getSquares().get('b' + Integer.toString(rank));
 				s2 = board.getSquares().get('c' + Integer.toString(rank));
 				s3 = board.getSquares().get('d' + Integer.toString(rank));
-				if (!s1.hasPiece() && !s2.hasPiece() && !s3.hasPiece() && !board.squareUnderAttack(color, s1)) {
-					if (!board.squareUnderAttack(color, s2) && !board.squareUnderAttack(color,  s3)) {
-						moves.add(s2);
-					}
+				if (!s1.hasPiece() && !s2.hasPiece() && !s3.hasPiece() && !board.squareUnderAttack(color, s1) && !board.squareUnderAttack(color, s2) && !board.squareUnderAttack(color,  s3)) {
+					moves.add(s2);
 				}
 			}
 			if (rightRook != null && (rightRook instanceof Rook) && ((Rook)rightRook).castleFlag) {

@@ -32,11 +32,16 @@ public class Knight extends Piece {
 	
 	public Knight(ConfigElement element, Board b) {
 		this(element.getColor(), b.getSquares().get(element.getSquare()));
+		this.moveCount = element.getMoveCount();
 		this.board = b;
 	}
 
 	public Knight(Piece p) {
 		super(p);
+		symbol = 'N';
+		name = "Knight";
+		value = 3;
+		pName = PieceName.KNIGHT;
 	}
 
 	@Override
@@ -70,7 +75,7 @@ public class Knight extends Piece {
 			delta1 = delta2;
 			delta2 = temp*-1;
 		}*/
-		//which algorithm is better?
+		//which algorithm is better? I like the one below @Brock @Jeremy
 		for (short i = 0; i < 8; i++) {
 			tempRank = rank+delta1;
 			tempIndex = fileIndex+delta2;

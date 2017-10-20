@@ -4,8 +4,8 @@ import boardgame.pieces.*;
 import boardgame.data.*;
 
 public abstract class Player {
-	private String name;
-	private Color color;
+	protected String name;
+	protected Color color;
 	
 	public Player() {
 		// TODO Auto-generated constructor stub

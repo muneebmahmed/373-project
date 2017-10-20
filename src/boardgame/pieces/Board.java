@@ -4,6 +4,13 @@ import java.util.*;
 import boardgame.data.*;
 import boardgame.data.Configuration.ConfigElement;
 
+/**
+ * 
+ * @author Muneeb Ahmed
+ * @author Brock Berube
+ * @author Jeremy Sears
+ *
+ */
 public class Board {
 	private Configuration currentState;
 	private ArrayList<Configuration> history;	//use stack instead?
@@ -101,8 +108,9 @@ public class Board {
 		currentState = new Configuration(this);
 	}
 	
-	/*
+	/**
 	 * Constructor for a new Board from a given configuration
+	 * 
 	 * @param state configuration to be set
 	 */
 	public Board(Configuration state) {
@@ -115,7 +123,6 @@ public class Board {
 	public HashMap<String, Square> getSquares(){
 		return squares;
 	}
-	//TODO add other setters and getters
 	
 	public Configuration getCurrentState() {
 		return currentState;
@@ -157,158 +164,8 @@ public class Board {
 	public ArrayList<Piece> getPieces() {
 		return pieces;
 	}
-
-	/*
-	 * Moves a single piece
-	 * 
-	 * Command should either have references to squares or string names
-	 * 
-	 * @param move command detailing which piece to move where
-	 */
-	public void Move(Command move) {
-		//TODO
-		//this method is not finished, only the basics are written
-		//so that the CLIRunner can be tested
-		
-		//write code to test for:
-		//castling
-		int rank;
-		char file;
-		if (move.piece.getPieceName() == PieceName.KING && move.castleMode > 0) {
-			rank = (move.piece.getColor() == Color.WHITE)? 1 : 8;
-			file = (move.castleMode == 1)? 'f' : 'd';
-			Square rookOrigin = move.capturePiece.getSquare();
-			Square rookDestination = squares.get(file + Integer.toString(rank));
-			rookOrigin.setPiece(null);
-			rookDestination.setPiece(move.capturePiece);
-			move.capturePiece.incrementMoveCount();
-		}
-		//en passant
-		
-		//capture
-		if (move.capture) {
-			if (move.capturePiece.getColor() == Color.WHITE) {
-				whitePieces.remove(move.capturePiece);
-			}
-			else {
-				blackPieces.remove(move.capturePiece);
-			}
-			pieces.remove(move.capturePiece);
-			move.capturePiece.getSquare().setPiece(null);
-			
-		}
-		
-		//the following is very simplified code for testing purposes only
-		//it does not cover all the possibilities
-		Piece moving = move.piece;
-		Square origin = move.origin;
-		Square destination = move.destination;
-		origin.setPiece(null);
-		destination.setPiece(moving);
-		moving.incrementMoveCount();
-		//en passant flags
-		Pawn tempPawn;
-		for (Piece p : pieces) {
-			if (p instanceof Pawn) {
-				p.setSpecialFlags(false);
-				tempPawn = (Pawn)p;
-				tempPawn.setEnPassant(null);
-			}
-		}
-		if (moving.getPieceName() == PieceName.PAWN && moving.getMoveCount() == 1) {
-			if (destination.getRank() == 4 || destination.getRank() == 5) {
-				rank = destination.getRank();
-				file = destination.getFile();
-				int fileIndex = Square.alphabet.indexOf(file);
-				Square temp;
-				if (fileIndex - 1 >= 0) {
-					temp = squares.get(Square.alphabet.charAt(fileIndex -1) + Integer.toString(rank));
-					if (temp.hasPiece() && temp.getPiece().getColor() != moving.getColor()) {
-						temp.getPiece().setSpecialFlags(true);
-						if (temp.getPiece() instanceof Pawn) {
-							tempPawn = (Pawn)temp.getPiece();
-							tempPawn.setEnPassant((Pawn)moving);
-						}
-					}
-				}
-				if (fileIndex + 1 <= 7) {
-					temp = squares.get(Square.alphabet.charAt(fileIndex +1) + Integer.toString(rank));
-					if (temp.hasPiece() && temp.getPiece().getColor() != moving.getColor()) {
-						temp.getPiece().setSpecialFlags(true);
-						if (temp.getPiece() instanceof Pawn) {
-							tempPawn = (Pawn)temp.getPiece();
-							tempPawn.setEnPassant((Pawn)moving);
-						}
-					}
-				}
-			}
-		}
-		history.add(currentState);
-		currentState = new Configuration(this);
-		moves.add(move.toString());
-		return;
-	}
 	
-	public void undoMove() {
-		Configuration last = history.get(history.size()-1);
-		String lastMove = moves.get(moves.size()-1);
-		future.push(currentState);
-		undoneMoves.push(lastMove);
-		moves.remove(lastMove);
-		currentState = last;
-		loadConfiguration(last);
-		history.remove(last);
-		return;
-	}
-	
-	/*
-	 * Returns an ArrayList of Commands given Square strings
-	 * 
-	 * @param piece Piece to move
-	 * @param squares ArrayList of destination squares
-	 * @return ArrayList of Commands
-	 */
-	public ArrayList<Command> GenerateMoves(Piece piece, ArrayList<Square> destSquares){
-		ArrayList<Command> commands = new ArrayList<Command>();
-		for (Square s : destSquares) {
-			commands.add(new Command(piece, piece.getSquare(), s));
-		}
-		return commands;
-	}
-	
-	/*
-	 * Overloads above method without requiring references
-	 * 
-	 * Used for copying a set of commands from one board to a new copy
-	 * 
-	 * @param originSquare String representation of origin
-	 * @param destSquares ArrayList of destination squares
-	 * @return ArrayList of Commands
-	 */
-	public ArrayList<Command> GenerateMoves(String originSquare, ArrayList<String> destSquares){
-		ArrayList<Command> commands = new ArrayList<Command>();
-		Square origin = squares.get(originSquare);
-		Square destination;
-		for (String s : destSquares) {
-			destination = squares.get(s);
-			commands.add(new Command(origin.getPiece(), origin, destination));
-		}
-		return commands;
-	}
-	
-	/*
-	 * Formats commands that may have been written for different Board
-	 * 
-	 * Also used after the Board loads a new configuration with new pieces
-	 * 
-	 * @param unformatted Command
-	 * @return formatted Command
-	 */
-	public Command formatCommands(Command unformatted) {
-		//TODO write method
-		return unformatted;
-	}
-	/*
+	/**
 	 * Loads a new configuration to the board (i.e. moves)
 	 * 
 	 * Moves by loading a new configuration
@@ -387,8 +244,240 @@ public class Board {
 		capturedPieces.clear();
 		return;
 	}
+
+	/**
+	 * Moves a single piece
+	 * 
+	 * Command should either have references to squares or string names
+	 * 
+	 * @param move command detailing which piece to move where
+	 */
+	public void Move(Command move) {
+		//TODO
+		//this method is not finished, only the basics are written
+		//so that the CLIRunner can be tested
+		
+		//write code to test for:
+		//castling
+		int rank;
+		char file;
+		if (move.piece.getPieceName() == PieceName.KING && move.castleMode > 0) {
+			rank = (move.piece.getColor() == Color.WHITE)? 1 : 8;
+			file = (move.castleMode == 1)? 'f' : 'd';
+			Square rookOrigin = move.capturePiece.getSquare();
+			Square rookDestination = squares.get(file + Integer.toString(rank));
+			rookOrigin.setPiece(null);
+			rookDestination.setPiece(move.capturePiece);
+			move.capturePiece.incrementMoveCount();
+		}
+		//en passant
+		
+		//capture
+		if (move.capture) {
+			if (move.capturePiece.getColor() == Color.WHITE) {
+				whitePieces.remove(move.capturePiece);
+			}
+			else {
+				blackPieces.remove(move.capturePiece);
+			}
+			pieces.remove(move.capturePiece);
+			move.capturePiece.getSquare().setPiece(null);
+			
+		}
+		
+		//the following is very simplified code for testing purposes only
+		//it does not cover all the possibilities
+		Piece moving = move.piece;
+		Square origin = move.origin;
+		Square destination = move.destination;
+		origin.setPiece(null);
+		destination.setPiece(moving);
+		moving.incrementMoveCount();
+		
+		//test if promotion
+		if (move.promotion) {
+			Piece promotion;
+			switch (move.promotionPiece) {
+			case ROOK:
+				promotion = new Rook(moving);
+				break;
+			case BISHOP:
+				promotion = new Bishop(moving);
+				break;
+			case KNIGHT:
+				promotion = new Knight(moving);
+				break;
+			case QUEEN:
+			default:
+				promotion = new Queen(moving);
+				break;
+			}
+			destination.setPiece(promotion);
+			if (promotion.getColor() == Color.WHITE) {
+				whitePieces.remove(moving);
+				whitePieces.add(promotion);
+			}
+			else {
+				blackPieces.remove(moving);
+				blackPieces.add(promotion);
+			}
+			pieces.remove(moving);
+			pieces.add(promotion);
+			
+		}
+		//en passant flags
+		for (Piece p : pieces) {
+			if (p instanceof Pawn) {
+				p.setSpecialFlags(false);
+				p.setEnPassant(null);
+			}
+		}
+		if (moving.getPieceName() == PieceName.PAWN && moving.getMoveCount() == 1) {
+			if (destination.getRank() == 4 || destination.getRank() == 5) {
+				rank = destination.getRank();
+				file = destination.getFile();
+				int fileIndex = Square.alphabet.indexOf(file);
+				Square temp;
+				if (fileIndex - 1 >= 0) {
+					temp = squares.get(Square.alphabet.charAt(fileIndex -1) + Integer.toString(rank));
+					if (temp.hasPiece() && temp.getPiece().getColor() != moving.getColor()) {
+						temp.getPiece().setSpecialFlags(true);
+						temp.getPiece().setEnPassant(moving.getSquare().getName());
+					}
+				}
+				if (fileIndex + 1 <= 7) {
+					temp = squares.get(Square.alphabet.charAt(fileIndex +1) + Integer.toString(rank));
+					if (temp.hasPiece() && temp.getPiece().getColor() != moving.getColor()) {
+						temp.getPiece().setSpecialFlags(true);
+						temp.getPiece().setEnPassant(moving.getSquare().getName());
+					}
+				}
+			}
+		}
+		history.add(currentState);
+		currentState = new Configuration(this);
+		moves.add(move.toString());
+		return;
+	}
 	
 	/*
+	 * Undoes a move
+	 */
+	public void undoMove() {
+		Configuration last = history.get(history.size()-1);
+		String lastMove = moves.get(moves.size()-1);
+		future.push(currentState);
+		undoneMoves.push(lastMove);
+		moves.remove(lastMove);
+		currentState = last;
+		loadConfiguration(last);
+		history.remove(last);
+		return;
+	}
+	
+	/**
+	 * Undoes n moves
+	 * 
+	 * Is more efficient than calling undoMove() n times
+	 * 
+	 * @param n number of moves to undo
+	 */
+	public void undoMove(int n) {
+		for (int i = 0; i < n; i++) {
+			future.push(currentState);
+			currentState = history.get(history.size()-1);
+			history.remove(history.size()-1);
+			undoneMoves.push(moves.get(moves.size()-1));
+			moves.remove(moves.size()-1);
+		}
+		loadConfiguration(currentState);
+		return;
+	}
+	
+	public void redoMove() {
+		Command move = new Command(undoneMoves.pop());
+		Move(move);
+		future.pop();
+		
+		//Use code above, since it should be more efficient than below for one move
+		/*
+		history.add(currentState);
+		currentState = future.pop();
+		loadConfiguration(currentState);
+		moves.add(undoneMoves.pop());
+		*/
+		return;
+	}
+	
+	/**
+	 * Redoes n moves
+	 * 
+	 * Should be more efficient than calling redoMove n times
+	 * 
+	 * @param n, number of moves to redo
+	 */
+	public void redoMove(int n) {
+		//TODO
+		for (int i = 0; i < n; i++) {
+			history.add(currentState);
+			currentState = future.pop();
+			moves.add(undoneMoves.pop());
+		}
+		loadConfiguration(currentState);
+		return;
+	}
+	
+	/**
+	 * Returns an ArrayList of Commands given Square strings
+	 * 
+	 * @param piece Piece to move
+	 * @param destSquares ArrayList of destination squares
+	 * @return ArrayList of Commands
+	 */
+	public ArrayList<Command> GenerateMoves(Piece piece, ArrayList<Square> destSquares){
+		ArrayList<Command> commands = new ArrayList<Command>();
+		for (Square s : destSquares) {
+			commands.add(new Command(piece, piece.getSquare(), s));
+		}
+		return commands;
+	}
+	
+	/**
+	 * Overloads above method without requiring references
+	 * 
+	 * Used for copying a set of commands from one board to a new copy
+	 * 
+	 * @param originSquare String representation of origin
+	 * @param destSquares ArrayList of destination squares
+	 * @return ArrayList of Commands
+	 */
+	public ArrayList<Command> GenerateMoves(String originSquare, ArrayList<String> destSquares){
+		ArrayList<Command> commands = new ArrayList<Command>();
+		Square origin = squares.get(originSquare);
+		Square destination;
+		for (String s : destSquares) {
+			destination = squares.get(s);
+			commands.add(new Command(origin.getPiece(), origin, destination));
+		}
+		return commands;
+	}
+	
+	/**
+	 * Formats commands that may have been written for different Board
+	 * 
+	 * Takes the Command fields that aren't explicit Square or Piece references
+	 * (String) and changes the fields that are to match the current board
+	 * Also used after the Board loads a new configuration with new pieces
+	 * 
+	 * @param unformatted Command
+	 * @return formatted Command
+	 */
+	public Command formatCommands(Command unformatted) {
+		//TODO write method
+		return unformatted;
+	}
+	
+	/**
 	 * Checks if king is not in check
 	 * 
 	 * Ignores opponent's King
@@ -419,7 +508,7 @@ public class Board {
 		return squareUnderAttack(color, k.getSquare());
 	}
 	
-	/*
+	/**
 	 * Checks if square is under attack by the other side
 	 * 
 	 * @param color of Player who's being attacked
@@ -437,7 +526,10 @@ public class Board {
 			opponents = this.whitePieces;
 		}
 		for (Piece p : opponents) {
-			moves.addAll(p.getValidMoves());
+			if (p instanceof King) {
+				moves.addAll(p.getRange());	//fix fatal castling error
+			}
+			else { moves.addAll(p.getValidMoves()); }
 		}
 		for (Square square : moves) {
 			if (square.equals(s)) {

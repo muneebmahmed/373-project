@@ -35,4 +35,4 @@ The graphical interface will show the board in two dimensions, and will allow mo
 
 Try running the CLIRunner to see our progress!
 
-![Chess board](https://github.com/muneebmahmed/373-project/blob/master/images/Chess%20Board.png)
+![Chess board](https://github.com/muneebmahmed/373-project/blob/master/images/Chess%20Board%20w%20pieces.png)

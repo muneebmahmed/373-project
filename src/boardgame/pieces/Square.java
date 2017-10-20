@@ -5,6 +5,11 @@ import java.util.*;
 
 import boardgame.pieces.Color;
 
+/**
+ * 
+ * @author Muneeb Ahmed
+ *
+ */
 public class Square {
 	private Color color;
 	private char file;

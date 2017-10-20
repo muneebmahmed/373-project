@@ -3,6 +3,13 @@ package boardgame.play;
 import boardgame.data.*;
 import boardgame.pieces.*;
 
+/**
+ * 
+ * @author Muneeb Ahmed
+ * @author Brock Berube
+ * @author Jeremy Sears
+ *
+ */
 public class Human extends Player {
 
 	public Human() {

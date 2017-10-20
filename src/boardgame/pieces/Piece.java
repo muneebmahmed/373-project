@@ -6,6 +6,11 @@ import boardgame.data.*;
 import boardgame.data.Configuration.ConfigElement;
 import boardgame.play.*;
 
+/**
+ * 
+ * @author Muneeb Ahmed
+ *
+ */
 public abstract class Piece {
 	protected Color color;
 	protected PieceName pName;
@@ -48,16 +53,13 @@ public abstract class Piece {
 	//create a piece for a given board given a ConfigElement and Board
 	public Piece(ConfigElement element, Board b) {
 		this(element.getColor(), b.getSquares().get(element.getSquare()));
+		this.moveCount = element.getMoveCount();
 		this.board = b;
 	}
 	
 	public Piece(Piece p) {
 		color = p.color;
-		pName = p.pName;
 		square = p.square;
-		symbol = p.symbol;
-		name = p.name;
-		value = p.value;
 		moveCount = p.value;
 		board = p.board;
 	}
@@ -135,6 +137,12 @@ public abstract class Piece {
 	public void setSpecialFlags(boolean flag) {
 		return;	//don't do anything except if special piece
 	}
+	public String getEnPassant() {
+		return null;
+	}
+	public void setEnPassant(String s) {
+		return;
+	}
 	
 	public void incrementMoveCount() {
 		moveCount++;
@@ -142,7 +150,7 @@ public abstract class Piece {
 	}
 	
 
-	/*
+	/**
 	 * Returns ArrayList of all squares in piece's range, regardless
 	 * of whether or not it can actually move there
 	 * 
@@ -150,18 +158,18 @@ public abstract class Piece {
 	 */
 	public abstract ArrayList<Square> getRange();
 	
-	/*
+	/**
 	 * Returns ArrayList of squares that can be moved to
-	 * 
-	 * Can getRange() to get squares in range
-	 * Checks of piece can actually move there
+	 * <p>
+	 * Can getRange() to get squares in range<br>
+	 * Checks of piece can actually move there<br>
 	 * Does NOT check if King will be left in check
 	 * 
 	 * @return ArrayList of squares that can be moved to
 	 */
 	public abstract ArrayList<Square> getValidMoves();
 	
-	/*
+	/**
 	 * Helper function for getValidMoves()
 	 * 
 	 * @param file of the destination square

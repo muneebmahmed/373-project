@@ -32,11 +32,16 @@ public class Queen extends Piece {
 	
 	public Queen(ConfigElement element, Board b) {
 		this(element.getColor(), b.getSquares().get(element.getSquare()));
+		this.moveCount = element.getMoveCount();
 		this.board = b;
 	}
 
 	public Queen(Piece p) {
 		super(p);
+		symbol = 'Q';
+		name = "Queen";
+		value = 9;
+		pName = PieceName.QUEEN;
 	}
 
 	@Override

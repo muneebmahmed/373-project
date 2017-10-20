@@ -8,11 +8,13 @@ import java.util.ArrayList;
 import boardgame.data.Configuration.ConfigElement;
 
 /**
- * @author muneeb
+ * @author Muneeb Ahmed
  *
  */
 public class Rook extends Piece {
+	
 	protected boolean castleFlag;
+	
 	public Rook() {
 		super();
 		symbol = 'R';
@@ -41,12 +43,17 @@ public class Rook extends Piece {
 	
 	public Rook(ConfigElement element, Board b) {
 		this(element.getColor(), b.getSquares().get(element.getSquare()));
+		this.moveCount = element.getMoveCount();
 		this.board = b;
 		castleFlag = element.isFlags();
 	}
 
 	public Rook(Piece p) {
 		super(p);
+		pName = PieceName.ROOK;
+		symbol = 'R';
+		name = "Rook";
+		value = 5;
 		castleFlag = false;
 	}
 

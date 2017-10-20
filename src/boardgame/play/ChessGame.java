@@ -5,6 +5,13 @@ import boardgame.data.*;
 import java.util.*;
 import java.lang.*;
 
+/**
+ * 
+ * @author Muneeb Ahmed
+ * @author Brock Berube
+ * @author Jeremy Sears
+ *
+ */
 public class ChessGame {
 	private Board board;
 	private Player white;

@@ -6,7 +6,10 @@ import java.util.*;
 
 /*
  * Run from command line
- * Also use for testing
+ * 
+ * Is NOT the CLI class. That will be added later
+ * The CLIRunner just runs the CLI, which will be added later
+ * Also used for testing
  */
 public class CLIRunner {
 
@@ -151,7 +154,32 @@ public class CLIRunner {
 				destination = testBoard.getSquares().get(input);
 			}
 			//testBoard.Move(new Command(moving, origin, destination));
-			current.Move(testBoard, new Command(moving, origin, destination));
+			if (moving.getPieceName() == PieceName.PAWN && (destination.getRank() == 8 || destination.getRank() == 1)) {
+				PieceName promotionPiece;
+				char pSymbol;
+				System.out.println("Choose a promotion piece: ");
+				input = scanner.nextLine();
+				pSymbol = input.charAt(0);
+				switch (pSymbol) {
+				case 'R':
+					promotionPiece = PieceName.ROOK;
+					break;
+				case 'B':
+					promotionPiece = PieceName.BISHOP;
+					break;
+				case 'K':
+				case 'N':
+					promotionPiece = PieceName.KNIGHT;
+					break;
+				case 'Q':
+				default:
+					promotionPiece = PieceName.QUEEN;
+					break;
+				}
+				current.Move(testBoard, new Command((Pawn)moving, destination, promotionPiece));
+			}
+			else {
+			current.Move(testBoard, new Command(moving, origin, destination));}
 			if (testBoard.KingInCheck(current.getColor())) {
 				System.out.println("Error! King cannot be in check! ");
 				testBoard.undoMove();
@@ -162,9 +190,20 @@ public class CLIRunner {
 			}
 			i++;
 		}
+		System.out.println("History:");
+		for (i = 0; i < testBoard.getMoves().size(); i++) {
+			if (i%2 == 0) {
+				System.out.print(Integer.toString(i/2 + 1) + ". " + testBoard.getMoves().get(i));
+			}
+			else {
+				System.out.println("\t" + testBoard.getMoves().get(i));
+			}
+		}
+		System.out.println("");
 		System.out.println("Goodbye, " + players[0].getName() + " and " + players[1].getName());
 		scanner.close();
 		
+		return;
 		/*
 		while(!input.equals("quit")) {
 			System.out.println("Choose an origin square, 'u' to undo, or 'quit' to quit: ");
