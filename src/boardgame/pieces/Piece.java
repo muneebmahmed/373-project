@@ -161,7 +161,6 @@ public abstract class Piece {
 	/**
 	 * Returns ArrayList of squares that can be moved to
 	 * <p>
-	 * Can getRange() to get squares in range<br>
 	 * Checks of piece can actually move there<br>
 	 * Does NOT check if King will be left in check
 	 * 
@@ -187,6 +186,24 @@ public abstract class Piece {
 			moves.add(s);
 		}
 		return false;
+	}
+	
+	public ArrayList<Square> getLegalMoves(){
+		ArrayList<Square> validMoves = getValidMoves();
+		ArrayList<Square> legalMoves = new ArrayList<Square>();
+		Configuration currentState = board.getCurrentState();
+		Board testBoard = new Board(currentState);
+		for (Square dest : validMoves) {
+			Command validMoveCommand = new Command(this, this.square, dest);
+			validMoveCommand = testBoard.formatCommand(validMoveCommand);
+			testBoard.Move(validMoveCommand);
+			if (!testBoard.KingInCheck(this.color)) {
+				legalMoves.add(dest);
+			}
+			testBoard.loadConfiguration(currentState);
+		}
+		
+		return legalMoves;
 	}
 	
 	public String toString() {

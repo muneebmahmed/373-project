@@ -24,6 +24,8 @@ public class Command {
 	public byte castleMode;	//0 if not castling, 1 if kingside, 2 if queenside
 	public Piece capturePiece;	//piece that's captured, if any
 	public char pieceSymbol;
+	public String originString;
+	public String destString;
 	//fields for piece color or piece name? If piece can't be found
 
 	public Command() {
@@ -34,7 +36,8 @@ public class Command {
 		promotion = false;
 		capture = false;
 		castleMode = 0;
-		
+		originString = null;
+		destString = null;
 	}
 	
 	/*
@@ -75,6 +78,8 @@ public class Command {
 				capturePiece = piece.getBoard().getSquares().get("a" + row).getPiece();
 			}
 		}
+		originString = origin.getName();
+		destString = destination.getName();
 	}
 	
 	public Command(Pawn pawn, Square destination, PieceName promote) {
@@ -100,7 +105,7 @@ public class Command {
 	 * 
 	 * @param input String to be parsed to Command
 	 */
-	public Command(String input) {
+	public Command(String input) throws IllegalFormatException {
 		//TODO write constructor to parse input string
 	}
 	
@@ -138,7 +143,7 @@ public class Command {
 	 * @param input String formatted as above
 	 * @param b Board on which to move
 	 */
-	public Command(Color color, String input, Board b) {
+	public Command(Color color, String input, Board b) throws IllegalFormatException {
 		//TODO write constructor to parse input string given board
 		
 		/*char fileDest, fileOrigin;

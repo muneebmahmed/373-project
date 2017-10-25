@@ -118,6 +118,26 @@ public class CLIRunner {
 		//This is for general testing purposes
 		while(!input.equals("quit")) {
 			current = players[i%2];
+			ArrayList<Square> legalCheck = new ArrayList<Square>();
+			for (Piece p : testBoard.getPieces()) {
+				if (p.getColor() == current.getColor()) { legalCheck.addAll(p.getLegalMoves()); }
+			}
+			if (legalCheck.size() == 0) {
+				if (testBoard.KingInCheck(current.getColor())) {
+					System.out.println(current.getName() + " loses!");
+					int checkmateIndex = testBoard.getMoves().size() -1;
+					String checkmateString = testBoard.getMoves().get(checkmateIndex);
+					checkmateString += '#';
+					testBoard.getMoves().remove(checkmateIndex);
+					testBoard.getMoves().add(checkmateString);
+					break;
+				}
+				else {
+					System.out.println("Stalemate");
+					break;
+				}
+			}
+			System.out.println("Your legal moves: " + legalCheck);
 			System.out.println(current.getName() + ", choose an origin square, 'u' to undo, or 'quit' to quit: ");
 			input = scanner.nextLine();
 			while (input.equals("u")) {
@@ -134,13 +154,13 @@ public class CLIRunner {
 				break;
 			}
 			origin = testBoard.getSquares().get(input);
-			while (!origin.hasPiece() || origin.getPiece().getColor() != current.getColor() || origin.getPiece().getValidMoves().size() == 0) {
+			while (origin == null || !origin.hasPiece() || origin.getPiece().getColor() != current.getColor() || origin.getPiece().getLegalMoves().size() == 0) {
 				System.out.println("Choose a square with one of your pieces: ");
 				input = scanner.nextLine();
 				origin = testBoard.getSquares().get(input);
 			}
 			moving = origin.getPiece();
-			validMoves = moving.getValidMoves();
+			validMoves = moving.getLegalMoves();
 			System.out.println(moving + "'s valid moves are "+ validMoves);
 			System.out.println("Choose a destination square: ");
 			input = scanner.nextLine();
@@ -152,7 +172,9 @@ public class CLIRunner {
 				System.out.println("Choose a valid move: " + validMoves);
 				input = scanner.nextLine();
 				destination = testBoard.getSquares().get(input);
+				if (input.equals("quit")) { break; }
 			}
+			if (input.equals("quit")) { break;}
 			//testBoard.Move(new Command(moving, origin, destination));
 			if (moving.getPieceName() == PieceName.PAWN && (destination.getRank() == 8 || destination.getRank() == 1)) {
 				PieceName promotionPiece;

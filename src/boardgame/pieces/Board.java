@@ -472,9 +472,12 @@ public class Board {
 	 * @param unformatted Command
 	 * @return formatted Command
 	 */
-	public Command formatCommands(Command unformatted) {
-		//TODO write method
-		return unformatted;
+	public Command formatCommand(Command unformatted) {
+		
+		Square origin = squares.get(unformatted.originString);
+		Square destination = squares.get(unformatted.destString);
+		return new Command(origin.getPiece(), origin, destination);
+		
 	}
 	
 	/**
