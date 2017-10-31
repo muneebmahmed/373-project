@@ -22,9 +22,9 @@ public class Board {
 	ArrayList<Piece> pieces;
 	private ArrayList<Piece> whitePieces, blackPieces;
 	HashMap<String, Square> squares;	//easy access to squares
+	private int moveCount; //used for 50 move rule
 	
 	private int mateFlag; //0 = game running, 1 = white wins, 2 = black wins, 3 = stalemate
-	private ArrayList<Square> captured; //possible arrayLists to have squares with only captured pieces
 	private ArrayList<Piece> capturedPieces;
 	//Are separate lists for pawns necessary?
 	private ArrayList<Pawn> pawns_white, pawns_black;
@@ -42,6 +42,7 @@ public class Board {
 		pawns_white = new ArrayList<Pawn>();
 		pawns_black = new ArrayList<Pawn>();
 		capturedPieces = new ArrayList<Piece>();
+		moveCount = 0;
 		mateFlag = 0;
 		board = new Square[8][8];
 		//create board
@@ -165,6 +166,16 @@ public class Board {
 		return pieces;
 	}
 	
+	public int getMoveCount() {
+		return moveCount;
+	}
+
+	
+	public void setMoveCount(int moveCount) {
+		this.moveCount = moveCount;
+	}
+	
+
 	/**
 	 * Loads a new configuration to the board (i.e. moves)
 	 * 
@@ -259,6 +270,14 @@ public class Board {
 		
 		//write code to test for:
 		//castling
+		//if castleMode = 100 then signal to undo a move
+		if (move.castleMode == 100) {
+			if (history.size() != 0) {
+				undoMove();
+			}
+			return;
+		}
+		moveCount++;
 		int rank;
 		char file;
 		if (move.piece.getPieceName() == PieceName.KING && move.castleMode > 0) {
@@ -282,7 +301,7 @@ public class Board {
 			}
 			pieces.remove(move.capturePiece);
 			move.capturePiece.getSquare().setPiece(null);
-			
+			moveCount = 0;
 		}
 		
 		//the following is very simplified code for testing purposes only
@@ -353,6 +372,9 @@ public class Board {
 					}
 				}
 			}
+		}
+		if (moving.getPieceName() == PieceName.PAWN) {
+			moveCount = 0;
 		}
 		history.add(currentState);
 		currentState = new Configuration(this);
@@ -473,38 +495,27 @@ public class Board {
 	 * @return formatted Command
 	 */
 	public Command formatCommand(Command unformatted) {
-		
-		Square origin = squares.get(unformatted.originString);
-		Square destination = squares.get(unformatted.destString);
-		return new Command(origin.getPiece(), origin, destination);
-		
+
+		return new Command(unformatted, this);
 	}
 	
 	/**
-	 * Checks if king is not in check
+	 * Checks if player's king is in check
 	 * 
 	 * Ignores opponent's King
 	 * 
-	 * @param color Color of player who just moved
+	 * @param color Color of player to move
 	 * 
 	 * @return true if player's King is in check
 	 */
 	public boolean KingInCheck(Color color) {
 		King k = new King();
-		if (color == Color.WHITE) {
-			for (Piece p : whitePieces) {
-				if (p.getPieceName() == PieceName.KING) {
-					k = (King)p;
-					break;
-				}
-			}
-		}
-		else {
-			for (Piece p : blackPieces) {
-				if (p.getPieceName() == PieceName.KING) {
-					k = (King)p;
-					break;
-				}
+		ArrayList<Piece> kingsPieces;
+		kingsPieces = (color == Color.WHITE)? whitePieces : blackPieces;
+		for (Piece p : kingsPieces) {
+			if (p.getPieceName() == PieceName.KING) {
+				k = (King)p;
+				break;
 			}
 		}
 		
@@ -522,12 +533,7 @@ public class Board {
 	public boolean squareUnderAttack(Color color, Square s) {
 		ArrayList<Square> moves = new ArrayList<Square>();
 		ArrayList<Piece> opponents;
-		if (color == Color.WHITE) {
-			opponents = this.blackPieces;
-		}
-		else {
-			opponents = this.whitePieces;
-		}
+		opponents = (color == Color.WHITE)? this.blackPieces : this.whitePieces;
 		for (Piece p : opponents) {
 			if (p instanceof King) {
 				moves.addAll(p.getRange());	//fix fatal castling error
@@ -540,6 +546,54 @@ public class Board {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Checks if specified command is a legal move
+	 * 
+	 * @param command to be checked
+	 * @return true if command is legal, else false
+	 */
+	public boolean isLegalCommand(Command command) {
+		if (command == null || command.piece == null || command.destination == null) {
+			return false;
+		}
+		return command.piece.getLegalMoves().contains(command.destination);
+	}
+	
+	/**
+	 * Evaluates if the Game is over and updates mateFlag
+	 * <p>
+	 * mateFlag = 0 if game running, 1 if white wins, 2 if black wins,
+	 * 3 if stalemate, 4 if draw by 50 move rule
+	 * 
+	 * @param sideToMove Color of the player to move
+	 * @return mateFlag detailing status
+	 */
+	public int isGameOver(Color sideToMove) {
+		if (moveCount >= 100) {	//100 plies = 50 moves
+			mateFlag = 4;
+			return 4;
+		}
+		ArrayList<Piece> moving = (sideToMove == Color.WHITE)? whitePieces : blackPieces;
+		ArrayList<Square> legalMoves = new ArrayList<Square>();
+		for (Piece p : moving) {
+			legalMoves.addAll(p.getLegalMoves());
+			if (legalMoves.size() > 0) {
+				mateFlag = 0;
+				return 0;
+			}
+		}
+		//only reaches this point if no legal moves
+		if (KingInCheck(sideToMove)) {
+			mateFlag = (sideToMove == Color.WHITE)? 2 : 1;	//2 if black wins (white in checkmate)
+		}													//1 if white wins (black in checkmate)
+		else {
+			//stalemate
+			mateFlag = 3;
+		}
+		
+		return mateFlag;
 	}
 	
 	/*

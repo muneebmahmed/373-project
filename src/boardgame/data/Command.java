@@ -59,9 +59,13 @@ public class Command {
 			int rank = origin.getRank();
 			capturePiece = piece.getBoard().getSquares().get(file + Integer.toString(rank)).getPiece();
 			//check to make sure you're not capturing your own piece
-			if (capturePiece.getColor() == piece.getColor()) {
+			if (capturePiece == null || capturePiece.getColor() == piece.getColor()) {
 				capture = false;
 			}
+		}
+		if (piece.getPieceName() == PieceName.PAWN && (destination.getRank() == 8 || destination.getRank() == 1)) {
+			promotion = true;
+			promotionPiece = PieceName.QUEEN;
 		}
 		castleMode = 0;
 		if (piece.getPieceName() == PieceName.KING && piece.getMoveCount() == 0) {
@@ -92,7 +96,8 @@ public class Command {
 		origin = b.getSquares().get(copy.origin.getName());
 		piece = origin.getPiece();
 		destination = b.getSquares().get(copy.destination.getName());
-		capturePiece = destination.getPiece();
+		if (copy.capturePiece == null) { capturePiece = null; }
+		else {capturePiece = b.getSquares().get(copy.capturePiece.getSquare().getName()).getPiece();}
 		promotion = copy.promotion;
 		capture = copy.capture;
 		castleMode = copy.castleMode;

@@ -159,7 +159,7 @@ public abstract class Piece {
 	public abstract ArrayList<Square> getRange();
 	
 	/**
-	 * Returns ArrayList of squares that can be moved to
+	 * Creates ArrayList of squares that can be moved to
 	 * <p>
 	 * Checks of piece can actually move there<br>
 	 * Does NOT check if King will be left in check
@@ -188,21 +188,27 @@ public abstract class Piece {
 		return false;
 	}
 	
+	/**
+	 * Creates ArrayList of Squares that can legally be moved to
+	 * <p>
+	 * Checks if King will be in check after each valid moves
+	 * 
+	 * @return ArrayList of Squares that legally can be moved to
+	 */
 	public ArrayList<Square> getLegalMoves(){
 		ArrayList<Square> validMoves = getValidMoves();
 		ArrayList<Square> legalMoves = new ArrayList<Square>();
 		Configuration currentState = board.getCurrentState();
-		Board testBoard = new Board(currentState);
+		Board testBoard = new Board();
 		for (Square dest : validMoves) {
+			testBoard.loadConfiguration(currentState);
 			Command validMoveCommand = new Command(this, this.square, dest);
 			validMoveCommand = testBoard.formatCommand(validMoveCommand);
 			testBoard.Move(validMoveCommand);
 			if (!testBoard.KingInCheck(this.color)) {
 				legalMoves.add(dest);
 			}
-			testBoard.loadConfiguration(currentState);
 		}
-		
 		return legalMoves;
 	}
 	

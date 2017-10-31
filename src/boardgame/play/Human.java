@@ -11,27 +11,43 @@ import boardgame.pieces.*;
  *
  */
 public class Human extends Player {
-
+	
+	UserInterface ui;
+	
 	public Human() {
-		// TODO Auto-generated constructor stub
+		super();
+		ui = null;
 	}
 
 	public Human(String name, Color color) {
 		super(name, color);
-		// TODO Auto-generated constructor stub
+		ui = null;
+	}
+	
+	public Human(String name, Color color, UserInterface ui) {
+		super (name, color);
+		this.ui = ui;
+	}
+
+	public UserInterface getUi() {
+		return ui;
+	}
+
+	public void setUi(UserInterface ui) {
+		this.ui = ui;
 	}
 
 	@Override
 	public int Move(Board b) {
-		// TODO Auto-generated method stub
-		return 0;
+		Command c = ui.getCommand(this, b);		//getCommand() should check if move is legal
+		b.Move(c);
+		return b.getMateFlag();
 	}
 
 	@Override
 	public int Move(Board b, Command c) {
-		// TODO Auto-generated method stub
 		b.Move(c);
-		return 0;
+		return b.getMateFlag();
 	}
 
 }

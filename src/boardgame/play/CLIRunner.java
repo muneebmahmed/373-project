@@ -107,110 +107,46 @@ public class CLIRunner {
 		Piece moving;
 		System.out.println("Enter the name for white: ");
 		input = scanner.nextLine();
-		Player white = new Human(input, Color.WHITE);
+		CLI commandLine = new CLI();
+		Player white = new Human(input, Color.WHITE, commandLine);
 		System.out.println("Enter the name for black: ");
 		input = scanner.nextLine();
-		Player black = new Human(input, Color.BLACK), current;
+		Player black = new Human(input, Color.BLACK, commandLine), current = white;
 		Player players[] = {white, black};
 		ArrayList<Square> validMoves = new ArrayList<Square>();
 		int i = 0;
-		
 		//This is for general testing purposes
-		while(!input.equals("quit")) {
-			current = players[i%2];
-			ArrayList<Square> legalCheck = new ArrayList<Square>();
-			for (Piece p : testBoard.getPieces()) {
-				if (p.getColor() == current.getColor()) { legalCheck.addAll(p.getLegalMoves()); }
-			}
-			if (legalCheck.size() == 0) {
-				if (testBoard.KingInCheck(current.getColor())) {
-					System.out.println(current.getName() + " loses!");
-					int checkmateIndex = testBoard.getMoves().size() -1;
-					String checkmateString = testBoard.getMoves().get(checkmateIndex);
-					checkmateString += '#';
-					testBoard.getMoves().remove(checkmateIndex);
-					testBoard.getMoves().add(checkmateString);
-					break;
-				}
-				else {
-					System.out.println("Stalemate");
-					break;
-				}
-			}
-			System.out.println("Your legal moves: " + legalCheck);
-			System.out.println(current.getName() + ", choose an origin square, 'u' to undo, or 'quit' to quit: ");
-			input = scanner.nextLine();
-			while (input.equals("u")) {
+		while(testBoard.isGameOver(current.getColor()) == 0) {
+			Command c = commandLine.getCommand(current, testBoard);
+			while (c.castleMode == 100) {
 				if (testBoard.getHistory().size() != 0) {
 					testBoard.undoMove();
 					System.out.print(printBoard(testBoard));
 					i--;
 					current = players[i%2];
 				}
-				System.out.println("Choose an origin square, 'u' to undo, or 'quit' to quit:");
-				input = scanner.nextLine();
+				c = commandLine.getCommand(current, testBoard);
 			}
-			if (input.equals("quit") || input.equals("checkmate")) {
+			if (c.castleMode == 50) {
 				break;
 			}
-			origin = testBoard.getSquares().get(input);
-			while (origin == null || !origin.hasPiece() || origin.getPiece().getColor() != current.getColor() || origin.getPiece().getLegalMoves().size() == 0) {
-				System.out.println("Choose a square with one of your pieces: ");
-				input = scanner.nextLine();
-				origin = testBoard.getSquares().get(input);
-			}
-			moving = origin.getPiece();
-			validMoves = moving.getLegalMoves();
-			System.out.println(moving + "'s valid moves are "+ validMoves);
-			System.out.println("Choose a destination square: ");
-			input = scanner.nextLine();
-			if (input.equals("quit")) {
-				break;
-			}
-			destination = testBoard.getSquares().get(input);
-			while (!validMoves.contains(destination)) {
-				System.out.println("Choose a valid move: " + validMoves);
-				input = scanner.nextLine();
-				destination = testBoard.getSquares().get(input);
-				if (input.equals("quit")) { break; }
-			}
-			if (input.equals("quit")) { break;}
-			//testBoard.Move(new Command(moving, origin, destination));
-			if (moving.getPieceName() == PieceName.PAWN && (destination.getRank() == 8 || destination.getRank() == 1)) {
-				PieceName promotionPiece;
-				char pSymbol;
-				System.out.println("Choose a promotion piece: ");
-				input = scanner.nextLine();
-				pSymbol = input.charAt(0);
-				switch (pSymbol) {
-				case 'R':
-					promotionPiece = PieceName.ROOK;
-					break;
-				case 'B':
-					promotionPiece = PieceName.BISHOP;
-					break;
-				case 'K':
-				case 'N':
-					promotionPiece = PieceName.KNIGHT;
-					break;
-				case 'Q':
-				default:
-					promotionPiece = PieceName.QUEEN;
-					break;
-				}
-				current.Move(testBoard, new Command((Pawn)moving, destination, promotionPiece));
-			}
-			else {
-			current.Move(testBoard, new Command(moving, origin, destination));}
-			if (testBoard.KingInCheck(current.getColor())) {
-				System.out.println("Error! King cannot be in check! ");
-				testBoard.undoMove();
-				i--;
-			}
-			else {
-				System.out.print(printBoard(testBoard));
-			}
+			testBoard.Move(c);
+			System.out.print(printBoard(testBoard));
 			i++;
+			current = players[i%2];
+		}
+		if (testBoard.isGameOver(current.getColor()) != 0) {
+			if (testBoard.getMateFlag() == 1 || testBoard.getMateFlag() == 2) {
+				System.out.println(current.getName() + " loses!");
+				int checkmateIndex = testBoard.getMoves().size()-1;
+				String checkmateString = testBoard.getMoves().get(checkmateIndex);
+				checkmateString += '#';
+				testBoard.getMoves().remove(checkmateIndex);
+				testBoard.getMoves().add(checkmateString);
+			}
+			else {
+				System.out.println("Stalemate");
+			}
 		}
 		System.out.println("History:");
 		for (i = 0; i < testBoard.getMoves().size(); i++) {
@@ -226,34 +162,6 @@ public class CLIRunner {
 		scanner.close();
 		
 		return;
-		/*
-		while(!input.equals("quit")) {
-			System.out.println("Choose an origin square, 'u' to undo, or 'quit' to quit: ");
-			input = scanner.nextLine();
-			while (input.equals("u")) {
-				testBoard.undoMove();
-				System.out.print(printBoard(testBoard));
-				System.out.println("Choose an origin square, 'u' to undo, or 'quit' to quit:");
-				input = scanner.nextLine();
-			}
-			if (input.equals("quit")) {
-				break;
-			}
-			origin = testBoard.getSquares().get(input);
-			moving = origin.getPiece();
-			System.out.println(moving + "'s valid moves are "+ moving.getValidMoves());
-			System.out.println("Choose a destination square: ");
-			input = scanner.nextLine();
-			if (input.equals("quit")) {
-				break;
-			}
-			destination = testBoard.getSquares().get(input);
-			testBoard.Move(new Command(moving, origin, destination));
-			System.out.print(printBoard(testBoard));
-		}
-		System.out.println("Goodbye");
-		scanner.close();
-		*/
 	}
 
 }

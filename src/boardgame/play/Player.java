@@ -35,5 +35,10 @@ public abstract class Player {
 	public abstract int Move(Board b);
 	
 	public abstract int Move(Board b, Command c);
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 
 }
