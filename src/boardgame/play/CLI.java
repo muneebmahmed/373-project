@@ -103,5 +103,16 @@ public class CLI implements UserInterface {
 		
 		return c;
 	}
+	
+	//@Override
+	public String getPlayerName(Color player) {
+		System.out.println("Enter the player name for " + player + ":");
+		return scanner.nextLine();
+	}
+	
+	public int getGameMode() {
+		
+		return 0;
+	}
 
 }

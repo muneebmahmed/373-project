@@ -13,5 +13,8 @@ public interface UserInterface {
 	
 	public Command getCommand(Player player, Board b);
 	//Add more methods as they become necessary
+	//public String getPlayerName(Color player);	//method for users to enter names
+	
+	//public int getGameMode();	//method for users to determine which game mode to play
 	
 }

@@ -101,23 +101,41 @@ public class CLIRunner {
 		//do stuff
 		Board testBoard = new Board();
 		System.out.print(printBoard(testBoard));
-		Square origin, destination;
 		Scanner scanner = new Scanner(System.in);
 		String input = "";
-		Piece moving;
-		System.out.println("Enter the name for white: ");
-		input = scanner.nextLine();
 		CLI commandLine = new CLI();
-		Player white = new Human(input, Color.WHITE, commandLine);
-		System.out.println("Enter the name for black: ");
-		input = scanner.nextLine();
-		Player black = new Human(input, Color.BLACK, commandLine), current = white;
+		int mode = 0;
+		Player white, black, current;
+		System.out.println("Is white human or computer? (0/1)");
+		try { mode = scanner.nextInt(); } catch (InputMismatchException e) { mode = 0; }
+		if (mode == 1) {white = new Computer("Computer", Color.WHITE);}
+		else {
+			input = commandLine.getPlayerName(Color.WHITE);
+			white = new Human(input, Color.WHITE, commandLine);}
+		System.out.println("Is black human or computer? (0/1)");
+		try { mode = scanner.nextInt(); } catch (InputMismatchException e) { mode = 0; }
+		if (mode == 1) {black = new Computer("Computer", Color.BLACK);}
+		else {
+			input = commandLine.getPlayerName(Color.BLACK);
+			black = new Human(input, Color.BLACK, commandLine);}
+		current = white;
 		Player players[] = {white, black};
-		ArrayList<Square> validMoves = new ArrayList<Square>();
 		int i = 0;
+		long startTime = 0, endTime = 0;
+		if (white instanceof Computer && black instanceof Computer) {
+			startTime = System.currentTimeMillis();
+		}
 		//This is for general testing purposes
 		while(testBoard.isGameOver(current.getColor()) == 0) {
-			Command c = commandLine.getCommand(current, testBoard);
+			Command c;
+			if (current instanceof Human) {
+				c = commandLine.getCommand(current, testBoard);}
+			else {
+				Evaluator e = ((Computer)current).evaluator;
+				e.setBoard(testBoard);
+				c = e.getBestMove(current.getColor());
+				c = testBoard.formatCommand(c);
+			}
 			while (c.castleMode == 100) {
 				if (testBoard.getHistory().size() != 0) {
 					testBoard.undoMove();
@@ -131,8 +149,10 @@ public class CLIRunner {
 				break;
 			}
 			testBoard.Move(c);
+			testBoard.updateState(c);
 			System.out.print(printBoard(testBoard));
 			i++;
+			if (current instanceof Computer) { System.out.println("I moved " + c); }
 			current = players[i%2];
 		}
 		if (testBoard.isGameOver(current.getColor()) != 0) {
@@ -144,9 +164,8 @@ public class CLIRunner {
 				testBoard.getMoves().remove(checkmateIndex);
 				testBoard.getMoves().add(checkmateString);
 			}
-			else {
-				System.out.println("Stalemate");
-			}
+			else if (testBoard.getMateFlag() == 3) { System.out.println("Stalemate"); }
+			else { System.out.println("Draw"); }
 		}
 		System.out.println("History:");
 		for (i = 0; i < testBoard.getMoves().size(); i++) {
@@ -158,7 +177,11 @@ public class CLIRunner {
 			}
 		}
 		System.out.println("");
-		System.out.println("Goodbye, " + players[0].getName() + " and " + players[1].getName());
+		if (white instanceof Computer && black instanceof Computer) {
+			endTime = System.currentTimeMillis();
+			System.out.println("Execution time: " + (endTime-startTime) + " milliseconds");
+		}else {
+		System.out.println("Goodbye, " + players[0].getName() + " and " + players[1].getName());}
 		scanner.close();
 		
 		return;

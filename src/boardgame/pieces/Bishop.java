@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import boardgame.data.Configuration.ConfigElement;
 
 public class Bishop extends Piece {
-	private Color diagonals;
 	
 	public Bishop() {
 		super();

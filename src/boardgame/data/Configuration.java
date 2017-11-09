@@ -4,10 +4,11 @@ import java.util.*;
 import boardgame.pieces.*;
 
 /**
- * @author Muneeb Ahmed
+ * Represents the state of the board at any given time
  * <p>
- * Represents the state of the board at any given time<br>
- * ArrayLists for pieces detailing square, color, and other flags and data
+ * Has ArrayLists for pieces detailing square, color, and other flags and data
+ * @author Muneeb Ahmed
+ * 
  */
 public class Configuration implements Cloneable {
 

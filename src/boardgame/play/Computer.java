@@ -11,13 +11,17 @@ import boardgame.pieces.*;
  *
  */
 public class Computer extends Player {
+	
+	public Evaluator evaluator;
 
 	public Computer() {
 		// TODO Auto-generated constructor stub
+		evaluator = new Evaluator();
 	}
 
 	public Computer(String name, Color color) {
 		super(name, color);
+		evaluator = new Evaluator();
 		// TODO Auto-generated constructor stub
 	}
 

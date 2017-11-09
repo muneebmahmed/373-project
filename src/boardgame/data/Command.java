@@ -4,15 +4,14 @@ import java.util.*;
 import boardgame.pieces.*;
 import boardgame.play.*;
 /**
- * @author Brock Berube
- * @author Jeremy Sears
- * <p>
  * Represents a single move in the game
  * <br>
  * Data includes:
  * Piece to be moved, origin square, new square, if it's a capture<br>
  * Will have methods to parse a command from the command line<br>
  * Also will have methods to parse from graphical interface, once implemented
+ * @author Brock Berube
+ * @author Jeremy Sears
  */
 public class Command {
 	public Piece piece;

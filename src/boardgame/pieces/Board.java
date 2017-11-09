@@ -11,7 +11,7 @@ import boardgame.data.Configuration.ConfigElement;
  * @author Jeremy Sears
  *
  */
-public class Board {
+public class Board implements Cloneable {
 	private Configuration currentState;
 	private ArrayList<Configuration> history;	//use stack instead?
 	private ArrayList<String> moves;		//maybe should be of Commands instead of String
@@ -55,6 +55,7 @@ public class Board {
 				squares.put(board[row][col].toString(), board[row][col]);
 				i++;
 			}
+			i++;
 		}
 		
 		/*
@@ -115,7 +116,33 @@ public class Board {
 	 * @param state configuration to be set
 	 */
 	public Board(Configuration state) {
-		this();
+		//just make a new board here instead of default board with this()
+		whitePieces = new ArrayList<Piece>();
+		blackPieces = new ArrayList<Piece>();
+		squares = new HashMap<String, Square>();
+		pieces = new ArrayList<Piece>();
+		history = new ArrayList<Configuration>();
+		moves = new ArrayList<String>();
+		future = new Stack<Configuration>();
+		undoneMoves = new Stack<String>();
+		pawns_white = new ArrayList<Pawn>();
+		pawns_black = new ArrayList<Pawn>();
+		capturedPieces = new ArrayList<Piece>();
+		moveCount = 0;
+		mateFlag = 0;
+		board = new Square[8][8];
+		//create board
+		Color colors[] = {Color.BLACK, Color.WHITE};
+		int i = 0;
+		for (int row = 0; row < 8; row++) {
+			for (int col = 0; col < 8; col++) {
+				i %= 2;
+				board[row][col] = new Square(colors[i], row, col);
+				squares.put(board[row][col].toString(), board[row][col]);
+				i++;
+			}
+			i++;
+		}
 		loadConfiguration(state);
 		currentState = state.clone();
 	}
@@ -258,8 +285,10 @@ public class Board {
 
 	/**
 	 * Moves a single piece
-	 * 
-	 * Command should either have references to squares or string names
+	 * <p>
+	 * Command should either have references to squares or string names <br>
+	 * Does not update the configuration, so that the computer can try many moves
+	 * more efficiently
 	 * 
 	 * @param move command detailing which piece to move where
 	 */
@@ -376,6 +405,19 @@ public class Board {
 		if (moving.getPieceName() == PieceName.PAWN) {
 			moveCount = 0;
 		}
+		//state updates moved to updateState()
+		return;
+	}
+	
+	/**
+	 * Updates the history and current state
+	 * <p>
+	 * Only called when making a legitimate move <br>
+	 * Not calling it allows the computer to more efficiently test multiple moves
+	 * 
+	 * @param move the Command to be added to move history
+	 */
+	public void updateState(Command move) {
 		history.add(currentState);
 		currentState = new Configuration(this);
 		moves.add(move.toString());
@@ -419,7 +461,9 @@ public class Board {
 	public void redoMove() {
 		Command move = new Command(undoneMoves.pop());
 		Move(move);
-		future.pop();
+		history.add(currentState);
+		currentState = future.pop();
+		moves.add(move.toString());
 		
 		//Use code above, since it should be more efficient than below for one move
 		/*
@@ -575,6 +619,12 @@ public class Board {
 			mateFlag = 4;
 			return 4;
 		}
+		int sum = 0, pawnCount = 0;
+		for (Piece p : pieces) {
+			sum += p.getValue();
+			if (p instanceof Pawn) {pawnCount++;}
+		}
+		if (sum == 138 || (sum == 141 && pawnCount == 0)) {mateFlag = 4; return 4;}
 		ArrayList<Piece> moving = (sideToMove == Color.WHITE)? whitePieces : blackPieces;
 		ArrayList<Square> legalMoves = new ArrayList<Square>();
 		for (Piece p : moving) {
@@ -594,6 +644,15 @@ public class Board {
 		}
 		
 		return mateFlag;
+	}
+	
+	@Override
+	public Board clone() {
+		Board newBoard = new Board(this.currentState);
+		for (Configuration c : history) {
+			newBoard.history.add(c.clone());
+		}
+		return newBoard;
 	}
 	
 	/*
