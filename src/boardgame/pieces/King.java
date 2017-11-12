@@ -57,7 +57,7 @@ public class King extends Piece {
 	}
 
 	@Override
-	public ArrayList<Square> getRange() {
+	public ArrayList<Square> getAttacking() {
 		char file = square.getFile();
 		int rank = square.getRank();
 		int fileIndex = Square.alphabet.indexOf(file);
@@ -75,13 +75,12 @@ public class King extends Piece {
 				}
 			}
 		}
-		//TODO add castling squares to range
 		return range;
 	}
 
 	@Override
 	public ArrayList<Square> getValidMoves() {
-		ArrayList<Square> range = getRange();
+		ArrayList<Square> range = getAttacking();
 		ArrayList<Square> moves = new ArrayList<Square>();
 		for (Square s : range) {
 			if (!s.hasPiece() || s.getPiece().color != color) {

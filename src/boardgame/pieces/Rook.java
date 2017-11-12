@@ -58,9 +58,9 @@ public class Rook extends Piece {
 	}
 
 	@Override
-	public ArrayList<Square> getRange() {
+	public ArrayList<Square> getAttacking() {
 		// TODO Auto-generated method stub
-		return null;
+		return getValidMoves();
 	}
 
 	@Override

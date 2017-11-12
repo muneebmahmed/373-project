@@ -84,8 +84,8 @@ public class CLIRunner {
 					builder.append(" ");
 				}
 				builder.append("  "); //removed space
-				if (j%2 == 1) {	//for spacing in the terminal
-					builder.append(' ');
+				if (j%2 == 1) {	//change the '==' to  '<=' if not using Eclipse on Mac
+					builder.append(' '); //for spacing in Eclipse on Mac
 				}
 			}
 			builder.append('\n');
@@ -103,17 +103,27 @@ public class CLIRunner {
 		System.out.print(printBoard(testBoard));
 		Scanner scanner = new Scanner(System.in);
 		String input = "";
-		CLI commandLine = new CLI();
+		UserInterface commandLine = new CLI();
 		int mode = 0;
 		Player white, black, current;
-		System.out.println("Is white human or computer? (0/1)");
-		try { mode = scanner.nextInt(); } catch (InputMismatchException e) { mode = 0; }
+		if (args.length != 2) {
+			System.out.println("Is white human or computer? (0/1)");
+			try { mode = scanner.nextInt(); } catch (InputMismatchException e) { mode = 0; }
+		}
+		else {
+			try { mode = Integer.parseInt(args[0]); } catch (NumberFormatException e) { mode = 1; }
+		}
 		if (mode == 1) {white = new Computer("Computer", Color.WHITE);}
 		else {
 			input = commandLine.getPlayerName(Color.WHITE);
 			white = new Human(input, Color.WHITE, commandLine);}
-		System.out.println("Is black human or computer? (0/1)");
-		try { mode = scanner.nextInt(); } catch (InputMismatchException e) { mode = 0; }
+		if (args.length != 2) {
+			System.out.println("Is black human or computer? (0/1)");
+			try { mode = scanner.nextInt(); } catch (InputMismatchException e) { mode = 0; }
+		}
+		else {
+			try {mode = Integer.parseInt(args[1]); } catch (NumberFormatException e) { mode = 1; }
+		}
 		if (mode == 1) {black = new Computer("Computer", Color.BLACK);}
 		else {
 			input = commandLine.getPlayerName(Color.BLACK);
@@ -177,11 +187,14 @@ public class CLIRunner {
 			}
 		}
 		System.out.println("");
+        if (testBoard.getMateFlag() == 1 || testBoard.getMateFlag() == 2) { System.out.println("Checkmate\n"); }
+        else if (testBoard.getMateFlag() == 3) { System.out.println("Stalemate\n"); }
+        else { System.out.println("Draw\n"); }
 		if (white instanceof Computer && black instanceof Computer) {
 			endTime = System.currentTimeMillis();
-			System.out.println("Execution time: " + (endTime-startTime) + " milliseconds");
+			System.out.println("Execution time: " + ((double)endTime-startTime)/1000.0 + " seconds");
 		}else {
-		System.out.println("Goodbye, " + players[0].getName() + " and " + players[1].getName());}
+			System.out.println("Goodbye, " + players[0].getName() + " and " + players[1].getName());}
 		scanner.close();
 		
 		return;

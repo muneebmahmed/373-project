@@ -45,12 +45,9 @@ public class Queen extends Piece {
 	}
 
 	@Override
-	public ArrayList<Square> getRange() {
-		ArrayList<Square> range = new ArrayList<Square>();
-		range.addAll(this.board.getRank(square));
-		range.addAll(this.board.getFile(square));
-		//TODO add Bishop squares
-		return range;
+	public ArrayList<Square> getAttacking() {
+		
+		return getValidMoves();
 	}
 
 	@Override

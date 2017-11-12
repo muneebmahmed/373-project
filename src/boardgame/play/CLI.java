@@ -13,6 +13,84 @@ public class CLI implements UserInterface {
 		// TODO Auto-generated constructor stub
 		scanner = new Scanner(System.in);
 	}
+	
+	public static StringBuilder printBoard(Board b) {
+		StringBuilder builder = new StringBuilder(450);
+	    String top =  "\t _____ _____ _____ _____ _____ _____ _____ _____";
+		String row =  "\t|     |     |     |     |     |     |     |     |";
+		String both =  "\t|_____|_____|_____|_____|_____|_____|_____|_____|";
+		builder.append(top + "\n");
+		for (int i = 7; i >= 0; i--) {
+			builder.append(row);
+			builder.append("\n\t" + (i+1));
+			for (int j = 0; j < 8; j++) {
+				builder.append("  ");
+				if (b.getBoard()[i][j].hasPiece()) {
+					Piece p = b.getBoard()[i][j].getPiece();
+					switch (p.getSymbol()) {
+					case 'K':
+						if (p.getColor() == Color.WHITE) {
+							builder.append('\u2654');
+						}
+						else {
+							builder.append("♚");
+						}
+						break;
+					case 'Q':
+						if (p.getColor() == Color.WHITE) {
+							builder.append('\u2655');
+						}
+						else {
+							builder.append("♛");
+						}
+						break;
+					case 'R':
+						if (p.getColor() == Color.WHITE) {
+							builder.append('\u2656');
+						}
+						else {
+							builder.append('\u265C');
+						}
+						break;
+					case 'B':
+						if (p.getColor() == Color.WHITE) {
+							builder.append('\u2657');
+						}
+						else {
+							builder.append('\u265D');
+						}
+						break;
+					case 'N':
+						if (p.getColor() == Color.WHITE) {
+							builder.append('\u2658');
+						}
+						else {
+							builder.append('\u265E');
+						}
+						break;
+					default:
+						if (p.getColor() == Color.WHITE) {
+							builder.append('\u2659');
+						}
+						else {
+							builder.append('\u265F');
+						}
+					}
+				}
+				else {
+					builder.append(" ");
+				}
+				builder.append("   ");
+				
+				//if (j%2 == 1) {	builder.append(' '); } //for spacing in the terminal
+			}
+			builder.append('\n');
+			builder.append(both);
+			builder.append('\n');
+		}
+		builder.append("\t   a     b     c     d     e     f     g     h  \n");
+		return builder;
+	}
 
 	@Override
 	public Command getCommand(Player player, Board b) {
@@ -104,14 +182,21 @@ public class CLI implements UserInterface {
 		return c;
 	}
 	
-	//@Override
+	@Override
 	public String getPlayerName(Color player) {
 		System.out.println("Enter the player name for " + player + ":");
 		return scanner.nextLine();
 	}
 	
+	@Override
+	public void updateBoard(Board b) {
+		//TODO
+		System.out.print(printBoard(b));
+		return;
+	}
+	
 	public int getGameMode() {
-		
+		//TODO
 		return 0;
 	}
 

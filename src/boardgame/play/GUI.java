@@ -15,20 +15,21 @@ import boardgame.pieces.*;
 import boardgame.pieces.Color;
 
 
-
-
-
 public class GUI extends JFrame implements UserInterface {
 
 	//add JPanel and components here
+	private final JPanel gui = new JPanel(new BorderLayout(3,3));
+	private JButton[][] chessBoardSquares= new JButton[8][8];
+	private JPanel chessBoard;
+	private static final String Columns = "ABCDEFGH";
+	private static final String ROWS = "12345678";
 	
+	//components in getting a move
 	private volatile Piece moving;
 	private volatile Square origin;
 	private volatile Square destination;
 	
 
-	
-	
 	
 	public GUI() throws HeadlessException {
 		// TODO Auto-generated constructor stub
@@ -84,34 +85,6 @@ public class GUI extends JFrame implements UserInterface {
 //		return new Dimension(s, s);
 //	}
 
-	@Override
-	public Command getCommand(Player player, Board b) {
-		// TODO Auto-generated method stub
-		destination = null;
-		
-		/*
-		 * The following code waits until the player selects a move
-		 * The player should be able to select a piece and destination with the GUI
-		 * The action listeners associated with the pieces will execute on a different thread
-		 * Therefore, the current thread should sleep to not waste resources
-		 */
-		while (destination == null) {
-			try {
-				Thread.sleep(1000);
-			}catch (InterruptedException e) {
-				//do stuff?
-			}
-		}
-		//System.out.println("Loop exited");
-		return new Command(moving, origin, destination);
-	}
-	
-	
-	private final JPanel gui = new JPanel(new BorderLayout(3,3));
-	private JButton[][] chessBoardSquares= new JButton[8][8];
-	private JPanel chessBoard;
-	private static final String Columns = "ABCDEFGH";
-	private static final String ROWS = "12345678";
 	
 	public void makeGUI() {
 		//make frame first
@@ -183,50 +156,51 @@ public class GUI extends JFrame implements UserInterface {
     	 */
     	
     	//black pieces first
-    	for(int i = 0; i < 8; i++) {
-    		chessBoardSquares[i][1].setBackground(java.awt.Color.BLUE);//add the black pawns here
-    	}
-    	chessBoardSquares[0][0].setBackground(java.awt.Color.BLUE);//black rooks add here
-    	chessBoardSquares[7][0].setBackground(java.awt.Color.BLUE);
+    		for(int i = 0; i < 8; i++) {
+    			chessBoardSquares[i][1].setBackground(java.awt.Color.BLUE);//add the black pawns here
+    		}
+    		chessBoardSquares[0][0].setBackground(java.awt.Color.BLUE);//black rooks add here
+    		chessBoardSquares[7][0].setBackground(java.awt.Color.BLUE);
     	
-    	chessBoardSquares[1][0].setBackground(java.awt.Color.BLUE);//black knights add here
-    	chessBoardSquares[6][0].setBackground(java.awt.Color.BLUE);
+    		chessBoardSquares[1][0].setBackground(java.awt.Color.BLUE);//black knights add here
+    		chessBoardSquares[6][0].setBackground(java.awt.Color.BLUE);
     	
-    	chessBoardSquares[2][0].setBackground(java.awt.Color.BLUE);//black bishop add here
-    	chessBoardSquares[5][0].setBackground(java.awt.Color.BLUE);
+    		chessBoardSquares[2][0].setBackground(java.awt.Color.BLUE);//black bishop add here
+    		chessBoardSquares[5][0].setBackground(java.awt.Color.BLUE);
     	
-    	chessBoardSquares[3][0].setBackground(java.awt.Color.BLUE);//black queen
-    	chessBoardSquares[4][0].setBackground(java.awt.Color.RED);//black king
+    		chessBoardSquares[3][0].setBackground(java.awt.Color.BLUE);//black queen
+    		chessBoardSquares[4][0].setBackground(java.awt.Color.RED);//black king
 
     	
-    	for(int i = 0; i < 8; i++) {
-    		chessBoardSquares[i][6].setBackground(java.awt.Color.GREEN);//add the white pawns here
-    	}
+    		for(int i = 0; i < 8; i++) {
+    			chessBoardSquares[i][6].setBackground(java.awt.Color.GREEN);//add the white pawns here
+    		}
     	
-       	chessBoardSquares[0][7].setBackground(java.awt.Color.GREEN);//black rooks add here
-    	chessBoardSquares[7][7].setBackground(java.awt.Color.GREEN);
+    		chessBoardSquares[0][7].setBackground(java.awt.Color.GREEN);//black rooks add here
+    		chessBoardSquares[7][7].setBackground(java.awt.Color.GREEN);
     	
-    	chessBoardSquares[1][7].setBackground(java.awt.Color.GREEN);//black knights add here
-    	chessBoardSquares[6][7].setBackground(java.awt.Color.GREEN);
+    		chessBoardSquares[1][7].setBackground(java.awt.Color.GREEN);//black knights add here
+    		chessBoardSquares[6][7].setBackground(java.awt.Color.GREEN);
     	
-    	chessBoardSquares[2][7].setBackground(java.awt.Color.GREEN);//black bishop add here
-    	chessBoardSquares[5][7].setBackground(java.awt.Color.GREEN);
+    		chessBoardSquares[2][7].setBackground(java.awt.Color.GREEN);//black bishop add here
+    		chessBoardSquares[5][7].setBackground(java.awt.Color.GREEN);
+    		
+    		chessBoardSquares[4][7].setBackground(java.awt.Color.GREEN);//black queen
+    		chessBoardSquares[3][7].setBackground(java.awt.Color.RED);//black king
     	
-    	chessBoardSquares[4][7].setBackground(java.awt.Color.GREEN);//black queen
-    	chessBoardSquares[3][7].setBackground(java.awt.Color.RED);//black king
     	
-    	
-    	//next step is to add action listeners for each of these pieces
+    		//next step is to add action listeners for each of these pieces
     	
     }
-
+/*
     public static void main(String[] args) {
         Runnable r = new Runnable() {
 
             @Override
             public void run() {
             	GUI cb = new GUI();
-
+            	cb.setVisible(true);
+            	
                 JFrame f = new JFrame("Chess");
                 f.add(cb.getGui());
                 f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -243,13 +217,41 @@ public class GUI extends JFrame implements UserInterface {
         SwingUtilities.invokeLater(r);
 	
 	}
-	
-	public String getPlayerName(Color player) {
+  */  
+
+	@Override
+	public Command getCommand(Player player, Board b) {
+		// TODO Auto-generated method stub
+		destination = null;
 		
-		
-		
-		return "fixme";
+		/*
+		 * The following code waits until the player selects a move
+		 * The player should be able to select a piece and destination with the GUI
+		 * The action listeners associated with the pieces will execute on a different thread
+		 * Therefore, the current thread should sleep to not waste resources
+		 */
+		while (destination == null) {
+			try {
+				Thread.sleep(1000);
+			}catch (InterruptedException e) {
+				//do stuff?
+			}
+		}
+		//System.out.println("Loop exited");
+		return new Command(moving, origin, destination);
 	}
 	
+	@Override
+	public String getPlayerName(Color player) {
+		//TODO
+		return "";
+	}
+	
+	@Override
+	public void updateBoard(Board b) {
+		//TODO
+		//should redraw the board after a move, if necessary
+		return;
+	}
 
 }

@@ -579,10 +579,7 @@ public class Board implements Cloneable {
 		ArrayList<Piece> opponents;
 		opponents = (color == Color.WHITE)? this.blackPieces : this.whitePieces;
 		for (Piece p : opponents) {
-			if (p instanceof King) {
-				moves.addAll(p.getRange());	//fix fatal castling error
-			}
-			else { moves.addAll(p.getValidMoves()); }
+			moves.addAll(p.getAttacking());	//fix fatal castling errors
 		}
 		for (Square square : moves) {
 			if (square.equals(s)) {
@@ -608,8 +605,10 @@ public class Board implements Cloneable {
 	/**
 	 * Evaluates if the Game is over and updates mateFlag
 	 * <p>
-	 * mateFlag = 0 if game running, 1 if white wins, 2 if black wins,
-	 * 3 if stalemate, 4 if draw by 50 move rule
+	 * Updates the value of the mateFlag. mateFlag is: <br>
+	 * 0 if the game is running<br>1 if white won<br>2 if black won<br>
+	 * 3 if there is a stalemate<br> 4 if a draw by 50 move rule<br>5 if a draw due to insufficient
+	 * mating material
 	 * 
 	 * @param sideToMove Color of the player to move
 	 * @return mateFlag detailing status
@@ -624,7 +623,7 @@ public class Board implements Cloneable {
 			sum += p.getValue();
 			if (p instanceof Pawn) {pawnCount++;}
 		}
-		if (sum == 138 || (sum == 141 && pawnCount == 0)) {mateFlag = 4; return 4;}
+		if (sum == 138 || (sum == 141 && pawnCount == 0)) {mateFlag = 5; return 5;}
 		ArrayList<Piece> moving = (sideToMove == Color.WHITE)? whitePieces : blackPieces;
 		ArrayList<Square> legalMoves = new ArrayList<Square>();
 		for (Piece p : moving) {
@@ -639,8 +638,7 @@ public class Board implements Cloneable {
 			mateFlag = (sideToMove == Color.WHITE)? 2 : 1;	//2 if black wins (white in checkmate)
 		}													//1 if white wins (black in checkmate)
 		else {
-			//stalemate
-			mateFlag = 3;
+			mateFlag = 3;	//stalemate
 		}
 		
 		return mateFlag;

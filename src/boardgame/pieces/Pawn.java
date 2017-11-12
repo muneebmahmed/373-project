@@ -82,9 +82,18 @@ public class Pawn extends Piece {
 	}
 
 	@Override
-	public ArrayList<Square> getRange() {
+	public ArrayList<Square> getAttacking() {
 		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Square> moves = new ArrayList<Square>();
+		int direction = (color == Color.WHITE)? 1 : -1;
+		int fileIndex = Square.alphabet.indexOf(square.getFile()), tempRank = square.getRank()+direction;
+		for (int i = fileIndex -1; i <= fileIndex + 1; i += 2) {
+			if (i >= 0 && i <= 7 && tempRank <= 8 && tempRank >= 1) {
+				Square s = board.getSquares().get(Square.alphabet.charAt(i) + Integer.toString(tempRank));
+				moves.add(s);
+			}
+		}
+		return moves;
 	}
 
 	@Override
@@ -106,12 +115,6 @@ public class Pawn extends Piece {
 			tempRank += direction;
 			validMovesHelper(file, tempRank, moves);
 		}
-		
-		tempRank = rank + direction;
-		if (enPassantFlag && enPassantCapture != null) {
-			Square s = board.getSquares().get(enPassantCapture.getFile() + Integer.toString(tempRank));
-			moves.add(s);
-		}
 		return moves;
 	}
 	
@@ -121,6 +124,9 @@ public class Pawn extends Piece {
 		if (!s.hasPiece() && file == square.getFile()) {
 			moves.add(s);
 			return true;
+		}
+		else if (!s.hasPiece() && enPassantFlag && enPassantCapture!= null && enPassantCapture.getFile() == file) {
+			moves.add(s);
 		}
 		else if (s.hasPiece() && s.getPiece().color != color && file != square.getFile()) {
 			moves.add(s);

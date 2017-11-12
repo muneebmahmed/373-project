@@ -28,6 +28,10 @@ public class Computer extends Player {
 	@Override
 	public int Move(Board b) {
 		// TODO Auto-generated method stub
+		evaluator.setBoard(b);
+		Command c = evaluator.getBestMove(color);
+		b.Move(c);
+		b.updateState(c);
 		return 0;
 	}
 

@@ -60,13 +60,16 @@ public class Evaluator {
 		ArrayList<Piece> pieces = board.getPieces();
 		ArrayList<Command> commands = new ArrayList<Command>();
 		ArrayList<Square> squares = new ArrayList<Square>();
+		boolean flag = false;
 		for (Piece p : pieces) {
 			if (p.getColor() == sideToMove) {
-				squares = p.getLegalMoves();}
+				flag = p.getGoodLegalMoves(squares);}
 			else { squares.clear();}
+			if (flag) { commands.clear(); }
 			for (Square s : squares) {
 				commands.add(new Command(p, p.getSquare(), s));
 			}
+			if (flag) { break; }
 		}
 		Command c = commands.get((int)(Math.random()*commands.size()));
 		return c;
