@@ -13,6 +13,7 @@ import javax.swing.border.*;
 import boardgame.data.Command;
 import boardgame.pieces.*;
 import boardgame.pieces.Color;
+import boardgame.gui.*;
 
 
 public class GUI extends JFrame implements UserInterface {
@@ -23,6 +24,8 @@ public class GUI extends JFrame implements UserInterface {
 	private JPanel chessBoard;
 	private static final String Columns = "ABCDEFGH";
 	private static final String ROWS = "12345678";
+	
+	public Board board;
 	
 	//components in getting a move
 	private volatile Piece moving;
@@ -44,6 +47,7 @@ public class GUI extends JFrame implements UserInterface {
 		
 		//setVisible(true);
 		
+		board = new Board();
 		makeGUI();
 	}
 
@@ -66,6 +70,11 @@ public class GUI extends JFrame implements UserInterface {
 		// TODO Auto-generated constructor stub
 		
 		
+	}
+	
+	public GUI(Board b) {
+		board = b;
+		makeGUI();
 	}
 	
 	//In the JPanel class, use this code to always keep the board square:
@@ -103,121 +112,111 @@ public class GUI extends JFrame implements UserInterface {
 		gui.add(chessBoard);
 		
 		Insets buttonMargin = new Insets(0,0,0,0);
-        for (int i = 0; i < chessBoardSquares.length; i++) {
-            for (int j = 0; j < chessBoardSquares[i].length; j++) {
-                JButton b = new JButton();
-                b.setMargin(buttonMargin);
-                ImageIcon image = new ImageIcon(new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB));//64x64 px in size
-                b.setIcon(image);
-                if (((j % 2 == 1) && (i % 2 == 1)) || (j % 2 == 0 && i % 2 == 0)) {//fills in every other tiles with white or black
-                    b.setBackground(java.awt.Color.WHITE);
-                } else {
-                	b.setBackground(java.awt.Color.BLACK);
-                }
-                chessBoardSquares[j][i] = b;
-            }
-        }
+		for (int i = 0; i < chessBoardSquares.length; i++) {
+			for (int j = 0; j < chessBoardSquares[i].length; j++) {
+            		Square s = board.getBoard()[7-i][j];
+            		JButton b;
+            		if (s.hasPiece()) {
+            			b = PieceButton.createPieceButton(s.getPiece());
+            		}
+            		else {
+            			b = new JButton();
+            			ImageIcon image = new ImageIcon(new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB));//64x64 px in size
+            			b.setIcon(image);
+            		}
+				b.setMargin(buttonMargin);
+
+				if (((j % 2 == 1) && (i % 2 == 1)) || (j % 2 == 0 && i % 2 == 0)) {//fills in every other tiles with white or black
+					b.setBackground(java.awt.Color.WHITE);
+				} else {
+					b.setBackground(new java.awt.Color(0, 90, 45));
+				}
+				b.setOpaque(true);
+				b.setBorderPainted(false);
+				chessBoardSquares[j][i] = b;
+			}
+		}
 		
-      //fill the chess board
-        chessBoard.add(new JLabel(""));
-        // fill the top row
-        for (int i = 0; i < 8; i++) {
-            chessBoard.add(new JLabel(Columns.substring(i, i + 1),SwingConstants.CENTER));
-        }
-        // fill the black non-pawn piece row
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                switch (j) {
-                    case 0:
-                        chessBoard.add(new JLabel("" + (8 -i),SwingConstants.CENTER));
-                    default:
-                        chessBoard.add(chessBoardSquares[j][i]);
-                }
-            }
-        }
-    }
-
-    public final JComponent getChessBoard() {
-        return chessBoard;
-    }
-
-    public final JComponent getGui() {
-        return gui;
-    }
-    
-    
-    public void addChessPieces() {
-    	/*
-    	 * FIXME
-    	 * In order to get the pieces to show up, we have to change the setBackground to setForeground. 
-    	 * We also need to implement the icon of the piece instead of the
-    	 * different colors
-    	 * 
-    	 */
-    	
-    	//black pieces first
-    		for(int i = 0; i < 8; i++) {
-    			chessBoardSquares[i][1].setBackground(java.awt.Color.BLUE);//add the black pawns here
-    		}
-    		chessBoardSquares[0][0].setBackground(java.awt.Color.BLUE);//black rooks add here
-    		chessBoardSquares[7][0].setBackground(java.awt.Color.BLUE);
-    	
-    		chessBoardSquares[1][0].setBackground(java.awt.Color.BLUE);//black knights add here
-    		chessBoardSquares[6][0].setBackground(java.awt.Color.BLUE);
-    	
-    		chessBoardSquares[2][0].setBackground(java.awt.Color.BLUE);//black bishop add here
-    		chessBoardSquares[5][0].setBackground(java.awt.Color.BLUE);
-    	
-    		chessBoardSquares[3][0].setBackground(java.awt.Color.BLUE);//black queen
-    		chessBoardSquares[4][0].setBackground(java.awt.Color.RED);//black king
-
-    	
-    		for(int i = 0; i < 8; i++) {
-    			chessBoardSquares[i][6].setBackground(java.awt.Color.GREEN);//add the white pawns here
-    		}
-    	
-    		chessBoardSquares[0][7].setBackground(java.awt.Color.GREEN);//black rooks add here
-    		chessBoardSquares[7][7].setBackground(java.awt.Color.GREEN);
-    	
-    		chessBoardSquares[1][7].setBackground(java.awt.Color.GREEN);//black knights add here
-    		chessBoardSquares[6][7].setBackground(java.awt.Color.GREEN);
-    	
-    		chessBoardSquares[2][7].setBackground(java.awt.Color.GREEN);//black bishop add here
-    		chessBoardSquares[5][7].setBackground(java.awt.Color.GREEN);
-    		
-    		chessBoardSquares[4][7].setBackground(java.awt.Color.GREEN);//black queen
-    		chessBoardSquares[3][7].setBackground(java.awt.Color.RED);//black king
-    	
-    	
-    		//next step is to add action listeners for each of these pieces
-    	
-    }
-/*
-    public static void main(String[] args) {
-        Runnable r = new Runnable() {
-
-            @Override
-            public void run() {
-            	GUI cb = new GUI();
-            	cb.setVisible(true);
-            	
-                JFrame f = new JFrame("Chess");
-                f.add(cb.getGui());
-                f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                f.setLocationByPlatform(true);
-
-                // ensures the frame is the minimum size it needs to be
-                // in order display the components within it
-                f.pack();
-                // ensures the minimum size is enforced.
-                f.setMinimumSize(f.getSize());
-                f.setVisible(true);
-            }
-        };
-        SwingUtilities.invokeLater(r);
-	
+		//fill the chess board
+		//chessBoard.add(new JLabel(""));
+		// fill the top row
+//		for (int i = 0; i < 8; i++) {
+//			chessBoard.add(new JLabel(Columns.substring(i, i + 1),SwingConstants.CENTER));
+//		}
+		// fill the black non-pawn piece row
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				switch (j) {
+				case 0:
+					chessBoard.add(new JLabel("" + (8 -i),SwingConstants.CENTER));
+				default:
+					chessBoard.add(chessBoardSquares[j][i]);
+				}
+			}
+		}
+		//File labels should be at the bottom
+		chessBoard.add(new JLabel(""));
+		for (int i = 0; i < 8; i++) {
+			chessBoard.add(new JLabel(Character.toString(Character.toUpperCase(Square.alphabet.charAt(i))), SwingConstants.CENTER));
+		}
 	}
-  */  
+
+	public final JComponent getChessBoard() {
+		return chessBoard;
+	}
+
+	public final JComponent getGui() {
+		return gui;
+	}
+
+    
+	public void addChessPieces() {
+		/*
+		 * FIXME
+		 * In order to get the pieces to show up, we have to change the setBackground to setForeground. 
+		 * We also need to implement the icon of the piece instead of the
+		 * different colors
+		 * 
+		 */
+    	/*
+		//black pieces first
+		for(int i = 0; i < 8; i++) {
+			chessBoardSquares[i][1].setBackground(java.awt.Color.BLUE);//add the black pawns here
+		}
+		chessBoardSquares[0][0].setBackground(java.awt.Color.BLUE);//black rooks add here
+		chessBoardSquares[7][0].setBackground(java.awt.Color.BLUE);
+    	
+		chessBoardSquares[1][0].setBackground(java.awt.Color.BLUE);//black knights add here
+		chessBoardSquares[6][0].setBackground(java.awt.Color.BLUE);
+    	
+		chessBoardSquares[2][0].setBackground(java.awt.Color.BLUE);//black bishop add here
+		chessBoardSquares[5][0].setBackground(java.awt.Color.BLUE);
+    	
+		chessBoardSquares[3][0].setBackground(java.awt.Color.BLUE);//black queen
+		chessBoardSquares[4][0].setBackground(java.awt.Color.RED);//black king
+
+    	
+		for(int i = 0; i < 8; i++) {
+			chessBoardSquares[i][6].setBackground(java.awt.Color.GREEN);//add the white pawns here
+		}
+    	
+		chessBoardSquares[0][7].setBackground(java.awt.Color.GREEN);//white rooks add here
+		chessBoardSquares[7][7].setBackground(java.awt.Color.GREEN);
+    	
+		chessBoardSquares[1][7].setBackground(java.awt.Color.GREEN);//white knights add here
+		chessBoardSquares[6][7].setBackground(java.awt.Color.GREEN);
+    	
+		chessBoardSquares[2][7].setBackground(java.awt.Color.GREEN);//white bishop add here
+		chessBoardSquares[5][7].setBackground(java.awt.Color.GREEN);
+    		
+		chessBoardSquares[3][7].setBackground(java.awt.Color.GREEN);//white queen
+		chessBoardSquares[4][7].setBackground(java.awt.Color.RED);//white king
+
+
+		//next step is to add action listeners for each of these pieces
+    	*/
+		return;
+	}
 
 	@Override
 	public Command getCommand(Player player, Board b) {
@@ -244,7 +243,8 @@ public class GUI extends JFrame implements UserInterface {
 	@Override
 	public String getPlayerName(Color player) {
 		//TODO
-		return "";
+		String name = JOptionPane.showInputDialog("Enter the name for " + player);
+		return name;
 	}
 	
 	@Override

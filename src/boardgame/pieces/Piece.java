@@ -222,41 +222,41 @@ public abstract class Piece {
 	 * @return ArrayList of squares that can legally be moved to 
 	 * 
 	 */
-    public boolean getGoodLegalMoves(ArrayList<Square> legalMoves){
-        ArrayList<Square> validMoves = getValidMoves();
-        legalMoves.clear();
-        Configuration currentState = board.getCurrentState();
-        Board testBoard = new Board();
-        Color opponent = (color == Color.WHITE)? Color.BLACK : Color.WHITE;
-        ArrayList<Square> opponentMoves = new ArrayList<Square>();
-        boolean flag = false;
-        for (Square dest : validMoves) {
-            testBoard.loadConfiguration(currentState);
-            Command validMoveCommand = new Command(this, this.square, dest);
-            validMoveCommand = testBoard.formatCommand(validMoveCommand);
-            testBoard.Move(validMoveCommand);
-            if (!testBoard.KingInCheck(this.color)) {
-                legalMoves.add(dest);
-                if (testBoard.KingInCheck(opponent)) {
-                    testBoard.setCurrentState(new Configuration(testBoard));     //null pointer exception
-                    for (Piece p : testBoard.getPieces()) {
-                        if (p.getColor() == opponent) {
-                            opponentMoves.addAll(p.getLegalMoves());
-                        }
-                        if (opponentMoves.size() != 0) { break; }
-                    }
-                    if (opponentMoves.size() == 0) {
-                        legalMoves.clear();
-                        legalMoves.add(dest);
-                        flag = true;
-                        break;
-                    }
-                }
-            }
-            
-        }
-        return flag;
-    }
+	public boolean getGoodLegalMoves(ArrayList<Square> legalMoves){
+		ArrayList<Square> validMoves = getValidMoves();
+		legalMoves.clear();
+		Configuration currentState = board.getCurrentState();
+		Board testBoard = new Board();
+		Color opponent = (color == Color.WHITE)? Color.BLACK : Color.WHITE;
+		ArrayList<Square> opponentMoves = new ArrayList<Square>();
+		boolean flag = false;
+		for (Square dest : validMoves) {
+			testBoard.loadConfiguration(currentState);
+			Command validMoveCommand = new Command(this, this.square, dest);
+			validMoveCommand = testBoard.formatCommand(validMoveCommand);
+			testBoard.Move(validMoveCommand);
+			if (!testBoard.KingInCheck(this.color)) {
+				legalMoves.add(dest);
+				if (testBoard.KingInCheck(opponent)) {
+					testBoard.setCurrentState(new Configuration(testBoard));     //null pointer exception
+					for (Piece p : testBoard.getPieces()) {
+						if (p.getColor() == opponent) {
+							opponentMoves.addAll(p.getLegalMoves());
+						}
+						if (opponentMoves.size() != 0) { break; }
+					}
+					if (opponentMoves.size() == 0) {
+						legalMoves.clear();
+						legalMoves.add(dest);
+						flag = true;
+						break;
+					}
+				}
+			}
+			
+		}
+		return flag;
+	}
 	
 	public String toString() {
 		return color.toString() + ' ' + pName.toString();

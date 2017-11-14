@@ -17,7 +17,7 @@ Eclipse supports importing git repositories, as well staging, commiting, fetchin
 
 # Running and Testing
 
-A CLIRunner driver is provided. This is the driver that was used for testing classes as well as using them together for a game of chess. It only uses has a command line interface, but a GUIRunner driver will be added once enough progress is made on the GUI.
+A CLIRunner driver is provided. This is the driver that was used for testing classes as well as using them together for a game of chess. However, it only uses a command line interface. The GUIRunner driver currently is only capable of making a board.
 
 The CLIRunner driver is capable of running a game of chess, with human or computer players. It also accepts two integer command line arguments, each representing if a player is a computer (1) or human (not 1). The first argument is the white player, the second is the black player. This can be compiled and run from the terminal:
 ```
@@ -47,6 +47,7 @@ There are three packages containing different types of classes:
 * [pieces](src/boardgame/pieces), containing the board, pieces, and squares that make up a chessboard;
 * [data](src/boardgame/data), which contains classes that parse and store moves, board configurations, and move evaluations;
 * [play](src/boardgame/play), which contains the classes necessary to play a game, such as players, a Game class, and CLI/GUI interfaces
+* [gui](src/boardgame/gui), which has custom JComponents used for making our GUI.
 
 ## [Pieces](src/boardgame/pieces) (package)
 
@@ -67,8 +68,10 @@ Currently an Evaluator is only capable of finding a mate in 1, or returning a ra
 
 A Player is the Human or Computer that is playing the game. The overall ChessGame class has Players and a Board.
 
+## [GUI](src/boardgame/gui)
+
 The graphical interface will show the board in two dimensions, and will allow movement of pieces via point and click.
 
-The board should look like:
+The board should look somewhat like:
 
 ![Chess board](https://github.com/muneebmahmed/373-project/blob/master/images/Chess%20Board%20w%20pieces.png)

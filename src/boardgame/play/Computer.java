@@ -32,13 +32,15 @@ public class Computer extends Player {
 		Command c = evaluator.getBestMove(color);
 		b.Move(c);
 		b.updateState(c);
-		return 0;
+		return b.getMateFlag();
 	}
 
 	@Override
 	public int Move(Board b, Command c) {
 		// TODO Auto-generated method stub
-		return 0;
+		b.Move(c);
+		b.updateState(c);
+		return b.getMateFlag();
 	}
 
 }

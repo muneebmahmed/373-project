@@ -15,16 +15,15 @@ public class Board implements Cloneable {
 	private Configuration currentState;
 	private ArrayList<Configuration> history;	//use stack instead?
 	private ArrayList<String> moves;		//maybe should be of Commands instead of String
-	//ArrayLists for future moves if move is undone?
-	Stack<Configuration> future;
-	Stack<String> undoneMoves;
+	private Stack<Configuration> future;	//change access to private
+	private Stack<String> undoneMoves;
 	private Square[][] board;
 	ArrayList<Piece> pieces;
 	private ArrayList<Piece> whitePieces, blackPieces;
 	HashMap<String, Square> squares;	//easy access to squares
 	private int moveCount; //used for 50 move rule
 	
-	private int mateFlag; //0 = game running, 1 = white wins, 2 = black wins, 3 = stalemate
+	private int mateFlag; //0 = game running, 1 = white wins, 2 = black wins, 3 = stalemate, 4,5 = draw
 	private ArrayList<Piece> capturedPieces;
 	//Are separate lists for pawns necessary?
 	private ArrayList<Pawn> pawns_white, pawns_black;
@@ -261,6 +260,7 @@ public class Board implements Cloneable {
 				}
 			}
 		}
+		moveCount = state.getPlyCount();
 		return;
 	}
 	
@@ -294,11 +294,7 @@ public class Board implements Cloneable {
 	 */
 	public void Move(Command move) {
 		//TODO
-		//this method is not finished, only the basics are written
-		//so that the CLIRunner can be tested
 		
-		//write code to test for:
-		//castling
 		//if castleMode = 100 then signal to undo a move
 		if (move.castleMode == 100) {
 			if (history.size() != 0) {
@@ -318,9 +314,8 @@ public class Board implements Cloneable {
 			rookDestination.setPiece(move.capturePiece);
 			move.capturePiece.incrementMoveCount();
 		}
-		//en passant
 		
-		//capture
+		//capture, including en passant
 		if (move.capture) {
 			if (move.capturePiece.getColor() == Color.WHITE) {
 				whitePieces.remove(move.capturePiece);
@@ -333,8 +328,8 @@ public class Board implements Cloneable {
 			moveCount = 0;
 		}
 		
-		//the following is very simplified code for testing purposes only
-		//it does not cover all the possibilities
+		//the following was simplified code for testing purposes only
+		//it may not yet cover all the possibilities
 		Piece moving = move.piece;
 		Square origin = move.origin;
 		Square destination = move.destination;
@@ -373,7 +368,7 @@ public class Board implements Cloneable {
 			pieces.add(promotion);
 			
 		}
-		//en passant flags
+		//reset en passant flags
 		for (Piece p : pieces) {
 			if (p instanceof Pawn) {
 				p.setSpecialFlags(false);
@@ -575,15 +570,15 @@ public class Board implements Cloneable {
 	 * @return boolean true if under attack, else false
 	 */
 	public boolean squareUnderAttack(Color color, Square s) {
-		ArrayList<Square> moves = new ArrayList<Square>();
 		ArrayList<Piece> opponents;
+		ArrayList<Square> moves;
 		opponents = (color == Color.WHITE)? this.blackPieces : this.whitePieces;
 		for (Piece p : opponents) {
-			moves.addAll(p.getAttacking());	//fix fatal castling errors
-		}
-		for (Square square : moves) {
-			if (square.equals(s)) {
-				return true;
+			moves = p.getAttacking();	//fix fatal castling errors
+			for (Square square : moves) {
+				if (square.equals(s)) { 
+					return true;			//slightly faster code
+				}
 			}
 		}
 		return false;

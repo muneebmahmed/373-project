@@ -13,6 +13,7 @@ import boardgame.pieces.*;
 public class Configuration implements Cloneable {
 
 	public ArrayList<ConfigElement> elements;
+	public int plyCount;
 	
 	/*
 	 * New class will have data:
@@ -117,6 +118,7 @@ public class Configuration implements Cloneable {
 	
 	public Configuration() {
 		elements = new ArrayList<ConfigElement>();
+		plyCount = 0;
 	}
 	
 	/*
@@ -128,6 +130,7 @@ public class Configuration implements Cloneable {
 		for (Piece p : pieces) {
 			elements.add(new ConfigElement(p));
 		}
+		plyCount = b.getMoveCount();
 	}
 	
 	public void setNewConfig(Board b) {
@@ -136,10 +139,15 @@ public class Configuration implements Cloneable {
 		for (Piece p : pieces) {
 			elements.add(new ConfigElement(p));
 		}
+		plyCount = b.getMoveCount();
 	}
 	
 	public ArrayList<ConfigElement> getElements(){
 		return elements;
+	}
+	
+	public int getPlyCount() {
+		return plyCount;
 	}
 	
 	@Override
@@ -148,6 +156,7 @@ public class Configuration implements Cloneable {
 		for (ConfigElement e : elements) {
 			config.elements.add(new ConfigElement(e));
 		}
+		config.plyCount = plyCount;
 		return config;
 	}
 	
