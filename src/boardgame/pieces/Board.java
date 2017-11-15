@@ -416,6 +416,17 @@ public class Board implements Cloneable {
 		history.add(currentState);
 		currentState = new Configuration(this);
 		moves.add(move.toString());
+		
+		if (!undoneMoves.isEmpty() && !future.isEmpty()) {
+			if (!move.toString().equals(undoneMoves.pop())) {
+				undoneMoves.clear();
+				future.clear();
+			}
+			else { future.pop(); }
+		}
+		else if (!undoneMoves.isEmpty()) { undoneMoves.clear(); }
+		else if (!future.isEmpty()) { future.clear(); }
+		
 		return;
 	}
 	
@@ -591,7 +602,9 @@ public class Board implements Cloneable {
 	 * @return true if command is legal, else false
 	 */
 	public boolean isLegalCommand(Command command) {
-		if (command == null || command.piece == null || command.destination == null) {
+		if (command == null) { return false; }
+		if (command.castleMode == 50 || command.castleMode == 100) { return true; }
+		if (command.piece == null || command.destination == null) {
 			return false;
 		}
 		return command.piece.getLegalMoves().contains(command.destination);

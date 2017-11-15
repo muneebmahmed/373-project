@@ -20,7 +20,7 @@ public class GUIRunner {
 			public void run() {
 				Board testBoard = new Board();
 				GUI cb = new GUI(testBoard);
-				cb.setVisible(true);
+				cb.setVisible(false);
             	
 				JFrame f = new JFrame("Chess");
 				f.add(cb.getGui());

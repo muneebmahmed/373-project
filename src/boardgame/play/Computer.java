@@ -30,6 +30,7 @@ public class Computer extends Player {
 		// TODO Auto-generated method stub
 		evaluator.setBoard(b);
 		Command c = evaluator.getBestMove(color);
+		c = b.formatCommand(c);
 		b.Move(c);
 		b.updateState(c);
 		return b.getMateFlag();

@@ -1,6 +1,6 @@
 package boardgame.play;
 
-import boardgame.data.Command;
+import boardgame.data.*;
 import boardgame.pieces.*;
 import java.io.*;
 import java.util.*;
@@ -97,10 +97,14 @@ public class CLI implements UserInterface {
 		String input;
 		Command c = new Command();
 		Color side = player.getColor();
+		boolean loopPassed = false;
 		do {
+			if (loopPassed) {
+				System.out.println("That is not a legal move");
+			}
 			System.out.println(player + ", enter a move: ");
 			input = scanner.nextLine();
-			
+			/*
 			//TODO 
 			//comment out
 			//next fifty
@@ -169,14 +173,16 @@ public class CLI implements UserInterface {
 			//TODO 
 			//end
 			//uncomment
+			*/
 			
-			/*
 			try {
 				c = new Command(side, input, b);
-			} catch (IllegalFormatException e) {
-				e.printStackTrace();
-				c = null;
-			}*/
+			} catch (IllegalArgumentException e) {
+				//e.printStackTrace();
+				System.out.println("Could not parse move!");
+				c = new Command();
+			}
+			loopPassed = true;
 		} while (!b.isLegalCommand(c));
 		
 		return c;

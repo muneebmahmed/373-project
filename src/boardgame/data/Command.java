@@ -108,8 +108,9 @@ public class Command {
 	 * Parses string to Command
 	 * 
 	 * @param input String to be parsed to Command
+	 * @deprecated
 	 */
-	public Command(String input) throws IllegalFormatException {
+	public Command(String input) throws IllegalArgumentException {
 		//TODO write constructor to parse input string
 	}
 	
@@ -146,22 +147,241 @@ public class Command {
 	 * @param color Color of piece to be moved
 	 * @param input String formatted as above
 	 * @param b Board on which to move
+	 * @throws IllegalArgumentException if the Command could not be parsed
 	 */
-	public Command(Color color, String input, Board b) throws IllegalFormatException {
+	public Command(Color color, String input, Board b) throws IllegalArgumentException {
 		//TODO write constructor to parse input string given board
-		
-		/*char fileDest, fileOrigin;
+		this();
+		char fileDest, fileOrigin;
 		int rankDest, rankOrigin;
 		String destSquare, originSquare;		//will be used by squares.get()
 		char currChar;
 		String buffer = input;
-		String temp = "";
-		boolean done = false;
+		String temp = "", pieceSyms = "KQRBNkqrbn";
+		PieceName pieceName;
+		boolean fileNotrank = false, found = false;
 		
-		//We can start by checking for castling
+		//We can start by removing spaces
+		input = input.trim();
+		input = input.replace(" ", "");
+		input = input.replace(".", "");
+		input = input.replace("ep", "");
+		input = input.replace("+", "");
+		input = input.replace("#", "");
+		input = input.replace("?", "");
+
 		//Only castling uses 'O' (capital letter not number)
 		//Kingside will have 2 O, Queenside will have 3
+		//check if undoing a move or quitting
+		if (input.contains("u")) {
+			castleMode = 100;		//undo
+			if (input.contains("quit")) { castleMode = 50; }
+		}
+		else if (input.contains("O-O")) {				//castling
+			for (Piece p : b.getPieces()) {
+				if (p instanceof King && p.getColor() == color) {
+					piece = p;
+					origin = p.getSquare();
+					break;
+				}
+			}
+			int rookRank = (color == Color.WHITE)? 1 : 8;
+			char rookFile = 'h';
+			destSquare = 'g' + Integer.toString(rookRank);
+			castleMode = 1;								//kingside
+			if (input.contains("O-O-O")) {
+				rookFile = 'a';
+				destSquare = 'c' + Integer.toString(rookRank);
+				castleMode = 2;							//queenside
+			}
+			destination = b.getSquares().get(destSquare);
+			capturePiece = b.getSquares().get(rookFile + Integer.toString(rookRank)).getPiece();
+			if (capturePiece == null) { throw new IllegalArgumentException(); }
+		}
+		else {											//not castling
+			if (input.contains("=")) {					//promotion
+				char promPiece = input.charAt(input.length()-1);
+				switch (promPiece) {
+				case 'R':
+					promotionPiece = PieceName.ROOK;
+					break;
+				case 'B':
+					promotionPiece = PieceName.BISHOP;
+					break;
+				case 'N':
+					promotionPiece = PieceName.KNIGHT;
+					break;
+				case 'Q':
+				default:
+					promotionPiece = PieceName.QUEEN;
+					break;
+				}
+				try {
+					input = input.substring(0, input.length()-2); 
+				} catch (IndexOutOfBoundsException e) {throw new IllegalArgumentException();}
+				if (input.contains("=")) { throw new IllegalArgumentException(); }
+				promotion = true;
+			}
+			if (input.contains("x") || input.contains("-")) {
+				int captureIndex = input.indexOf('-');
+				if (input.contains("x")) {
+					capture = true;						//capture
+					captureIndex = input.indexOf('x');
+				}
+				destSquare = input.substring(captureIndex+1);
+				if (destSquare.length() != 2) { throw new IllegalArgumentException(); }
+				destination = b.getSquares().get(destSquare);
+				if (destination == null) { throw new IllegalArgumentException(); }
+				input = input.substring(0, captureIndex);
+				capturePiece = destination.getPiece();
+			}
+			else {
+				try {
+					destSquare = input.substring(input.length()-2);
+				} catch (IndexOutOfBoundsException e) {throw new IllegalArgumentException();}
+				destination = b.getSquares().get(destSquare);			//set destination
+				if (destination == null) { throw new IllegalArgumentException(); }
+				try {
+					input = input.substring(0, input.length()-2);
+				}catch (IndexOutOfBoundsException e) { throw new IllegalArgumentException(); }
+			}
+			
+			//At this point input only has the piece symbol and an origin left
+			//Could also be a pawn
+			if (input.length() == 0) {					//nothing left, must be pawn
+				for (Piece p : b.getPieces()) {
+					if (p instanceof Pawn && p.getColor() == color) {
+						if (p.getLegalMoves().contains(destination)) {
+							piece = p;
+							origin = p.getSquare();
+							found = true;
+							break;
+						}
+					}
+				}
+				if (!found) {
+					throw new IllegalArgumentException();//error if not found
+				}
+			}
+			else {
+				if (pieceSyms.contains(Character.toString(input.charAt(0)))) {
+					switch (input.charAt(0)) {			//find which piece it is
+					case 'K':
+					case 'k':
+						pieceName = PieceName.KING;
+						break;
+					case 'Q':
+					case 'q':
+						pieceName = PieceName.QUEEN;
+						break;
+					case 'R':
+					case 'r':
+						pieceName = PieceName.ROOK;
+						break;
+					case 'B':
+					case 'b':
+						pieceName = PieceName.BISHOP;
+						break;
+					case 'N':
+					case 'n':
+						pieceName = PieceName.KNIGHT;
+						break;
+					default:
+						pieceName = PieceName.PAWN;
+							
+					}
+					input = input.substring(1);
+				}
+				else {
+					pieceName = PieceName.PAWN;
+				}
+				if (input.length() != 0) {
+					if (input.length() == 2) {		//origin square is in the string
+						originSquare = input;
+						origin = b.getSquares().get(originSquare);
+						if (origin == null) { throw new IllegalArgumentException(); }
+						piece = origin.getPiece();
+						if (piece == null || piece.getPieceName() != pieceName) {
+							throw new IllegalArgumentException();
+						}
+					}
+					else {							//input is of length 1 (also could be greater than 2)
+						currChar = input.charAt(0);	//possible bug?
+						temp += currChar;
+						try {
+							fileOrigin = ' ';
+							rankOrigin = Integer.parseInt(temp);
+						}catch (NumberFormatException e) {
+							fileOrigin = currChar;
+							rankOrigin = 0;
+							fileNotrank = true;
+						}
+						for (Piece p : b.getPieces()) {	//search pieces for a match
+							if (p.getPieceName() == pieceName && p.getColor() == color) {
+								if (p.getLegalMoves().contains(destination)) {
+									if (fileNotrank && p.getSquare().getFile() == fileOrigin) {
+										piece = p;
+										origin = p.getSquare();
+										found = true;
+										break;
+									}
+									else if (!fileNotrank && p.getSquare().getRank() == rankOrigin) {
+										piece = p;
+										origin = p.getSquare();
+										found = true;
+										break;
+									}
+								}
+							}
+						}
+						if (!found) {
+							throw new IllegalArgumentException();
+						}
+					}
+				}
+				else {						//input is 0, so a major piece did not specify a starting square
+					for (Piece p : b.getPieces()) {
+						if (p.getPieceName() == pieceName && p.getColor() == color) {
+							if (p.getLegalMoves().contains(destination)) {
+								piece = p;
+								origin = p.getSquare();
+								found = true;	//found = !found; ?
+								break;
+							}
+						}
+					}
+				}
+				
+			}
+		}
+		//Final checks for errors not caught before
+		if (castleMode < 3) {
+			if (origin == null || destination == null || piece == null) {
+				throw new IllegalArgumentException();
+			}
+			if (destination.hasPiece() && capturePiece == null) {
+				capture = true;
+				capturePiece = destination.getPiece();
+			}
+			//pawn is capturing if it leaves the file
+			if (piece instanceof Pawn && destination.getFile() != piece.getSquare().getFile()) {
+				capture = true;
+			}
+			//set capturePiece for en passant
+			if (piece instanceof Pawn && piece.getSpecialFlags() && capture && !destination.hasPiece()) {
+				Pawn p = (Pawn)piece;
+				capturePiece = b.getSquares().get(p.getEnPassant()).getPiece();
+			}
+			//pawns can only promote when they reach the end of the board
+			if (promotion && (!(piece instanceof Pawn) || (destination.getRank() != 8 && destination.getRank() != 1))  ) {
+				throw new IllegalArgumentException();
+			}
+			pieceSymbol = piece.getSymbol();
+			originString = origin.getName();
+			destString = destination.getName();
+		}
 		
+		//Old code below
 		//We can continue by searching for 'x' and '='
 		
 		//Let's handle the 'x' and '=' cases here so we don't
@@ -174,6 +394,7 @@ public class Command {
 		//become too long
 		
 		//We can start parsing from the end:
+		/*
 		currChar = input.charAt(input.length()-1);
 		buffer = input.substring(0, input.length()-1);
 		//the following code may help determine once an int is reached
@@ -198,19 +419,6 @@ public class Command {
 		
 		//check the size of the buffer to see if 0 (pawns don't have symbols)
 		//if it's a pawn that doesn't capture, then fileDest = fileOrigin
-		
-		//Next char you pull off can be an x, a file, a rank, or a piece
-		
-		/*if (currChar == 'x'){
-			capture = true;
-			currChar = buffer.charAt(buffer.length()-1);
-			buffer = buffer.substring(0, buffer.length()-1);
-		}
-		else {
-			capture = false;
-		}*/
-		
-		//Now the char will be a rank, a file, or a piece
 		
 	}
 	

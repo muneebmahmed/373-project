@@ -114,16 +114,16 @@ public class GUI extends JFrame implements UserInterface {
 		Insets buttonMargin = new Insets(0,0,0,0);
 		for (int i = 0; i < chessBoardSquares.length; i++) {
 			for (int j = 0; j < chessBoardSquares[i].length; j++) {
-            		Square s = board.getBoard()[7-i][j];
-            		JButton b;
-            		if (s.hasPiece()) {
-            			b = PieceButton.createPieceButton(s.getPiece());
-            		}
-            		else {
-            			b = new JButton();
-            			ImageIcon image = new ImageIcon(new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB));//64x64 px in size
-            			b.setIcon(image);
-            		}
+				Square s = board.getBoard()[7-i][j];
+				JButton b;
+				if (s.hasPiece()) {
+					b = PieceButton.createPieceButton(s.getPiece());
+				}
+				else {
+					b = new JButton();
+					ImageIcon image = new ImageIcon(new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB));//64x64 px in size
+					b.setIcon(image);
+				}
 				b.setMargin(buttonMargin);
 
 				if (((j % 2 == 1) && (i % 2 == 1)) || (j % 2 == 0 && i % 2 == 0)) {//fills in every other tiles with white or black
