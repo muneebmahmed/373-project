@@ -603,7 +603,7 @@ public class Board implements Cloneable {
 	 */
 	public boolean isLegalCommand(Command command) {
 		if (command == null) { return false; }
-		if (command.castleMode == 50 || command.castleMode == 100) { return true; }
+		if (command.castleMode == 50 || command.castleMode == 100 || command.castleMode == 25) { return true; }
 		if (command.piece == null || command.destination == null) {
 			return false;
 		}

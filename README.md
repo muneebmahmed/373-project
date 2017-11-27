@@ -27,10 +27,10 @@ java src/boardgame/CLIRunner 1 1
 The above example will create a simulation of two computers playing against each other. If no command line arguments are specified then the user will be asked to decide during program execution.
 
 Operations supported by the CLIRunner while playing a game:
-* Moving a piece: enter the origin square (file then rank, such as "e2"). Afterwards, enter the destination square.
+* Moving a piece: ~~enter the origin square (file then rank, such as "e2"). Afterwards, enter the destination square.~~  As of the latest commit, the CLI supports entering moves in algebraic notation. The user can simply enter "e4" or "Qxf7" and the game will automatically determine which piece to move.
 * Undoing a move: enter "u" to undo the last move
 * Quitting: enter "quit" to quit
-* Promotion: enter the name (capital case) of the piece when prompted
+* Promotion: enter the symbol of a piece after an '='
 The game will automatically be checked for checkmate or draws. 
 
 If not using Eclipse on Mac, change line 87 of the CLIRunner from '==' to '<=':

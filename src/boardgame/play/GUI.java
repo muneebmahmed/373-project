@@ -3,6 +3,8 @@ package boardgame.play;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import javax.swing.*;
@@ -19,18 +21,24 @@ import boardgame.gui.*;
 public class GUI extends JFrame implements UserInterface {
 
 	//add JPanel and components here
-	private final JPanel gui = new JPanel(new BorderLayout(3,3));
+	private JPanel gui;
+	//private final JPanel gui = new JPanel(new BorderLayout(3,3));
 	private JButton[][] chessBoardSquares= new JButton[8][8];
+	private HashMap<String, SquareButton> squares;
 	private JPanel chessBoard;
 	private static final String Columns = "ABCDEFGH";
 	private static final String ROWS = "12345678";
 	
 	public Board board;
+	public Color toMove;
 	
 	//components in getting a move
 	private volatile Piece moving;
 	private volatile Square origin;
 	private volatile Square destination;
+	private volatile boolean undo, redo, quit;	//one for pawn promotion as well?
+	//private volatile PieceName promotion;	//in case of pawn promotion
+	private volatile Command c;	//messing around, should delete later?
 	
 
 	
@@ -46,8 +54,10 @@ public class GUI extends JFrame implements UserInterface {
 		//destination = null;
 		
 		//setVisible(true);
-		
+		super();
 		board = new Board();
+		gui = new JPanel();
+		squares = new HashMap<String, SquareButton>();
 		makeGUI();
 	}
 
@@ -73,7 +83,14 @@ public class GUI extends JFrame implements UserInterface {
 	}
 	
 	public GUI(Board b) {
+		super();
 		board = b;
+		gui = new JPanel();
+		toMove = Color.WHITE;		//let user decide?
+		squares = new HashMap<String, SquareButton>();
+		//initialize volatile elements?
+		//undo = false; quit = false; redo = false;
+		//moving = null; origin = null; destination = null;
 		makeGUI();
 	}
 	
@@ -98,24 +115,33 @@ public class GUI extends JFrame implements UserInterface {
 	public void makeGUI() {
 		//make frame first
 		makeChessFrame();
-		addChessPieces();
+		resetSquareIcons();
 		//makeBoard-add elements
 	    
 
 	}
-	
+	/*
+	 * TODO
+	 * What happens when changing the board?
+	 * Will a new board get added to the frame?
+	 * Perhaps split adding components and making buttons so that
+	 * modifying boards between games will be easier
+	 */
 	public void makeChessFrame() {
 		gui.setBorder(new EmptyBorder(5,5,5,5));
 		
 		chessBoard = new JPanel(new GridLayout(0,9));//provides the number of elements in board, including chess squares and indexes
 		
-		gui.add(chessBoard);
+		//gui.add(chessBoard); add(gui);
+		add(chessBoard);
 		
 		Insets buttonMargin = new Insets(0,0,0,0);
 		for (int i = 0; i < chessBoardSquares.length; i++) {
 			for (int j = 0; j < chessBoardSquares[i].length; j++) {
 				Square s = board.getBoard()[7-i][j];
-				JButton b;
+				SquareButton b = new SquareButton(s);
+				b.setMargin(buttonMargin);
+				/*
 				if (s.hasPiece()) {
 					b = PieceButton.createPieceButton(s.getPiece());
 				}
@@ -131,9 +157,12 @@ public class GUI extends JFrame implements UserInterface {
 				} else {
 					b.setBackground(new java.awt.Color(0, 90, 45));
 				}
+				*/
 				b.setOpaque(true);
 				b.setBorderPainted(false);
+				b.addActionListener(new SquareListener());
 				chessBoardSquares[j][i] = b;
+				squares.put(b.getSquare().getName(), b);	//Why errors?
 			}
 		}
 		
@@ -159,69 +188,104 @@ public class GUI extends JFrame implements UserInterface {
 		for (int i = 0; i < 8; i++) {
 			chessBoard.add(new JLabel(Character.toString(Character.toUpperCase(Square.alphabet.charAt(i))), SwingConstants.CENTER));
 		}
+		chessBoard.setVisible(true);
+		setVisible(true);
+		//gui.setVisible(true);
 	}
 
-	public final JComponent getChessBoard() {
+	public JComponent getChessBoard() {
 		return chessBoard;
 	}
 
-	public final JComponent getGui() {
+	public JComponent getGui() {
 		return gui;
 	}
 
     
-	public void addChessPieces() {
-		/*
-		 * FIXME
-		 * In order to get the pieces to show up, we have to change the setBackground to setForeground. 
-		 * We also need to implement the icon of the piece instead of the
-		 * different colors
-		 * 
-		 */
-    	/*
-		//black pieces first
-		for(int i = 0; i < 8; i++) {
-			chessBoardSquares[i][1].setBackground(java.awt.Color.BLUE);//add the black pawns here
+	public void resetSquareIcons() {
+
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				SquareButton square = (SquareButton)chessBoardSquares[i][j];
+				square.updateIcon();
+				square.resetBackground();
+			}
 		}
-		chessBoardSquares[0][0].setBackground(java.awt.Color.BLUE);//black rooks add here
-		chessBoardSquares[7][0].setBackground(java.awt.Color.BLUE);
-    	
-		chessBoardSquares[1][0].setBackground(java.awt.Color.BLUE);//black knights add here
-		chessBoardSquares[6][0].setBackground(java.awt.Color.BLUE);
-    	
-		chessBoardSquares[2][0].setBackground(java.awt.Color.BLUE);//black bishop add here
-		chessBoardSquares[5][0].setBackground(java.awt.Color.BLUE);
-    	
-		chessBoardSquares[3][0].setBackground(java.awt.Color.BLUE);//black queen
-		chessBoardSquares[4][0].setBackground(java.awt.Color.RED);//black king
-
-    	
-		for(int i = 0; i < 8; i++) {
-			chessBoardSquares[i][6].setBackground(java.awt.Color.GREEN);//add the white pawns here
-		}
-    	
-		chessBoardSquares[0][7].setBackground(java.awt.Color.GREEN);//white rooks add here
-		chessBoardSquares[7][7].setBackground(java.awt.Color.GREEN);
-    	
-		chessBoardSquares[1][7].setBackground(java.awt.Color.GREEN);//white knights add here
-		chessBoardSquares[6][7].setBackground(java.awt.Color.GREEN);
-    	
-		chessBoardSquares[2][7].setBackground(java.awt.Color.GREEN);//white bishop add here
-		chessBoardSquares[5][7].setBackground(java.awt.Color.GREEN);
-    		
-		chessBoardSquares[3][7].setBackground(java.awt.Color.GREEN);//white queen
-		chessBoardSquares[4][7].setBackground(java.awt.Color.RED);//white king
-
-
-		//next step is to add action listeners for each of these pieces
-    	*/
 		return;
+	}
+	
+	public class SquareListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			SquareButton source = (SquareButton)(e.getSource());
+			Square square = source.getSquare();
+			if (destination != null) { return; }
+			if (origin != null) {
+				if (origin.equals(square)) {
+					origin = null;
+					moving = null;
+					source.updateIcon();
+					source.resetBackground();
+					return;
+				}
+				else {
+					ArrayList<Square> destSquares = moving.getLegalMoves();
+					if (destSquares.contains(square)) {
+						destination = square;
+						//delete this later:
+						Command c = new Command(moving, origin, destination);
+						board.Move(c);
+						board.updateState(c);
+						resetSquareIcons();
+						repaint();
+						destination = null;
+						origin = null;
+						moving = null;
+						toMove = (toMove == Color.WHITE)? Color.BLACK : Color.WHITE;
+					}
+					else {
+						System.out.println("That's not a valid move");
+					}
+				}
+			}
+			else {
+				if (square.hasPiece() && toMove == square.getPiece().getColor()) {
+					origin = square;
+					moving = square.getPiece();
+					//check if piece has valid moves?
+					source.setBackground(java.awt.Color.BLUE);
+				}
+				else if (square.hasPiece() && toMove != square.getPiece().getColor()) {
+					System.out.println("That's not your piece!");
+				}
+				else {
+					System.out.println("That square does not have a piece");
+				}
+			}
+		}
+		
 	}
 
 	@Override
 	public Command getCommand(Player player, Board b) {
 		// TODO Auto-generated method stub
 		destination = null;
+		
+		//The following lines are just me messing around, I intend to delete them later
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				while (destination == null) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {}
+					
+				}
+				c = new Command(moving, origin, destination);
+			}
+		});
 		
 		/*
 		 * The following code waits until the player selects a move
@@ -234,7 +298,26 @@ public class GUI extends JFrame implements UserInterface {
 				Thread.sleep(1000);
 			}catch (InterruptedException e) {
 				//do stuff?
+				System.out.println("Interrupted ");
 			}
+			//cases when not making a move
+			if (undo) {
+				undo = false;
+				quit = false;
+				redo = false;
+				return new Command(toMove, "undo", board);
+			}
+			else if (quit) {
+				quit = false;
+				redo = false;
+				return new Command(toMove, "quit", board);
+			}
+			else if (redo) {
+				redo = false;
+				//TODO implement redo
+				//return new Command(toMove, "redo", board);
+			}
+			System.out.println("Waiting for destination ");
 		}
 		//System.out.println("Loop exited");
 		return new Command(moving, origin, destination);

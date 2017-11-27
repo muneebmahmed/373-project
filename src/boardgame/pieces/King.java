@@ -88,7 +88,8 @@ public class King extends Piece {
 			}
 		}
 		//TODO castling is done, but could it be better? @Brock @Jeremy
-		if (this.moveCount == 0 || castleFlag && !board.squareUnderAttack(color, square)) {
+		//parenthesis around or prevents castling out of check
+		if ((this.moveCount == 0 || castleFlag) && !board.squareUnderAttack(color, square)) {
 			Piece leftRook, rightRook;
 			int rank;
 			if (color == Color.WHITE) {

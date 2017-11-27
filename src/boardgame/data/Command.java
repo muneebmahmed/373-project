@@ -10,6 +10,7 @@ import boardgame.play.*;
  * Piece to be moved, origin square, new square, if it's a capture<br>
  * Will have methods to parse a command from the command line<br>
  * Also will have methods to parse from graphical interface, once implemented
+ * @author Muneeb Ahmed
  * @author Brock Berube
  * @author Jeremy Sears
  */
@@ -20,7 +21,7 @@ public class Command {
 	public boolean capture; //flag if capture takes place
 	public boolean promotion;	//flag if pawn promotion
 	public PieceName promotionPiece;
-	public byte castleMode;	//0 if not castling, 1 if kingside, 2 if queenside
+	public byte castleMode;	//0 if not castling, 1 if kingside, 2 if queenside, 25 if redo, 100 if undo, 50 if quit
 	public Piece capturePiece;	//piece that's captured, if any
 	public char pieceSymbol;
 	public String originString;
@@ -157,7 +158,7 @@ public class Command {
 		String destSquare, originSquare;		//will be used by squares.get()
 		char currChar;
 		String buffer = input;
-		String temp = "", pieceSyms = "KQRBNkqrbn";
+		String temp = "", pieceSyms = "KQRBNkqrn";
 		PieceName pieceName;
 		boolean fileNotrank = false, found = false;
 		
@@ -176,6 +177,9 @@ public class Command {
 		if (input.contains("u")) {
 			castleMode = 100;		//undo
 			if (input.contains("quit")) { castleMode = 50; }
+		}
+		else if (input.contains("redo")) {
+			castleMode = 25;
 		}
 		else if (input.contains("O-O")) {				//castling
 			for (Piece p : b.getPieces()) {
@@ -364,61 +368,46 @@ public class Command {
 				capturePiece = destination.getPiece();
 			}
 			//pawn is capturing if it leaves the file
-			if (piece instanceof Pawn && destination.getFile() != piece.getSquare().getFile()) {
-				capture = true;
+			if (piece instanceof Pawn) {
+				capture = (destination.getFile() != piece.getSquare().getFile());
+				
+				//set capturePiece for en passant
+				if (piece.getSpecialFlags() && capture && !destination.hasPiece()) {
+					Pawn p = (Pawn)piece;
+					capturePiece = b.getSquares().get(p.getEnPassant()).getPiece();
+				}
+				
+				//pawns can only promote when they reach the end of the board
+				if (promotion && (destination.getRank() != 8 && destination.getRank() != 1)) {
+					throw new IllegalArgumentException();
+				}
+				
+				//prevents pawn from reaching back rank without promoting
+				if (!promotion && (destination.getRank() == 8 || destination.getRank() == 1)) {
+					promotion = true;
+					promotionPiece = PieceName.QUEEN;
+				}
+				
 			}
-			//set capturePiece for en passant
-			if (piece instanceof Pawn && piece.getSpecialFlags() && capture && !destination.hasPiece()) {
-				Pawn p = (Pawn)piece;
-				capturePiece = b.getSquares().get(p.getEnPassant()).getPiece();
+			else if (promotion) { throw new IllegalArgumentException(); }
+			
+			//fixes fatal capturing error in issue #1
+			if (capture && capturePiece == null) {
+				capture = false;
 			}
-			//pawns can only promote when they reach the end of the board
-			if (promotion && (!(piece instanceof Pawn) || (destination.getRank() != 8 && destination.getRank() != 1))  ) {
-				throw new IllegalArgumentException();
+			
+			//let King castle
+			if (piece instanceof King && !piece.getAttacking().contains(destination)) {
+				Command c = new Command(piece, origin, destination);
+				capturePiece = c.capturePiece;
+				castleMode = c.castleMode;
 			}
 			pieceSymbol = piece.getSymbol();
 			originString = origin.getName();
 			destString = destination.getName();
 		}
 		
-		//Old code below
-		//We can continue by searching for 'x' and '='
-		
-		//Let's handle the 'x' and '=' cases here so we don't
-		//have to worry about them later
-		
-		//The rest of this code should probably be in an else branch
-		//since we don't want it to keep running
-		
-		//Suggestion: Have multiple helper functions so this code doesn't
-		//become too long
-		
-		//We can start parsing from the end:
-		/*
-		currChar = input.charAt(input.length()-1);
-		buffer = input.substring(0, input.length()-1);
-		//the following code may help determine once an int is reached
-		while (!done) {
-			try {
-				temp += currChar;
-				rankDest = Integer.parseInt(temp);
-				done = true;
-			}catch (NumberFormatException e) {
-				//what if it's a pawn promotion?
-				//check for that as well
-				currChar = buffer.charAt(buffer.length()-1);
-				buffer = buffer.substring(0, buffer.length()-1);
-				temp = "";
-				done = false;
-			}
-		}
-		*/
-		//Now pull off a char from the string to get the destination file
-		
-		//Assign destination square using fileDest and rankDest
-		
-		//check the size of the buffer to see if 0 (pawns don't have symbols)
-		//if it's a pawn that doesn't capture, then fileDest = fileOrigin
+		//Suggestion: Have multiple helper functions so this code doesn't become too long?
 		
 	}
 	
