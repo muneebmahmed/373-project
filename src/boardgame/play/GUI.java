@@ -159,6 +159,7 @@ public class GUI extends JFrame implements UserInterface {
 		for (int i = 0; i < 8; i++) {
 			chessBoard.add(new JLabel(Character.toString(Character.toUpperCase(Square.alphabet.charAt(i))), SwingConstants.CENTER));
 		}
+		this.addActionListeners();
 	}
 
 	public final JComponent getChessBoard() {
@@ -217,6 +218,297 @@ public class GUI extends JFrame implements UserInterface {
     	*/
 		return;
 	}
+public void addActionListeners() {
+        
+        class buttonListener implements ActionListener
+        {
+            public void actionPerformed(ActionEvent e) //this is the method MenuListener must implement, as it comes from the ActionListener interface.
+            {
+
+                JButton source = (JButton)(e.getSource());
+
+                
+                if(source.equals(chessBoardSquares[0][0]))
+                {
+                    //if piece is pressed, wait until another piece is selected
+                    
+                    //if other piece is selected, check if valid move, if same tile is pressed, cancel move
+                    
+                    //if move is valid, execute move, change the new location to having the icon of this piece
+                    //this tile is now blank
+                    
+                    //if move isnt valid, cancel move, and say invalid move
+                    
+                    //check checkmate, wait for next move
+                    
+                    chessBoardSquares[0][0].setBackground(java.awt.Color.BLUE);// this line is just to make sure it is responsive
+                }
+                else if(source.equals(chessBoardSquares[0][1]))
+                {
+                }
+                else if(source.equals(chessBoardSquares[0][2]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[0][3]))
+                {
+    
+                }
+                else if(source.equals(chessBoardSquares[0][4]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[0][5]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[0][6]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[0][7]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[1][0]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[1][1]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[1][2]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[1][3]))
+                {
+    
+                }
+                else if(source.equals(chessBoardSquares[1][4]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[1][5]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[1][6]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[1][7]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[2][0]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[2][1]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[2][2]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[2][3]))
+                {
+    
+                }
+                else if(source.equals(chessBoardSquares[2][4]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[2][5]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[2][6]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[2][7]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[3][0]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[3][1]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[3][2]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[3][3]))
+                {
+    
+                }
+                else if(source.equals(chessBoardSquares[3][4]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[3][5]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[3][6]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[3][7]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[4][0]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[4][1]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[4][2]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[4][3]))
+                {
+    
+                }
+                else if(source.equals(chessBoardSquares[4][4]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[4][5]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[4][6]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[4][7]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[5][0]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[5][1]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[5][2]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[5][3]))
+                {
+    
+                }
+                else if(source.equals(chessBoardSquares[5][4]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[5][5]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[5][6]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[5][7]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[6][0]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[6][1]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[6][2]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[6][3]))
+                {
+    
+                }
+                else if(source.equals(chessBoardSquares[6][4]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[6][5]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[6][6]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[6][7]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[7][0]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[7][1]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[7][2]))
+                {
+
+                }
+                else if(source.equals(chessBoardSquares[7][3]))
+                {
+    
+                }
+                else if(source.equals(chessBoardSquares[7][4]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[7][5]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[7][6]))
+                {
+                    
+                }
+                else if(source.equals(chessBoardSquares[7][7]))
+                {
+                    
+                }
+                
+            }
+        }
+                
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+                chessBoardSquares[i][j].addActionListener(new buttonListener());
+            }
+        }
+        
+        
+        
+        
+        
+    }
 
 	@Override
 	public Command getCommand(Player player, Board b) {
