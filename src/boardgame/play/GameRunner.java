@@ -12,13 +12,12 @@ public class GameRunner {
 		StartMenuGUI s = new StartMenuGUI();
 		
 		
-		while( /*game is still running*/ ) {
+		//while( /*game is still running*/ ) {
 		
 		
 		
-		}
-		
-		EndMenuGUI e = new EndMenuGUI();
+				
+		//EndMenuGUI e = new EndMenuGUI();
 		
 	}
 

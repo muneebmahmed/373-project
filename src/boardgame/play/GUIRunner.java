@@ -8,8 +8,12 @@ import javax.swing.SwingUtilities;
 
 import boardgame.pieces.*;
 import boardgame.data.*;
+import boardgame.play.*;
+
 
 public class GUIRunner {
+	
+	
 
 	public GUIRunner() {
 		// TODO Auto-generated constructor stub
@@ -19,6 +23,9 @@ public class GUIRunner {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		
+
+		
 		Board testBoard = new Board();
 		//GUI cb = new GUI(testBoard);
 		
@@ -80,6 +87,7 @@ public class GUIRunner {
 //					current = sides[i%2];
 //				}
 			}
+			
 		};
 		SwingUtilities.invokeLater(r);
 		
