@@ -19,8 +19,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import boardgame.pieces.*;
 import boardgame.data.*;
+import boardgame.play.*;
+
 
 public class GUIRunner {
+	
+	
 
 	public GUIRunner() {
 		// TODO Auto-generated constructor stub
@@ -28,6 +32,9 @@ public class GUIRunner {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		
+
+		
 		Board testBoard = new Board();
 		GUI cb = new GUI(testBoard);
 		cb.setVisible(true);
@@ -188,6 +195,7 @@ public class GUIRunner {
 				}*/
 
 			}
+			
 		};
 		//SwingUtilities.invokeLater(r);
 		(new Thread(r)).start();
