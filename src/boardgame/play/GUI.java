@@ -37,8 +37,7 @@ public class GUI extends JFrame implements UserInterface {
 	private volatile Square origin;
 	private volatile Square destination;
 	private volatile boolean undo, redo, quit;	//one for pawn promotion as well?
-	//private volatile PieceName promotion;	//in case of pawn promotion
-	private volatile Command c;	//messing around, should delete later?
+	private volatile PieceName promotion;	//in case of pawn promotion
 	
 
 	
@@ -57,6 +56,8 @@ public class GUI extends JFrame implements UserInterface {
 		super();
 		board = new Board();
 		gui = new JPanel();
+		toMove = Color.WHITE;
+		promotion = PieceName.PAWN;
 		squares = new HashMap<String, SquareButton>();
 		makeGUI();
 	}
@@ -87,6 +88,7 @@ public class GUI extends JFrame implements UserInterface {
 		board = b;
 		gui = new JPanel();
 		toMove = Color.WHITE;		//let user decide?
+		promotion = PieceName.PAWN;
 		squares = new HashMap<String, SquareButton>();
 		//initialize volatile elements?
 		//undo = false; quit = false; redo = false;
@@ -115,7 +117,6 @@ public class GUI extends JFrame implements UserInterface {
 	public void makeGUI() {
 		//make frame first
 		makeChessFrame();
-		resetSquareIcons();
 		//makeBoard-add elements
 	    
 
@@ -141,23 +142,6 @@ public class GUI extends JFrame implements UserInterface {
 				Square s = board.getBoard()[7-i][j];
 				SquareButton b = new SquareButton(s);
 				b.setMargin(buttonMargin);
-				/*
-				if (s.hasPiece()) {
-					b = PieceButton.createPieceButton(s.getPiece());
-				}
-				else {
-					b = new JButton();
-					ImageIcon image = new ImageIcon(new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB));//64x64 px in size
-					b.setIcon(image);
-				}
-				b.setMargin(buttonMargin);
-
-				if (((j % 2 == 1) && (i % 2 == 1)) || (j % 2 == 0 && i % 2 == 0)) {//fills in every other tiles with white or black
-					b.setBackground(java.awt.Color.WHITE);
-				} else {
-					b.setBackground(new java.awt.Color(0, 90, 45));
-				}
-				*/
 				b.setOpaque(true);
 				b.setBorderPainted(false);
 				b.addActionListener(new SquareListener());
@@ -202,13 +186,16 @@ public class GUI extends JFrame implements UserInterface {
 	}
 
     
-	public void resetSquareIcons() {
+	public synchronized void resetSquareIcons() {
 
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
 				SquareButton square = (SquareButton)chessBoardSquares[i][j];
 				square.updateIcon();
-				square.resetBackground();
+				if (square.paintCount != 0) {
+					square.resetBackground();
+				}
+				square.paintCount++;
 			}
 		}
 		return;
@@ -217,33 +204,30 @@ public class GUI extends JFrame implements UserInterface {
 	public class SquareListener implements ActionListener {
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public synchronized void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			SquareButton source = (SquareButton)(e.getSource());
 			Square square = source.getSquare();
 			if (destination != null) { return; }
 			if (origin != null) {
 				if (origin.equals(square)) {
+					if (moving != null) {
+						for (Square s : moving.getLegalMoves()) {
+							squares.get(s.getName()).resetBackground();
+						}
+					}
 					origin = null;
 					moving = null;
-					source.updateIcon();
 					source.resetBackground();
 					return;
 				}
 				else {
 					ArrayList<Square> destSquares = moving.getLegalMoves();
 					if (destSquares.contains(square)) {
-						destination = square;
-						//delete this later:
-						Command c = new Command(moving, origin, destination);
-						board.Move(c);
-						board.updateState(c);
-						resetSquareIcons();
-						repaint();
-						destination = null;
-						origin = null;
-						moving = null;
-						toMove = (toMove == Color.WHITE)? Color.BLACK : Color.WHITE;
+						//destination = square;
+						setDestination(square);
+						squares.get(origin.getName()).resetBackground();
+						//resetSquareIcons();
 					}
 					else {
 						System.out.println("That's not a valid move");
@@ -255,7 +239,11 @@ public class GUI extends JFrame implements UserInterface {
 					origin = square;
 					moving = square.getPiece();
 					//check if piece has valid moves?
-					source.setBackground(java.awt.Color.BLUE);
+					source.emphasizeBackground();
+					for (Square s : moving.getLegalMoves()) {
+						squares.get(s.getName()).setBlue();
+					}
+					//source.setBackground(java.awt.Color.BLUE);
 				}
 				else if (square.hasPiece() && toMove != square.getPiece().getColor()) {
 					System.out.println("That's not your piece!");
@@ -269,58 +257,53 @@ public class GUI extends JFrame implements UserInterface {
 	}
 
 	@Override
-	public Command getCommand(Player player, Board b) {
+	public synchronized Command getCommand(Player player, Board b) {
 		// TODO Auto-generated method stub
 		destination = null;
-		
-		//The following lines are just me messing around, I intend to delete them later
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				while (destination == null) {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {}
-					
-				}
-				c = new Command(moving, origin, destination);
-			}
-		});
+		toMove = player.getColor();
 		
 		/*
 		 * The following code waits until the player selects a move
 		 * The player should be able to select a piece and destination with the GUI
 		 * The action listeners associated with the pieces will execute on a different thread
-		 * Therefore, the current thread should sleep to not waste resources
+		 * Therefore, the current thread should wait to not waste resources
 		 */
 		while (destination == null) {
 			try {
-				Thread.sleep(1000);
+				//System.out.println("Waiting in Thread: " + Thread.currentThread().getName());
+				wait();
 			}catch (InterruptedException e) {
 				//do stuff?
 				System.out.println("Interrupted ");
 			}
 			//cases when not making a move
 			if (undo) {
-				undo = false;
-				quit = false;
-				redo = false;
+				undo = quit = redo = false;
 				return new Command(toMove, "undo", board);
 			}
 			else if (quit) {
-				quit = false;
-				redo = false;
+				quit = redo = false;
 				return new Command(toMove, "quit", board);
 			}
 			else if (redo) {
 				redo = false;
 				//TODO implement redo
-				//return new Command(toMove, "redo", board);
+				return new Command(toMove, "redo", board);
 			}
-			System.out.println("Waiting for destination ");
 		}
 		//System.out.println("Loop exited");
-		return new Command(moving, origin, destination);
+		Command move = new Command(moving, origin, destination);
+		if (promotion != PieceName.PAWN && moving instanceof Pawn) {
+			move = new Command((Pawn)moving, destination, promotion);
+		}
+		SquareButton ori = squares.get(origin.getName()), dest = squares.get(destination.getName());
+		ori.emphasizeBackground();
+		ori.paintCount = 0; dest.paintCount = 0;
+		dest.emphasizeBackground();
+		origin = destination = null;
+		moving = null;
+		promotion = PieceName.PAWN;
+		return move;
 	}
 	
 	@Override
@@ -334,7 +317,34 @@ public class GUI extends JFrame implements UserInterface {
 	public void updateBoard(Board b) {
 		//TODO
 		//should redraw the board after a move, if necessary
+		resetSquareIcons();
+		repaint();
 		return;
+	}
+
+	public synchronized Piece getMoving() {
+		return moving;
+	}
+
+	public synchronized void setMoving(Piece moving) {
+		this.moving = moving;
+	}
+
+	public synchronized Square getOrigin() {
+		return origin;
+	}
+
+	public synchronized void setOrigin(Square origin) {
+		this.origin = origin;
+	}
+
+	public synchronized Square getDestination() {
+		return destination;
+	}
+
+	public synchronized void setDestination(Square destination) {
+		this.destination = destination;
+		notifyAll();
 	}
 
 }

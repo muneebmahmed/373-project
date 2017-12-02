@@ -1,5 +1,6 @@
 package boardgame.pieces;
 
+import java.io.*;
 import java.util.*;
 import boardgame.data.*;
 import boardgame.data.Configuration.ConfigElement;
@@ -659,6 +660,64 @@ public class Board implements Cloneable {
 			newBoard.history.add(c.clone());
 		}
 		return newBoard;
+	}
+	
+	public Color ReadFile(FileInputStream file) {
+		Color current = Color.WHITE;
+		String lineFromFile;
+		String move;
+		Command command;
+		StringTokenizer alpha;
+		boolean done = false;
+		Scanner fileScanner = new Scanner(file);
+		while (fileScanner.hasNextLine()) {
+			lineFromFile = fileScanner.nextLine();
+			if (!lineFromFile.contains("[")) {
+				alpha = new StringTokenizer(lineFromFile, " .\t");
+				while (alpha.hasMoreTokens()) {
+					move = alpha.nextToken();
+					try {
+						Integer.parseInt(move);
+					}catch (NumberFormatException e) {
+						try {
+							command = new Command(current, move, this);
+							if (!this.isLegalCommand(command)) { done = true; break; }
+							this.Move(command);
+							this.updateState(command);
+							current = (current == Color.WHITE)? Color.BLACK : Color.WHITE;
+						}catch (IllegalArgumentException f) {
+							done = true;
+							break;
+						}
+					}
+				}
+				if (done) {
+					break;
+				}
+			}
+		}
+		fileScanner.close();
+		return current;
+	}
+	
+	public void SaveFile(FileOutputStream file) {
+		//PrintStream outFile = new PrintStream(file);
+		PrintWriter writer = new PrintWriter(file);
+		for (int i = 0; i < moves.size(); i++) {
+			if (i%2 == 0) {
+				writer.print(Integer.toString(i/2 + 1) + ". " + moves.get(i) + "\t");
+			}
+			else {
+				writer.println("\t" + moves.get(i));
+			}
+			if (i == moves.size()-1 && mateFlag != 0) {
+				if (mateFlag == 1) { writer.println("1-0"); }
+				else if (mateFlag == 2) { writer.println("0-1"); }
+				else { writer.println("1/2-1/2"); }
+			}
+		}
+		writer.close();
+		return;
 	}
 	
 	/*

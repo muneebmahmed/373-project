@@ -2,6 +2,12 @@ package boardgame.play;
 
 import boardgame.pieces.*;
 import boardgame.data.*;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 /*
@@ -136,6 +142,19 @@ public class CLIRunner {
 			startTime = System.currentTimeMillis();
 		}
 		//This is for general testing purposes
+		Color toMove = Color.WHITE;
+		try {
+			FileInputStream file = new FileInputStream("chess3.pgn");
+			toMove = testBoard.ReadFile(file);
+			try {
+				file.close();
+			} catch (IOException f){
+				f.printStackTrace();
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		current = (toMove == Color.WHITE)? white : black;
 		while(testBoard.isGameOver(current.getColor()) == 0) {
 			Command c;
 			if (current instanceof Human) {
@@ -189,6 +208,26 @@ public class CLIRunner {
 		System.out.println("");
         if (testBoard.getMateFlag() == 1 || testBoard.getMateFlag() == 2) { System.out.println("Checkmate\n"); }
         else if (testBoard.getMateFlag() == 3) { System.out.println("Stalemate\n"); }
+        else if (testBoard.getMateFlag() == 0) {
+        		System.out.println("Would you like to save the history to a file?");
+        		String yesno = scanner.nextLine();
+        		yesno = scanner.nextLine();
+        		yesno = scanner.nextLine();
+        		if (yesno.equals("yes") || yesno.equals("y")) {
+        			System.out.println("Enter fileName: ");
+        			input = scanner.nextLine();
+        			try {
+						FileOutputStream os = new FileOutputStream(input);
+						testBoard.SaveFile(os);
+						System.out.println("File saved");
+						os.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+        		}
+        		
+        }
         else { System.out.println("Draw\n"); }
 		if (white instanceof Computer && black instanceof Computer) {
 			endTime = System.currentTimeMillis();
