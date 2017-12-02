@@ -9,26 +9,30 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 
 
-public class Console {
+public class Console extends JTextArea{
 	
-	private JFrame outputFrame;
+	//private JFrame outputFrame;
 	private JTextArea outputText;
 	
-	public Console() {
+	public Console () {
 		
-		outputFrame = new JFrame("Console Output");
+		//outputFrame = new JFrame("Console Output");
 		outputText = new JTextArea("Console Output\n");
 		
-		outputFrame.add(outputText);
+		//outputFrame.add(outputText);
 		
-		outputFrame.setLayout(new FlowLayout());
-		outputFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		outputFrame.setSize(400, 300);
-		outputFrame.setVisible(true);
+		//outputFrame.setLayout(new FlowLayout());
+		//outputFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		//outputFrame.setSize(400, 300);
+		//outputFrame.setVisible(true);
 		
 		PrintStream out = new PrintStream( new CustomOutputStream(outputText));
 		System.setOut(out);
 		
+	}
+	
+	public JTextArea getTextArea() {
+		return this.outputText;
 	}
 	
 
