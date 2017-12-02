@@ -17,6 +17,7 @@ public class StartMenuGUI {
 	private JButton rulesButton;
 	private JTextArea welcomeMessage;
 	private GUIRunner guiRunner;
+	private RulesGUI rules;
 	
 	public StartMenuGUI() {
 		super();
@@ -68,12 +69,13 @@ public class StartMenuGUI {
 			{
 				
 				guiRunner.main(null);
-				startFrame.setVisible(false);
+				startFrame.dispose();
 			
 			}
 			if(source.equals(rulesButton)) {
 				
-				makeRuleFrame();
+				rules = new RulesGUI();
+				startFrame.dispose();
 				
 			}	
 			
@@ -81,23 +83,7 @@ public class StartMenuGUI {
 
 	}
 	
-	public void makeRuleFrame() {
-		
-		JFrame rules = new JFrame();
-		JTextArea link = new JTextArea("https://en.wikipedia.org/wiki/Rules_of_chess");//FIXME ----- insert rules here
-		JLabel rulesMessage = new JLabel("Follow the Link for the Rules!");
 
-
-		rules.add(rulesMessage);
-		rules.add(link);
-		
-		rules.setLayout(new FlowLayout());
-		rules.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		rules.setSize(300, 200);
-		rules.setVisible(true);
-		
-		
-	}
 	
 	
 
