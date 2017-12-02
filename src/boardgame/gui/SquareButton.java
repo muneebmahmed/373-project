@@ -16,8 +16,12 @@ import boardgame.data.*;
 public class SquareButton extends JButton {
 
 	public Square source;		//The Square the button points to
+	public int paintCount;		//when to repaint
 	
 	public static final java.awt.Color GREEN = new java.awt.Color(0, 90, 45);
+	public static final java.awt.Color LIGHTER_GREEN = new java.awt.Color(0, 120, 60);
+	public static final java.awt.Color GREY = new java.awt.Color(200, 200, 200);
+	public static final java.awt.Color BLUE = new java.awt.Color(124, 215, 250);
 	
 	public SquareButton() {
 		// TODO Auto-generated constructor stub
@@ -48,12 +52,7 @@ public class SquareButton extends JButton {
 		source = square;
 		java.awt.Color bg = (square.getColor() == Color.WHITE)? java.awt.Color.WHITE : GREEN;
 		this.setBackground(bg);
-		/*if (square.getColor() == Color.WHITE) {
-			this.setBackground(java.awt.Color.WHITE);
-		}
-		else {
-			this.setBackground(GREEN);
-		}*/
+		paintCount = 0;
 		this.setIcon(getIconFromPiece(square.getPiece()));
 	}
 	
@@ -76,6 +75,15 @@ public class SquareButton extends JButton {
 	public void resetBackground() {
 		java.awt.Color bg = (source.getColor() == Color.WHITE)? java.awt.Color.WHITE : GREEN;
 		this.setBackground(bg);
+	}
+	
+	public void emphasizeBackground() {
+		java.awt.Color bg = (source.getColor() == Color.WHITE)? GREY : LIGHTER_GREEN;
+		this.setBackground(bg);
+	}
+	
+	public void setBlue() {
+		this.setBackground(BLUE);
 	}
 	
 	public static ImageIcon getIconFromPiece(Piece piece) {

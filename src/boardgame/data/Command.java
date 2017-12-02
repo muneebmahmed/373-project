@@ -151,13 +151,10 @@ public class Command {
 	 * @throws IllegalArgumentException if the Command could not be parsed
 	 */
 	public Command(Color color, String input, Board b) throws IllegalArgumentException {
-		//TODO write constructor to parse input string given board
 		this();
-		char fileDest, fileOrigin;
-		int rankDest, rankOrigin;
+		char fileOrigin, currChar;
+		int rankOrigin;
 		String destSquare, originSquare;		//will be used by squares.get()
-		char currChar;
-		String buffer = input;
 		String temp = "", pieceSyms = "KQRBNkqrn";
 		PieceName pieceName;
 		boolean fileNotrank = false, found = false;

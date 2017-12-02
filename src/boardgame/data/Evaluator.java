@@ -74,4 +74,10 @@ public class Evaluator {
 		Command c = commands.get((int)(Math.random()*commands.size()));
 		return c;
 	}
+	
+	public static int EvaluateBoard(Board b, Color moved) {
+		//TODO
+		
+		return 0;
+	}
 }
