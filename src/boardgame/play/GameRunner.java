@@ -12,11 +12,6 @@ public class GameRunner {
 		StartMenuGUI s = new StartMenuGUI();
 		
 		
-		//while( /*game is still running*/ ) {
-		
-		
-		
-				
 		//EndMenuGUI e = new EndMenuGUI();
 		
 	}
