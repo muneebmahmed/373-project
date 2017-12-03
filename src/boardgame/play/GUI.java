@@ -18,7 +18,7 @@ import boardgame.pieces.Color;
 import boardgame.gui.*;
 
 
-public class GUI extends JFrame implements UserInterface {
+public class GUI extends JPanel implements UserInterface {
 
 	//add JPanel and components here
 	private JPanel gui;
@@ -38,6 +38,8 @@ public class GUI extends JFrame implements UserInterface {
 	private volatile Square destination;
 	private volatile boolean undo, redo, quit;	//one for pawn promotion as well?
 	private volatile PieceName promotion;	//in case of pawn promotion
+	//TODO implement pawn promotion
+	private SquareButton keySquare;
 	
 
 	
@@ -62,26 +64,26 @@ public class GUI extends JFrame implements UserInterface {
 		makeGUI();
 	}
 
-	public GUI(GraphicsConfiguration gc) {
-		super(gc);
-		// TODO Auto-generated constructor stub
-		
-		
-	}
-
-	public GUI(String title) throws HeadlessException {
-		super(title);
-		// TODO Auto-generated constructor stub
-		
-		
-	}
-
-	public GUI(String title, GraphicsConfiguration gc) {
-		super(title, gc);
-		// TODO Auto-generated constructor stub
-		
-		
-	}
+//	public GUI(GraphicsConfiguration gc) {
+//		super(gc);
+//		// TODO Auto-generated constructor stub
+//		
+//		
+//	}
+//
+//	public GUI(String title) throws HeadlessException {
+//		super(title);
+//		// TODO Auto-generated constructor stub
+//		
+//		
+//	}
+//
+//	public GUI(String title, GraphicsConfiguration gc) {
+//		super(title, gc);
+//		// TODO Auto-generated constructor stub
+//		
+//		
+//	}
 	
 	public GUI(Board b) {
 		super();
@@ -118,7 +120,8 @@ public class GUI extends JFrame implements UserInterface {
 		//make frame first
 		makeChessFrame();
 		//makeBoard-add elements
-	    
+	    this.addKeyListener(new KeyChooser());
+	    keySquare = squares.get("a1");
 
 	}
 	/*
@@ -132,7 +135,7 @@ public class GUI extends JFrame implements UserInterface {
 		gui.setBorder(new EmptyBorder(5,5,5,5));
 		
 		chessBoard = new JPanel(new GridLayout(0,9));//provides the number of elements in board, including chess squares and indexes
-		
+
 		//gui.add(chessBoard); add(gui);
 		add(chessBoard);
 		
@@ -208,7 +211,7 @@ public class GUI extends JFrame implements UserInterface {
 			// TODO Auto-generated method stub
 			SquareButton source = (SquareButton)(e.getSource());
 			Square square = source.getSquare();
-			if (destination != null) { return; }
+			if (destination != null || board.getMateFlag() != 0) { return; }
 			if (origin != null) {
 				if (origin.equals(square)) {
 					if (moving != null) {
@@ -345,6 +348,94 @@ public class GUI extends JFrame implements UserInterface {
 	public synchronized void setDestination(Square destination) {
 		this.destination = destination;
 		notifyAll();
+	}
+	
+	private SquareButton getButtonAbove(SquareButton button, int direction) {
+		Square s = button.getSquare();
+		int rank = s.getRank();
+		char file = s.getFile();
+		rank += direction;
+		if (rank > 8) { rank = 1; }
+		else if (rank < 1) { rank = 8; }
+		String access = new String(Character.toString(file) + Integer.toString(rank));
+		return squares.get(access);
+	}
+	
+	private SquareButton getButtonRight(SquareButton button, int direction) {
+		Square s = button.getSquare();
+		int rank = s.getRank();
+		char file = s.getFile();
+		int fileIndex = Square.alphabet.indexOf(file);
+		fileIndex += direction;
+		if (fileIndex > 7) { fileIndex = 0; }
+		else if (fileIndex < 0) { fileIndex = 7; }
+		String access = new String(Character.toString(Square.alphabet.charAt(fileIndex)) + Integer.toString(rank));
+		return squares.get(access);
+	}
+	
+	private class KeyChooser implements KeyListener{
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+			// TODO Auto-generated method stub
+			System.out.println("key Typed");
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			// TODO Auto-generated method stub
+			System.out.println("Key Pressed");
+			if (e.getKeyCode() == KeyEvent.VK_UP) {
+				keySquare.resetBackground();
+				keySquare = getButtonAbove(keySquare, 1);
+				keySquare.emphasizeBackground();
+			}
+			else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+				keySquare.resetBackground();
+				keySquare = getButtonAbove(keySquare, -1);
+				keySquare.emphasizeBackground();
+			}
+			else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				keySquare.resetBackground();
+				keySquare = getButtonRight(keySquare, 1);
+				keySquare.emphasizeBackground();
+			}
+			else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+				keySquare.resetBackground();
+				keySquare = getButtonRight(keySquare, -1);
+				keySquare.emphasizeBackground();
+			}
+			else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				if (origin == null && keySquare.getSquare().hasPiece() && keySquare.getSquare().getPiece().getColor() == toMove) {
+					origin = keySquare.getSquare();
+					moving = origin.getPiece();
+					for (Square s : moving.getLegalMoves()) {
+						squares.get(s.getName()).setBlue();
+					}
+				}
+				else if (origin != null && keySquare.getSquare().equals(origin)) {
+					if (moving != null) {
+						for (Square s : moving.getLegalMoves()) {
+							squares.get(s.getName()).resetBackground();
+						}
+					}
+					moving = null;
+					origin = null;
+				}
+				else if (origin != null && destination == null) {
+					if (origin.getPiece().getLegalMoves().contains(keySquare.getSquare())) {
+						setDestination(keySquare.getSquare());
+					}
+				}
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			// TODO Auto-generated method stub
+			System.out.println("Key Released");
+		}
+		
 	}
 
 }

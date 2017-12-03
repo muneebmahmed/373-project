@@ -2,7 +2,11 @@ package boardgame.play;
 
 import boardgame.pieces.*;
 import boardgame.data.*;
+import boardgame.gui.*;
 import java.util.*;
+
+import javax.swing.JFrame;
+
 import java.lang.*;
 
 /**
@@ -14,11 +18,12 @@ import java.lang.*;
  */
 public class ChessGame implements Runnable {
 	private Board board;
-	private Player white;
-	private Player black;
-	private Color toMove;
+	private volatile Player white;
+	private volatile Player black;
+	private volatile Color toMove;
 	private int mode; //replay a game or playing a new one? Undo moves?
-	public UserInterface ui;
+	public GUI ui;
+	public MainFrame mf;
 	public volatile boolean gameOver;
 	
 	public ChessGame() {
@@ -84,11 +89,11 @@ public class ChessGame implements Runnable {
 		this.toMove = toMove;
 	}
 
-	public UserInterface getUi() {
+	public GUI getUi() {
 		return ui;
 	}
 
-	public void setUi(UserInterface ui) {
+	public void setUi(GUI ui) {
 		this.ui = ui;
 	}
 	
@@ -97,16 +102,24 @@ public class ChessGame implements Runnable {
 	}
 
 	@Override
-	public void run() {
+	public synchronized void run() {
 		//TODO method stub
-		Player sides[] = { white, black };
+		//Player sides[] = { white, black };
+		mf = new MainFrame(ui);
+		mf.setVisible(true);
+		mf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mf.pack();
+		mf.setMinimumSize(mf.getSize());
 		Player current = (toMove == Color.WHITE)? white : black;
-		int i = 0;
+		int i = 0, move;
 		while (board.isGameOver(toMove) == 0) {
 			//test if reset or undo
-			current.Move(board);
+			move = current.Move(board);
+			if (move == 1) {
+				
+			}
 			ui.updateBoard(board);
-			current = sides[++i%2];
+			current = (toMove == Color.WHITE)? black : white;
 			toMove = current.getColor();
 		}
 		gameOver = true;

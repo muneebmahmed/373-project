@@ -26,6 +26,7 @@ public class Command {
 	public char pieceSymbol;
 	public String originString;
 	public String destString;
+	public String captureSquare;
 	//fields for piece color or piece name? If piece can't be found
 
 	public Command() {
@@ -38,6 +39,7 @@ public class Command {
 		castleMode = 0;
 		originString = null;
 		destString = null;
+		captureSquare = null;
 	}
 	
 	/*
@@ -84,6 +86,7 @@ public class Command {
 		}
 		originString = origin.getName();
 		destString = destination.getName();
+		if (capturePiece != null) { captureSquare = capturePiece.getSquare().getName(); }
 	}
 	
 	public Command(Pawn pawn, Square destination, PieceName promote) {
@@ -93,10 +96,15 @@ public class Command {
 	}
 	
 	public Command(Command copy, Board b) {
-		origin = b.getSquares().get(copy.origin.getName());
+		if (copy.originString == null) { origin = b.getSquares().get(copy.origin.getName()); }
+		else { origin = b.getSquares().get(copy.originString); }
 		piece = origin.getPiece();
-		destination = b.getSquares().get(copy.destination.getName());
-		if (copy.capturePiece == null) { capturePiece = null; }
+		if (copy.destString == null) { destination = b.getSquares().get(copy.destination.getName()); }
+		else { destination = b.getSquares().get(copy.destString); }
+		if (copy.capturePiece == null && copy.captureSquare == null) { capturePiece = null; }
+		else if (copy.captureSquare != null) {
+			capturePiece = b.getSquares().get(copy.captureSquare).getPiece();
+		}
 		else {capturePiece = b.getSquares().get(copy.capturePiece.getSquare().getName()).getPiece();}
 		promotion = copy.promotion;
 		capture = copy.capture;
@@ -402,6 +410,7 @@ public class Command {
 			pieceSymbol = piece.getSymbol();
 			originString = origin.getName();
 			destString = destination.getName();
+			if (capturePiece != null) { captureSquare = capturePiece.getSquare().getName(); }
 		}
 		
 		//Suggestion: Have multiple helper functions so this code doesn't become too long?

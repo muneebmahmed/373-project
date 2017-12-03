@@ -19,7 +19,7 @@ public class SquareButton extends JButton {
 	public int paintCount;		//when to repaint
 	
 	public static final java.awt.Color GREEN = new java.awt.Color(0, 90, 45);
-	public static final java.awt.Color LIGHTER_GREEN = new java.awt.Color(0, 120, 60);
+	public static final java.awt.Color LIGHTER_GREEN = new java.awt.Color(0, 150, 75);
 	public static final java.awt.Color GREY = new java.awt.Color(200, 200, 200);
 	public static final java.awt.Color BLUE = new java.awt.Color(124, 215, 250);
 	

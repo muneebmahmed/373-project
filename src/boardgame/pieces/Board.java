@@ -297,10 +297,10 @@ public class Board implements Cloneable {
 		//TODO
 		
 		//if castleMode = 100 then signal to undo a move
-		if (move.castleMode == 100) {
-			if (history.size() != 0) {
-				undoMove();
-			}
+		if (move.castleMode == 100 || move.castleMode == 25 || move.castleMode == 50) {
+//			if (history.size() != 0) {
+//				undoMove();
+//			}
 			return;
 		}
 		moveCount++;
@@ -414,6 +414,9 @@ public class Board implements Cloneable {
 	 * @param move the Command to be added to move history
 	 */
 	public void updateState(Command move) {
+		if (move.castleMode == 25 || move.castleMode == 50 || move.castleMode == 100) {
+			return;
+		}
 		history.add(currentState);
 		currentState = new Configuration(this);
 		moves.add(move.toString());

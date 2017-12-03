@@ -1,6 +1,7 @@
 package boardgame.play;
 
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -11,6 +12,8 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -29,8 +32,17 @@ public class GUIRunner {
 		GUI cb = new GUI(testBoard);
 		cb.setVisible(true);
 		cb.setMinimumSize(new Dimension(576, 576));
-		cb.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+		JFrame frame = new JFrame("Chess Game");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.add(cb);
+		frame.pack();
+		frame.setMinimumSize(frame.getSize());
+		frame.setVisible(true);
+		//cb.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		JTextArea text = new JTextArea(100,100);
+//		cb.setLayout(new FlowLayout());
+//		text.setVisible(true);
+//		cb.add(text);
 		Runnable x = new Runnable() {
 			@Override
 			public synchronized void run() {
@@ -66,20 +78,25 @@ public class GUIRunner {
 				FileNameExtensionFilter filter = new FileNameExtensionFilter("pgn and txt files", "pgn", "txt");
 				chooser.setFileFilter(filter);
 				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				chooser.setVisible(true);
-				JDialog dialog = new JDialog();
-				int code = chooser.showOpenDialog(dialog);
+				JDialog dialog;
+				int code = JOptionPane.showConfirmDialog(null, "Do you want to open a file?");
+				if (code == JOptionPane.YES_OPTION) {
+					chooser.setVisible(true);
+					dialog = new JDialog();
+					code = chooser.showOpenDialog(dialog);
 				
-				if (code == JFileChooser.APPROVE_OPTION) {
-					File gameFile = chooser.getSelectedFile();
-					try {
-						FileInputStream is = new FileInputStream(gameFile);
-						toMove = testBoard.ReadFile(is);
-					} catch (FileNotFoundException e) {
+					if (code == JFileChooser.APPROVE_OPTION) {
+						File gameFile = chooser.getSelectedFile();
+						try {
+							FileInputStream is = new FileInputStream(gameFile);
+							toMove = testBoard.ReadFile(is);
+							is.close();
+					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					
+				}
 				}
 				String input = "";
 				int mode = 0;
@@ -128,11 +145,12 @@ public class GUIRunner {
 
 				cb.resetSquareIcons();
 				cb.repaint();
+				cb.setFocusable(true);
 				while (testBoard.isGameOver(current.getColor()) == 0) {
 					System.out.println("In while loop: " + i);
 					cb.toMove = current.getColor();
 					//Command c = null;
-					
+					cb.requestFocus();
 					current.Move(testBoard);
 					//c = cb.getCommand(current, testBoard);
 					//testBoard.Move(c);
@@ -155,7 +173,7 @@ public class GUIRunner {
 					else { input = "Draw"; }
 				}
 				JOptionPane.showMessageDialog(null, input);
-				code = chooser.showSaveDialog(dialog);
+				/*code = chooser.showSaveDialog(dialog);
 				if (code == JFileChooser.APPROVE_OPTION) {
 					File saveFile = chooser.getSelectedFile();
 					try {
@@ -167,13 +185,13 @@ public class GUIRunner {
 						// TODO Auto-generated catch block
 						f.printStackTrace();
 					}
-				}
+				}*/
 
 			}
 		};
 		//SwingUtilities.invokeLater(r);
 		(new Thread(r)).start();
-		JFileChooser otherChooser = new JFileChooser();
+		/*JFileChooser otherChooser = new JFileChooser();
 		JDialog dia = new JDialog();
 		JFrame newFrame = new JFrame();
 		JButton saveButton = new JButton("Save");
@@ -200,7 +218,7 @@ public class GUIRunner {
 
 		});
 		newFrame.add(saveButton);
-		newFrame.setVisible(true);
+		newFrame.setVisible(true);*/
 		
 	}
 

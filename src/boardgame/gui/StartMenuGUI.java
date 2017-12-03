@@ -15,6 +15,7 @@ public class StartMenuGUI {
 	private JButton startGameButton;
 	private JButton rulesButton;
 	private JTextArea welcomeMessage;
+	private RulesGUI rules;
 	
 	public StartMenuGUI() {
 		// TODO Auto-generated constructor stub
@@ -56,12 +57,14 @@ public class StartMenuGUI {
 			{
 				String[] arguments = {"not an Argument"};
 				GUIRunner.main(arguments);
-				startFrame.setVisible(false);
+				//startFrame.setVisible(false);
+				startFrame.dispose();
 			
 			}
 			if(source.equals(rulesButton)) {
 				
-				makeRuleFrame();
+				//makeRuleFrame();
+				rules = new RulesGUI();
 				
 			}	
 			
