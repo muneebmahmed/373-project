@@ -1,5 +1,6 @@
 package boardgame.gui;
 
+<<<<<<< HEAD
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.io.IOException;
@@ -45,6 +46,41 @@ public class Console extends JTextArea{
 	    public CustomOutputStream(JTextArea textArea) {
 	        this.textArea = textArea;
 	        
+=======
+import java.awt.FlowLayout;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+
+import javax.swing.JFrame;
+import javax.swing.JTextArea;
+
+
+public class Console extends JTextArea{
+	
+	private PrintStream out;
+	
+	public Console () {
+		
+		this.setEditable(false);
+		
+		out = new PrintStream( new CustomOutputStream(outputText));
+		System.setOut(out);
+		
+	}
+	
+	public PrintStream getPrintStream() {
+		return out;
+	}
+	
+
+	
+	public class CustomOutputStream extends OutputStream {
+	    private JTextArea textArea;
+	     
+	    public CustomOutputStream(JTextArea textArea) {
+	        this.textArea = textArea;
+>>>>>>> refs/remotes/origin/NotJeremyBranch
 	    }
 	     
 	    @Override
