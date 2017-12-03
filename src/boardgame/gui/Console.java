@@ -11,28 +11,19 @@ import javax.swing.JTextArea;
 
 public class Console extends JTextArea{
 	
-	//private JFrame outputFrame;
-	private JTextArea outputText;
+	private PrintStream out;
 	
 	public Console () {
 		
-		//outputFrame = new JFrame("Console Output");
-		outputText = new JTextArea("Console Output\n");
+		this.setEditable(false);
 		
-		//outputFrame.add(outputText);
-		
-		//outputFrame.setLayout(new FlowLayout());
-		//outputFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		//outputFrame.setSize(400, 300);
-		//outputFrame.setVisible(true);
-		
-		PrintStream out = new PrintStream( new CustomOutputStream(outputText));
+		out = new PrintStream( new CustomOutputStream(outputText));
 		System.setOut(out);
 		
 	}
 	
-	public JTextArea getTextArea() {
-		return this.outputText;
+	public PrintStream getPrintStream() {
+		return out;
 	}
 	
 
