@@ -29,6 +29,8 @@ public class MainFrame extends JFrame {
 	private JFileChooser chooser;
 	private JDialog dialog;
 	private JTextArea text;
+	private JScrollPane consoleScrollPane;
+
 
 	public MainFrame() throws HeadlessException {
 		// TODO Auto-generated constructor stub
@@ -79,8 +81,14 @@ public class MainFrame extends JFrame {
 		add(this.gui, BorderLayout.CENTER);
 		
 		text = new Console();
-		text.setMaximumSize(new Dimension (500, 100));
-		this.add(text, BorderLayout.SOUTH);
+		
+		consoleScrollPane = new JScrollPane(text,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		consoleScrollPane.setMaximumSize(new Dimension(500,100));
+		 //outputFrame.add(outputText);
+		
+		//text.setMaximumSize(new Dimension (500, 100));
+		
+		this.add(consoleScrollPane, BorderLayout.SOUTH);
 		
 		chooser = new JFileChooser();
 		dialog = new JDialog();

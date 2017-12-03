@@ -44,6 +44,7 @@ public class Console extends JTextArea{
 	     
 	    public CustomOutputStream(JTextArea textArea) {
 	        this.textArea = textArea;
+	        
 	    }
 	     
 	    @Override
