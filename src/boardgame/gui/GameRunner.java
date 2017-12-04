@@ -28,6 +28,24 @@ public class GameRunner {
 		PrintStream systemOut = System.out;
 		
 		StartMenuGUI s = new StartMenuGUI();
+		Runnable x = new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				s.waitForStuff();
+			}
+			
+		};
+		Thread t2 = new Thread(x);
+		t2.start();
+		try {
+			t2.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//s.waitForStuff();
 		//PieceName asdf = Promoter.getPromotionPiece(Color.WHITE);
 		Board b = new Board();
 		GUI cb = new GUI(b);
@@ -49,13 +67,8 @@ public class GameRunner {
 		game.setUi(cb);
 		game.setBoard(b);
 		
-//		mf.setVisible(true);
-//		mf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		mf.pack();
-//		mf.setMinimumSize(mf.getSize());
 		Thread t1 = new Thread(game);
 		t1.start();
-		//while( /*game is still running*/ ) {
 		try {
 			t1.join();
 		} catch (InterruptedException e) {

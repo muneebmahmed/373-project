@@ -12,6 +12,8 @@ public class Evaluator {
 	Board board;
 	ArrayList<Evaluation> evaluations;	//should it be an ArrayList?
 										//Maybe some object structured like a graph?
+	public static int count = 0;
+	
 	public Evaluator() {
 		board = new Board();
 	}
@@ -32,7 +34,7 @@ public class Evaluator {
 		this.board = board.clone();
 	}
 
-	public class Evaluation {
+	public class Evaluation implements Comparable<Evaluation> {
 		protected int value;
 		protected Command command;
 		
@@ -43,8 +45,24 @@ public class Evaluator {
 		
 		public Evaluation(Board b, Command c) {
 			c = command;
+			Board testBoard = b.clone();
+			Command formatted = testBoard.formatCommand(c);
+			testBoard.Move(formatted);
+			value = Evaluator.EvaluateBoard(testBoard, formatted.piece.getColor());
+			formatted.piece = null;
+			formatted.origin = null;
+			formatted.destination = null;
+			formatted.capturePiece = null;
+			command = formatted;
 			//what else?
 		}
+
+		@Override
+		public int compareTo(Evaluation o) {
+			// TODO Auto-generated method stub
+			return value - o.value;		//should I reverse them?
+		}
+
 	}
 	
 	/**
@@ -60,7 +78,7 @@ public class Evaluator {
 		ArrayList<Piece> pieces = board.getPieces();
 		ArrayList<Command> commands = new ArrayList<Command>();
 		ArrayList<Square> squares = new ArrayList<Square>();
-		boolean flag = false;
+		boolean flag = false; //count = 0;
 		for (Piece p : pieces) {
 			if (p.getColor() == sideToMove) {
 				flag = p.getGoodLegalMoves(squares);}
@@ -72,12 +90,19 @@ public class Evaluator {
 			if (flag) { break; }
 		}
 		Command c = commands.get((int)(Math.random()*commands.size()));
+		//System.out.println("Moves searched: " + count);
 		return c;
 	}
 	
 	public static int EvaluateBoard(Board b, Color moved) {
 		//TODO
-		
-		return 0;
+		//check for checkmate?
+		int sum = 0, currentValue = 0;
+		for (Piece p : b.getPieces()) {
+			currentValue = p.getValue();
+			currentValue *= (p.getColor() == moved)? 1 : -1;
+			sum += currentValue;
+		}
+		return sum;
 	}
 }

@@ -27,7 +27,9 @@ public class RulesGUI {
 	private JButton backMainButton;
 	private Board board;
 	private GUI gui;
-	private Console console;
+	private JTextArea console;
+	private JScrollPane textScroll;
+	private JScrollPane guiScroller;
 	private ArrayList<Configuration> configurations;
 	private ArrayList<String> descriptions;
 	private Configuration current;
@@ -45,8 +47,9 @@ public class RulesGUI {
 
 		//rules.setLayout(new FlowLayout());
 		rules.setLayout(new BorderLayout());
+		rules.setLocation(100, 100);
 		rules.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		rules.setSize(600, 600);
+		rules.setSize(800, 700);
 		rules.setVisible(true);
 		
 		buildRulesGUI();
@@ -68,7 +71,9 @@ public class RulesGUI {
 		board = new Board();
 		gui = new GUI(board);
 		gui.setMaximumSize(new Dimension(300, 300));
-		rules.add(gui, BorderLayout.CENTER);
+		guiScroller = new JScrollPane(gui);
+		guiScroller.setAutoscrolls(true);
+		rules.add(guiScroller, BorderLayout.CENTER);
 		i = 0;
 		Configuration king = new Configuration();
 		ConfigElement kingElement = king.new ConfigElement(Color.WHITE, PieceName.KING, "e1");
@@ -93,13 +98,17 @@ public class RulesGUI {
 		
 		Configuration pawn = new Configuration();
 		ConfigElement pawnElement = pawn.new ConfigElement(Color.WHITE, PieceName.PAWN, "e2");
-		pawn.elements.add(pawnElement);
+		ConfigElement blackPawnElement = pawn.new ConfigElement(Color.BLACK, PieceName.PAWN, "d3");
+		ConfigElement pe2 = pawn.new ConfigElement(Color.WHITE, PieceName.PAWN, "d2");
+		ConfigElement pe3 = pawn.new ConfigElement(Color.BLACK, PieceName.PAWN, "c7");
+		pawn.elements.addAll(Arrays.asList(pawnElement, blackPawnElement, pe2, pe3));
 		configurations = new ArrayList<Configuration>();
 		configurations.addAll(Arrays.asList(king, queen, rook, bishop, knight, pawn));
 		current = configurations.get(i);
 		board.loadConfiguration(current);
 		board.setCurrentState(current);
 		gui.updateBoard(board);
+		gui.ruleMode = 1;
 		descriptions = new ArrayList<String>();
 		descriptions.add(new String("Rules for King\n"
 				+ "The King can only move to the spaces adjacent to it\n"
@@ -130,15 +139,17 @@ public class RulesGUI {
 				+"In order to take another piece, the Pawn must move\n"
 				+"diagonaly forward one step. It cannot take any pieces\n"
 				+"dirctly in front of it."));
-		console = new Console();
-		rules.add(console, BorderLayout.NORTH);
+		console = new JTextArea();
+		console.setEditable(false);
+		textScroll = new CustomScroller(console);
+		rules.add(textScroll, BorderLayout.NORTH);
 		console.setVisible(true);
 		console.setMinimumSize(new Dimension(100, 100));
+		console.setText(descriptions.get(i));
 	}
 	
 	
-	private class RuleButtonListener implements ActionListener
-	{
+	private class RuleButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 
@@ -149,7 +160,6 @@ public class RulesGUI {
 				
 				i++;
 				if (i > 5) {
-					StartMenuGUI s = new StartMenuGUI();
 					rules.dispose();
 					return;
 				}
@@ -158,16 +168,14 @@ public class RulesGUI {
 				board.setCurrentState(current);
 				gui.updateBoard(board);
 				console.setText("");
-				System.out.println(descriptions.get(i));
-				//makePawnFrame();
-				//rules.setVisible(false);
+				console.setText(descriptions.get(i));
+				//System.out.println(descriptions.get(i));
 				
 			
 			}
 			if(source.equals(backMainButton)) {
 				i--;
 				if (i < 0) {
-					StartMenuGUI s = new StartMenuGUI();
 					rules.dispose();
 					return;
 				}
@@ -176,7 +184,8 @@ public class RulesGUI {
 				board.setCurrentState(current);
 				gui.updateBoard(board);
 				console.setText("");
-				System.out.println(descriptions.get(i));
+				console.setText(descriptions.get(i));
+				//System.out.println(descriptions.get(i));
 			
 			}
 			

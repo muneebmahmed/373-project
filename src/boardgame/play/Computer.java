@@ -33,6 +33,7 @@ public class Computer extends Player {
 		c = b.formatCommand(c);
 		b.Move(c);
 		b.updateState(c);
+		System.out.println("I moved " + c);
 		return c.castleMode;
 	}
 

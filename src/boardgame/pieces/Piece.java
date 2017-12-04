@@ -234,11 +234,12 @@ public abstract class Piece {
 			testBoard.loadConfiguration(currentState);
 			Command validMoveCommand = new Command(this, this.square, dest);
 			validMoveCommand = testBoard.formatCommand(validMoveCommand);
-			testBoard.Move(validMoveCommand);
+			testBoard.Move(validMoveCommand);	//Evaluator.count++;
 			if (!testBoard.KingInCheck(this.color)) {
 				legalMoves.add(dest);
 				if (testBoard.KingInCheck(opponent)) {
-					testBoard.setCurrentState(new Configuration(testBoard));     //null pointer exception
+					testBoard.setCurrentState(new Configuration(testBoard));	//null pointer exception
+					opponentMoves.clear();		//fixes AI overlooking mate in 1
 					for (Piece p : testBoard.getPieces()) {
 						if (p.getColor() == opponent) {
 							opponentMoves.addAll(p.getLegalMoves());

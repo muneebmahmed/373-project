@@ -33,10 +33,19 @@ public class Console extends JTextArea{
 		return out;
 	}
 	
-	@Override
-	public Dimension getPreferredSize() {
-		return new Dimension(500, 100);
-	}
+//	@Override
+//	public Dimension getMinimumSize() {
+//		return new Dimension(500, 100);
+//	}
+//	
+//	public Dimension getMaximumSize() {
+//		return new Dimension(500, 100);
+//	}
+//	
+//	@Override
+//	public Dimension getPreferredSize() {
+//		return new Dimension(500, 100);
+//	}
 
 	
 	public class CustomOutputStream extends OutputStream {

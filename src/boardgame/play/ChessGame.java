@@ -21,12 +21,13 @@ public class ChessGame implements Runnable {
 	private volatile Player white;
 	private volatile Player black;
 	private volatile Color toMove;
-	private int mode; //0 = two humans, 1 = white human, 2 = black human, 3 = two computers
+	private volatile int mode; //0 = two humans, 1 = white human, 2 = black human, 3 = two computers
 	public GUI ui;
 	public MainFrame mf;
 	public volatile boolean gameOver;
 	public volatile boolean redo;
 	public volatile boolean undo;
+	public volatile boolean renamed;
 	
 	public ChessGame() {
 		board = new Board();
@@ -150,8 +151,12 @@ public class ChessGame implements Runnable {
 		Player current = (toMove == Color.WHITE)? white : black;
 		mf.setTitle(white + "-" + black);
 		int i = 0, move;
-		while (board.isGameOver(toMove) == 0) {
+		while (board.isGameOver(toMove) == 0 && !gameOver) {
 			ui.requestFocus();
+			if (renamed) {
+				mf.setTitle(white + "-" + black);
+				renamed = false;
+			}
 			//test if reset or undo
 			move = current.Move(board);
 			if (move == 50) {
@@ -184,6 +189,9 @@ public class ChessGame implements Runnable {
 			else if (move == 25) {
 				if (board.canRedo()) {
 					board.redoMove(1);
+				}
+				else {
+					toMove = (toMove == Color.WHITE)? Color.BLACK : Color.WHITE;
 				}
 			}
 			else if (move == 10) {

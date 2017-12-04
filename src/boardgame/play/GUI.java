@@ -41,7 +41,7 @@ public class GUI extends JPanel implements UserInterface {
 	private volatile PieceName promotion;	//in case of pawn promotion
 	//TODO implement pawn promotion
 	private SquareButton keySquare;
-	
+	public int ruleMode;
 
 	
 	public GUI() throws HeadlessException {
@@ -123,6 +123,7 @@ public class GUI extends JPanel implements UserInterface {
 		//makeBoard-add elements
 	    this.addKeyListener(new KeyChooser());
 	    keySquare = squares.get("a1");
+	    ruleMode = 0;
 
 	}
 	/*
@@ -292,6 +293,13 @@ public class GUI extends JPanel implements UserInterface {
 								break;
 							}
 						}
+						if (ruleMode == 1) {
+							Command c = new Command(moving, origin, square);
+							if (promotion != PieceName.PAWN) {
+								c = new Command((Pawn)moving, square, promotion);
+								promotion = PieceName.PAWN; }
+							board.Move(c); board.updateState(c); resetSquareIcons(); origin = null; moving = null;
+							return; }
 						setDestination(square);
 						//resetSquareIcons();
 					}
@@ -327,7 +335,14 @@ public class GUI extends JPanel implements UserInterface {
 		// TODO Auto-generated method stub
 		destination = null;
 		toMove = player.getColor();
-		
+		if (undo) {
+			undo = quit = redo = false;
+			return new Command(toMove, "undo", board);
+		}
+		else if (quit) {
+			quit = false;
+			return new Command(toMove, "quit", board);
+		}
 		/*
 		 * The following code waits until the player selects a move
 		 * The player should be able to select a piece and destination with the GUI
@@ -379,7 +394,7 @@ public class GUI extends JPanel implements UserInterface {
 	@Override
 	public String getPlayerName(Color player) {
 		//TODO
-		String name = JOptionPane.showInputDialog("Enter the name for " + player);
+		String name = JOptionPane.showInputDialog(this, "Enter the name for " + player);
 		return name;
 	}
 	

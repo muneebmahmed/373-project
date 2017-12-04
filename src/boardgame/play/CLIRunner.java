@@ -138,10 +138,7 @@ public class CLIRunner {
 		Player players[] = {white, black};
 		int i = 0;
 		long startTime = 0, endTime = 0;
-		if (white instanceof Computer && black instanceof Computer) {
-			startTime = System.currentTimeMillis();
-		}
-		//This is for general testing purposes
+
 		Color toMove = Color.WHITE;
 		System.out.println("Would you like to open a file?");
 		scanner.reset();
@@ -158,9 +155,16 @@ public class CLIRunner {
 				e.printStackTrace();
 			}
 		}
-		
+		//This is for general testing purposes
+		if (white instanceof Computer && black instanceof Computer) {
+			startTime = System.currentTimeMillis();
+		}
 		current = (toMove == Color.WHITE)? white : black;
+		if (toMove == Color.BLACK) {
+			i++;
+		}
 		while(testBoard.isGameOver(current.getColor()) == 0) {
+			System.out.println(printBoard(testBoard));
 			Command c;
 			if (current instanceof Human) {
 				c = commandLine.getCommand(current, testBoard);}
@@ -189,7 +193,7 @@ public class CLIRunner {
 			}
 			testBoard.Move(c);
 			testBoard.updateState(c);
-			System.out.print(printBoard(testBoard));
+			//System.out.print(printBoard(testBoard));
 			i++;
 			if (current instanceof Computer) { System.out.println("I moved " + c); }
 			current = players[i%2];
@@ -206,6 +210,7 @@ public class CLIRunner {
 			else if (testBoard.getMateFlag() == 3) { System.out.println("Stalemate"); }
 			else { System.out.println("Draw"); }
 		}
+		System.out.println(printBoard(testBoard));
 		System.out.println("History:");
 		for (i = 0; i < testBoard.getMoves().size(); i++) {
 			if (i%2 == 0) {

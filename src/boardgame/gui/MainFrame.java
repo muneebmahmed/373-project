@@ -34,8 +34,14 @@ public class MainFrame extends JFrame {
 	private JMenuItem exit;
 	private JMenuItem open;
 	private JMenu edit;
+	private JMenu white;
+	private JMenu black;
 	private JMenuItem setWhite;
 	private JMenuItem setBlack;
+	private JMenuItem renameWhite;
+	private JMenuItem renameBlack;
+	private JMenu help;
+	private JMenuItem rules;
 	
 	private JFileChooser chooser;
 	private JTextArea text;
@@ -48,6 +54,8 @@ public class MainFrame extends JFrame {
 	public Color toMove;
 	private JScrollPane boardScroller;
 	private JScrollPane textScroller;
+	
+	//private JMenuItem newGame;
 
 	public MainFrame() throws HeadlessException {
 		// TODO Auto-generated constructor stub
@@ -77,21 +85,39 @@ public class MainFrame extends JFrame {
 		save = new JMenuItem("Save");
 		open = new JMenuItem("Open");
 		exit = new JMenuItem("Exit");
+		white = new JMenu("White");
+		black = new JMenu("Black");
 		setWhite = new JMenuItem("Set White");
 		setBlack = new JMenuItem("Set Black");
+		renameWhite = new JMenuItem("Rename");
+		renameBlack = new JMenuItem("Rename");
 		save.addActionListener(new MenuListener());
 		open.addActionListener(new MenuListener());
 		exit.addActionListener(new MenuListener());
 		setWhite.addActionListener(new MenuListener());
 		setBlack.addActionListener(new MenuListener());
+		renameWhite.addActionListener(new MenuListener());
+		renameBlack.addActionListener(new MenuListener());
 		file.add(open);
 		file.add(save);
 		file.add(exit);
-		edit.add(setWhite);
-		edit.add(setBlack);
+//		newGame = new JMenuItem("New");
+//		newGame.addActionListener(new MenuListener());
+//		file.add(newGame);
+		white.add(renameWhite);
+		white.add(setWhite);
+		black.add(renameBlack);
+		black.add(setBlack);
+		edit.add(white);
+		edit.add(black);
+		help = new JMenu("Help");
+		rules = new JMenuItem("Rules");
+		rules.addActionListener(new MenuListener());
+		help.add(rules);
 		
 		menu.add(file);
 		menu.add(edit);
+		menu.add(help);
 		this.setJMenuBar(menu);
 		
 		this.setLayout(new BorderLayout());
@@ -102,8 +128,9 @@ public class MainFrame extends JFrame {
 		//add(this.gui, BorderLayout.CENTER);
 		
 		text = new Console();
-		textScroller = new JScrollPane(this.text);
+		textScroller = new CustomScroller(this.text);
 		//textScroller.setMaximumSize(new Dimension(500, 100));
+
 		//textScroller.setAutoscrolls(true);
 		textScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		//text.setMaximumSize(new Dimension (500, 100));
@@ -183,12 +210,74 @@ public class MainFrame extends JFrame {
 				}
 			}
 			else if (source.equals(exit)) {
-				gui.setQuit(true);
-				game.setGameOver(true);
+				if (game.getMode() != 3) {
+					gui.setQuit(true);
+					game.setGameOver(true);
+				}
+				else {
+					game.gameOver = true;
+				}
+			}
+			else if (source.equals(renameWhite)) {
+				String name = JOptionPane.showInputDialog(menu.getParent(), "Enter the name for White: ");
+				game.getWhite().setName(name);
+				game.renamed = true;
+				return;
+			}
+			else if (source.equals(renameBlack)) {
+				String name = JOptionPane.showInputDialog(menu.getParent(), "Enter the name for Black: ");
+				game.getBlack().setName(name);
+				game.renamed = true;
+				return;
 			}
 			else if (source.equals(setWhite)) {
-				//make a player
-				//game.setWhite(white);
+				int confirm = JOptionPane.showConfirmDialog(menu.getParent(), "Is white a human?");
+				String name;
+				Player whitePlayer;
+				if (confirm == JOptionPane.CANCEL_OPTION) {
+					return;
+				}
+				if (confirm == JOptionPane.YES_OPTION) {
+					name = JOptionPane.showInputDialog(menu.getParent(), "Enter the name for White: ");
+					whitePlayer = new Human(name, Color.WHITE, gui);
+					if (game.getMode() == 2 || game.getMode() == 3) {
+						game.setMode(game.getMode() -2);
+					}
+				}
+				else {
+					whitePlayer = new Computer("White Computer", Color.WHITE);
+					if (game.getMode() == 0 || game.getMode() == 1) {
+						game.setMode(game.getMode() + 2);
+					}
+				}
+				game.setWhite(whitePlayer);
+				game.renamed = true;
+			}
+			else if (source.equals(setBlack)) {
+				int confirm = JOptionPane.showConfirmDialog(menu.getParent(), "Is black a human?");
+				String name;
+				Player blackPlayer;
+				if (confirm == JOptionPane.CANCEL_OPTION) {
+					return;
+				}
+				if (confirm == JOptionPane.YES_OPTION) {
+					name = JOptionPane.showInputDialog(menu.getParent(), "Enter the name for Black: ");
+					blackPlayer = new Human(name, Color.BLACK, gui);
+					if (game.getMode() == 1 || game.getMode() == 3) {
+						game.setMode(game.getMode() -1);
+					}
+				}
+				else {
+					blackPlayer = new Computer("Black Computer", Color.BLACK);
+					if (game.getMode() == 0 || game.getMode() == 2) {
+						game.setMode(game.getMode() + 1);
+					}
+				}
+				game.setBlack(blackPlayer);
+				game.renamed = true;
+			}
+			else if (source.equals(rules)) {
+				RulesGUI r = new RulesGUI();
 			}
 			else {
 				
@@ -205,21 +294,27 @@ public class MainFrame extends JFrame {
 			JButton source = (JButton)e.getSource();
 			
 			if (source.equals(undo)) {
-				gui.setUndo(true);
+				if (game.getMode() != 3 || game.renamed) {
+					gui.setUndo(true);
+				}
 				if (gui.getBoard().getMateFlag() != 0) {
 					game.setUndo(true);
 				}
 				//game.set
 			}
 			else if (source.equals(redo)) {
-				gui.setRedo(true);
+				if (game.getMode() != 3) {
+					gui.setRedo(true);
+				}
 				if (gui.getBoard().getMateFlag() != 0) {
 					game.setRedo(true);
 				}
 				//something with game?
 			}
 			else if (source.equals(resign)) {
-				gui.setQuit(true);
+				if (game.getMode() != 3) {
+					gui.setQuit(true);
+				}
 				//game ?
 			}
 		}
@@ -230,8 +325,13 @@ public class MainFrame extends JFrame {
 		
 		@Override
 		public void windowClosing(WindowEvent e) {
-			gui.setQuit(true);
-			game.setGameOver(true);
+			if (game.getMode() != 3) {
+				gui.setQuit(true);
+				game.setGameOver(true);
+			}
+			else {
+				game.gameOver = true;
+			}
 		}
 		
 	}
