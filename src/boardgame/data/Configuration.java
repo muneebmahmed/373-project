@@ -63,6 +63,9 @@ public class Configuration implements Cloneable {
 			this.color = color;
 			this.name = name;
 			this.square = square;
+			if ((name == PieceName.KING || name == PieceName.ROOK) && (square.equals("h1") || square.equals("e1"))) {
+				flags = true;
+			}
 		}
 
 		public PieceName getName() {

@@ -42,14 +42,14 @@ public class Human extends Player {
 		Command c = ui.getCommand(this, b);		//getCommand() should check if move is legal
 		b.Move(c);
 		b.updateState(c);
-		return b.getMateFlag();
+		return c.castleMode;
 	}
 
 	@Override
 	public int Move(Board b, Command c) {
 		b.Move(c);
 		b.updateState(c);
-		return b.getMateFlag();
+		return c.castleMode;
 	}
 
 }

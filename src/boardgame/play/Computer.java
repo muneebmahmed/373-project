@@ -33,7 +33,7 @@ public class Computer extends Player {
 		c = b.formatCommand(c);
 		b.Move(c);
 		b.updateState(c);
-		return b.getMateFlag();
+		return c.castleMode;
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class Computer extends Player {
 		// TODO Auto-generated method stub
 		b.Move(c);
 		b.updateState(c);
-		return b.getMateFlag();
+		return c.castleMode;
 	}
 
 }

@@ -47,6 +47,10 @@ public class Command {
 	 */
 	public Command(Piece piece, Square origin, Square destination) {
 		this();
+		if (piece == null || origin == null || destination == null) {
+			castleMode = 10;		//error code
+			return;
+		}
 		this.piece = piece;
 		this.origin = origin;
 		this.destination = destination;
@@ -104,6 +108,7 @@ public class Command {
 		if (copy.capturePiece == null && copy.captureSquare == null) { capturePiece = null; }
 		else if (copy.captureSquare != null) {
 			capturePiece = b.getSquares().get(copy.captureSquare).getPiece();
+			captureSquare = copy.captureSquare;
 		}
 		else {capturePiece = b.getSquares().get(copy.capturePiece.getSquare().getName()).getPiece();}
 		promotion = copy.promotion;
@@ -111,6 +116,8 @@ public class Command {
 		castleMode = copy.castleMode;
 		pieceSymbol = copy.pieceSymbol;
 		promotionPiece = copy.promotionPiece;
+		originString = origin.getName();
+		destString = destination.getName();
 	}
 	
 	/**
@@ -185,6 +192,9 @@ public class Command {
 		}
 		else if (input.contains("redo")) {
 			castleMode = 25;
+		}
+		else if (input.contains("error")) {
+			castleMode = 10;
 		}
 		else if (input.contains("O-O")) {				//castling
 			for (Piece p : b.getPieces()) {

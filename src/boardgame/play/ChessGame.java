@@ -21,10 +21,12 @@ public class ChessGame implements Runnable {
 	private volatile Player white;
 	private volatile Player black;
 	private volatile Color toMove;
-	private int mode; //replay a game or playing a new one? Undo moves?
+	private int mode; //0 = two humans, 1 = white human, 2 = black human, 3 = two computers
 	public GUI ui;
 	public MainFrame mf;
 	public volatile boolean gameOver;
+	public volatile boolean redo;
+	public volatile boolean undo;
 	
 	public ChessGame() {
 		board = new Board();
@@ -32,6 +34,11 @@ public class ChessGame implements Runnable {
 		black = null;
 		toMove = Color.WHITE;
 		mode = 0;
+	}
+	
+	public ChessGame(int mode) {
+		this();
+		this.mode = mode;
 	}
 	
 	public ChessGame(Player white, Player black) {
@@ -85,7 +92,7 @@ public class ChessGame implements Runnable {
 		return toMove;
 	}
 
-	public void setToMove(Color toMove) {
+	public synchronized void setToMove(Color toMove) {
 		this.toMove = toMove;
 	}
 
@@ -97,8 +104,23 @@ public class ChessGame implements Runnable {
 		this.ui = ui;
 	}
 	
+	public synchronized void setGameOver(boolean b) {
+		gameOver = b;
+		notifyAll();
+	}
+	
 	public synchronized boolean isGameOver() {
 		return gameOver;
+	}
+	
+	public synchronized void setUndo(boolean b) {
+		undo = b;
+		setGameOver(false);
+	}
+	
+	public synchronized void setRedo(boolean b) {
+		redo = b;
+		setGameOver(false);
 	}
 
 	@Override
@@ -107,22 +129,104 @@ public class ChessGame implements Runnable {
 		//Player sides[] = { white, black };
 		mf = new MainFrame(ui);
 		mf.setVisible(true);
-		mf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mf.pack();
 		mf.setMinimumSize(mf.getSize());
+		mf.setGame(this);
+		String name;
+		if (mode == 0 || mode == 1) {
+			name = ui.getPlayerName(Color.WHITE);
+			white = new Human(name, Color.WHITE, ui);
+		}
+		else {
+			white = new Computer("White Computer", Color.WHITE);
+		}
+		if (mode == 0 || mode == 2) {
+			name = ui.getPlayerName(Color.BLACK);
+			black = new Human(name, Color.BLACK, ui);
+		}
+		else {
+			black = new Computer("Black Computer", Color.BLACK);
+		}
 		Player current = (toMove == Color.WHITE)? white : black;
+		mf.setTitle(white + "-" + black);
 		int i = 0, move;
 		while (board.isGameOver(toMove) == 0) {
+			ui.requestFocus();
 			//test if reset or undo
 			move = current.Move(board);
-			if (move == 1) {
-				
+			if (move == 50) {
+				board.setMateFlag((current.getColor() == Color.WHITE)? 2 : 1);
+				break;
+			}
+			else if (move == 100) {
+				if (white instanceof Human && black instanceof Human) {
+					if (board.canUndo()) {
+						board.undoMove();
+					}
+					else {
+						toMove = (toMove == Color.WHITE)? Color.BLACK : Color.WHITE;
+					}
+				}
+				else {
+					if (board.getHistory().size() > 1) {
+						board.undoMove(2);
+						toMove = (toMove == Color.WHITE)? Color.BLACK : Color.WHITE;
+					}
+					else if (board.getHistory().size() > 0) {
+						board.undoMove();
+					}
+					else {
+						toMove = (toMove == Color.WHITE)? Color.BLACK : Color.WHITE;
+					}
+					
+				}
+			}
+			else if (move == 25) {
+				if (board.canRedo()) {
+					board.redoMove(1);
+				}
+			}
+			else if (move == 10) {
+				toMove = (board.getHistory().size()%2 == 1)? Color.WHITE : Color.BLACK;
 			}
 			ui.updateBoard(board);
 			current = (toMove == Color.WHITE)? black : white;
 			toMove = current.getColor();
 		}
-		gameOver = true;
+		switch (board.getMateFlag()) {
+		case 1:
+			System.out.println(white + " wins!");
+			break;
+		case 2:
+			System.out.println(black + " wins!");
+			break;
+		case 3:
+			System.out.println("Stalemate!");
+			break;
+		case 4:
+			System.out.println("Draw by 50 move rule");
+			break;
+		case 5:
+			System.out.println("Draw by insufficient material");
+		}
+		System.out.println("Entering game over mode...");
+		System.out.println("You can replay the game with the undo/redo buttons, but not change moves");
+		while (!gameOver) {
+			try {
+				wait();
+			} catch(InterruptedException e) {}
+			if (undo && board.canUndo()) {
+				board.undoMove();
+				undo = false;
+				ui.updateBoard(board);
+			}
+			else if (redo && board.canRedo()) {
+				board.redoMove(1);
+				redo = false;
+				ui.updateBoard(board);
+			}
+		}
+		mf.dispose();
 		notifyAll();
 	}
 

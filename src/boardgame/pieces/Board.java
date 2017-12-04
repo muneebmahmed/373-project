@@ -297,10 +297,7 @@ public class Board implements Cloneable {
 		//TODO
 		
 		//if castleMode = 100 then signal to undo a move
-		if (move.castleMode == 100 || move.castleMode == 25 || move.castleMode == 50) {
-//			if (history.size() != 0) {
-//				undoMove();
-//			}
+		if (move.castleMode > 3) {
 			return;
 		}
 		moveCount++;
@@ -414,7 +411,7 @@ public class Board implements Cloneable {
 	 * @param move the Command to be added to move history
 	 */
 	public void updateState(Command move) {
-		if (move.castleMode == 25 || move.castleMode == 50 || move.castleMode == 100) {
+		if (move.castleMode > 3) {
 			return;
 		}
 		history.add(currentState);
@@ -466,6 +463,14 @@ public class Board implements Cloneable {
 		}
 		loadConfiguration(currentState);
 		return;
+	}
+	
+	public boolean canUndo() {
+		return (history.size() > 0);
+	}
+	
+	public boolean canRedo() {
+		return (undoneMoves.size() > 0 && future.size() > 0);
 	}
 	
 	public void redoMove() {
@@ -572,7 +577,7 @@ public class Board implements Cloneable {
 				break;
 			}
 		}
-		
+		if (k.getSquare() == null) { return false; }
 		return squareUnderAttack(color, k.getSquare());
 	}
 	
@@ -626,9 +631,10 @@ public class Board implements Cloneable {
 	 * @return mateFlag detailing status
 	 */
 	public int isGameOver(Color sideToMove) {
+		boolean fiftymoves = false;
 		if (moveCount >= 100) {	//100 plies = 50 moves
 			mateFlag = 4;
-			return 4;
+			fiftymoves = true;
 		}
 		int sum = 0, pawnCount = 0;
 		for (Piece p : pieces) {
@@ -641,8 +647,10 @@ public class Board implements Cloneable {
 		for (Piece p : moving) {
 			legalMoves.addAll(p.getLegalMoves());
 			if (legalMoves.size() > 0) {
-				mateFlag = 0;
-				return 0;
+				if (!fiftymoves) {
+					mateFlag = 0;
+				}
+				return mateFlag;
 			}
 		}
 		//only reaches this point if no legal moves

@@ -36,7 +36,8 @@ public class GUI extends JPanel implements UserInterface {
 	private volatile Piece moving;
 	private volatile Square origin;
 	private volatile Square destination;
-	private volatile boolean undo, redo, quit;	//one for pawn promotion as well?
+	private volatile boolean undo, redo, quit, error;	//one for pawn promotion as well?
+	private Promoter pawnPromoter;
 	private volatile PieceName promotion;	//in case of pawn promotion
 	//TODO implement pawn promotion
 	private SquareButton keySquare;
@@ -180,6 +181,10 @@ public class GUI extends JPanel implements UserInterface {
 		//gui.setVisible(true);
 	}
 
+	public Board getBoard() {
+		return board;
+	}
+	
 	public JComponent getChessBoard() {
 		return chessBoard;
 	}
@@ -228,8 +233,66 @@ public class GUI extends JPanel implements UserInterface {
 					ArrayList<Square> destSquares = moving.getLegalMoves();
 					if (destSquares.contains(square)) {
 						//destination = square;
-						setDestination(square);
 						squares.get(origin.getName()).resetBackground();
+						if (moving instanceof Pawn && (square.getRank() == 8 || square.getRank() == 1)) {
+//							Runnable promoter = new Runnable() {
+//								@Override
+//								public void run() {
+//									if (square.getRank() == 8) {
+//										pawnPromoter = new Promoter(Color.WHITE);
+//									}
+//									else {
+//										pawnPromoter = new Promoter(Color.BLACK);
+//									}
+//									//pawnPromoter.setLocation(source.getLocation());
+//									pawnPromoter.setVisible(true);
+//									promotion = pawnPromoter.promote();
+//									pawnPromoter.dispose();
+//								}
+//							};
+//							Thread t1 = new Thread(promoter);
+//							t1.start();
+//							try {
+//								t1.join();
+//							} catch (InterruptedException e1) {
+//								// TODO Auto-generated catch block
+//								e1.printStackTrace();
+//							}
+//							if (square.getRank() == 8) {
+//								pawnPromoter = new Promoter(Color.WHITE);
+//							}
+//							else {
+//								pawnPromoter = new Promoter(Color.BLACK);
+//							}
+//							//pawnPromoter.setLocation(source.getLocation());
+//							pawnPromoter.setVisible(true);
+//							promotion = pawnPromoter.promote();
+//							pawnPromoter.dispose();
+							String pName = JOptionPane.showInputDialog("Enter Promotion Piece: ");
+							switch (pName) {
+							case "Rook":
+							case "rook":
+							case "ROOK":
+								promotion = PieceName.ROOK;
+								break;
+							case "Bishop":
+							case "bishop":
+							case "BISHOP":
+								promotion = PieceName.BISHOP;
+								break;
+							case "Knight":
+							case "KNIGHT":
+							case "knight":
+								promotion = PieceName.KNIGHT;
+								break;
+							case "Queen":
+							case "QUEEN":
+							default:
+								promotion = PieceName.QUEEN;
+								break;
+							}
+						}
+						setDestination(square);
 						//resetSquareIcons();
 					}
 					else {
@@ -293,6 +356,10 @@ public class GUI extends JPanel implements UserInterface {
 				//TODO implement redo
 				return new Command(toMove, "redo", board);
 			}
+			else if (error) {
+				error = false;
+				return new Command(toMove, "error", board);
+			}
 		}
 		//System.out.println("Loop exited");
 		Command move = new Command(moving, origin, destination);
@@ -350,6 +417,38 @@ public class GUI extends JPanel implements UserInterface {
 		notifyAll();
 	}
 	
+	public synchronized boolean isUndo() {
+		return undo;
+	}
+
+	public synchronized void setUndo(boolean undo) {
+		this.undo = undo;
+		setDestination(null);
+	}
+
+	public synchronized boolean isRedo() {
+		return redo;
+	}
+
+	public synchronized void setRedo(boolean redo) {
+		this.redo = redo;
+		setDestination(null);
+	}
+
+	public synchronized boolean isQuit() {
+		return quit;
+	}
+
+	public synchronized void setQuit(boolean quit) {
+		this.quit = quit;
+		setDestination(null);
+	}
+	
+	public synchronized void setError(boolean error) {
+		this.error = error;
+		setDestination(null);
+	}
+
 	private SquareButton getButtonAbove(SquareButton button, int direction) {
 		Square s = button.getSquare();
 		int rank = s.getRank();
@@ -378,13 +477,11 @@ public class GUI extends JPanel implements UserInterface {
 		@Override
 		public void keyTyped(KeyEvent e) {
 			// TODO Auto-generated method stub
-			System.out.println("key Typed");
 		}
 
 		@Override
 		public void keyPressed(KeyEvent e) {
 			// TODO Auto-generated method stub
-			System.out.println("Key Pressed");
 			if (e.getKeyCode() == KeyEvent.VK_UP) {
 				keySquare.resetBackground();
 				keySquare = getButtonAbove(keySquare, 1);
@@ -433,7 +530,6 @@ public class GUI extends JPanel implements UserInterface {
 		@Override
 		public void keyReleased(KeyEvent e) {
 			// TODO Auto-generated method stub
-			System.out.println("Key Released");
 		}
 		
 	}

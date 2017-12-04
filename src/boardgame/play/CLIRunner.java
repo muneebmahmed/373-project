@@ -143,17 +143,22 @@ public class CLIRunner {
 		}
 		//This is for general testing purposes
 		Color toMove = Color.WHITE;
-		try {
-			FileInputStream file = new FileInputStream("chess3.pgn");
-			toMove = testBoard.ReadFile(file);
+		System.out.println("Would you like to open a file?");
+		scanner.reset();
+		input = scanner.nextLine();
+		input = scanner.nextLine();
+		if (input.equals("yes") || input.equals("y") || input.equals("Yes")) {
+			System.out.println("Enter filepath: ");
+			input = scanner.nextLine();
 			try {
+				FileInputStream file = new FileInputStream(input);
+				toMove = testBoard.ReadFile(file);
 				file.close();
-			} catch (IOException f){
-				f.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		}
+		
 		current = (toMove == Color.WHITE)? white : black;
 		while(testBoard.isGameOver(current.getColor()) == 0) {
 			Command c;
@@ -165,12 +170,17 @@ public class CLIRunner {
 				c = e.getBestMove(current.getColor());
 				c = testBoard.formatCommand(c);
 			}
-			while (c.castleMode == 100) {
-				if (testBoard.getHistory().size() != 0) {
+			while (c.castleMode == 100 || c.castleMode == 25) {
+				if (testBoard.getHistory().size() != 0 && c.castleMode == 100) {
 					testBoard.undoMove();
 					System.out.print(printBoard(testBoard));
 					i--;
 					current = players[i%2];
+				}
+				else if (c.castleMode == 25 && testBoard.canRedo()) {
+					testBoard.redoMove(1);
+					System.out.println(printBoard(testBoard));
+					current = players[++i%2];
 				}
 				c = commandLine.getCommand(current, testBoard);
 			}
@@ -211,11 +221,12 @@ public class CLIRunner {
         else if (testBoard.getMateFlag() == 0) {
         		System.out.println("Would you like to save the history to a file?");
         		String yesno = scanner.nextLine();
-        		yesno = scanner.nextLine();
-        		yesno = scanner.nextLine();
         		if (yesno.equals("yes") || yesno.equals("y")) {
         			System.out.println("Enter fileName: ");
         			input = scanner.nextLine();
+        			if (!input.contains(".pgn")) {
+        				input = input + ".pgn";
+        			}
         			try {
 						FileOutputStream os = new FileOutputStream(input);
 						testBoard.SaveFile(os);

@@ -1,6 +1,8 @@
 package boardgame.gui;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.io.PrintStream;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -23,14 +25,27 @@ public class GameRunner {
 //		outputFrame.setSize(300, 200);
 //		outputFrame.setVisible(true);
 //		System.out.println("Test");
+		PrintStream systemOut = System.out;
 		
-		//StartMenuGUI s = new StartMenuGUI();
+		StartMenuGUI s = new StartMenuGUI();
+		//PieceName asdf = Promoter.getPromotionPiece(Color.WHITE);
 		Board b = new Board();
 		GUI cb = new GUI(b);
+		cb.setMaximumSize(new Dimension(400, 400));
+		int mode = 0, players = 0;
+		players = JOptionPane.showConfirmDialog(null, "Is white a Human?");
+		if (players == JOptionPane.YES_OPTION) {
+			mode = 0;
+		}
+		else {
+			mode = 2;
+		}
+		players = JOptionPane.showConfirmDialog(null, "Is black human?");
+		if (players != JOptionPane.YES_OPTION) {
+			mode++;
+		}
 		//MainFrame mf = new MainFrame(cb);
-		Human white = new Human("Muneeb", Color.WHITE, cb);
-		Human black = new Human("Not", Color.BLACK, cb);
-		ChessGame game = new ChessGame(white, black);
+		ChessGame game = new ChessGame(mode);
 		game.setUi(cb);
 		game.setBoard(b);
 		
@@ -49,7 +64,7 @@ public class GameRunner {
 		}
 		JOptionPane.showMessageDialog(null, "Thread dead");
 		System.out.println("Thread dead");
-		
+		System.exit(0);
 		
 				
 		//EndMenuGUI e = new EndMenuGUI();

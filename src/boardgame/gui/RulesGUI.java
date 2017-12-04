@@ -1,8 +1,18 @@
 package boardgame.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import boardgame.pieces.*;
+import boardgame.data.*;
+import boardgame.data.Configuration.ConfigElement;
+import boardgame.play.*;
 
 import javax.swing.*;
 
@@ -15,6 +25,13 @@ public class RulesGUI {
 	private JLabel rulesMessage;
 	private JButton nextMainButton;
 	private JButton backMainButton;
+	private Board board;
+	private GUI gui;
+	private Console console;
+	private ArrayList<Configuration> configurations;
+	private ArrayList<String> descriptions;
+	private Configuration current;
+	int i;
 	
 	
 	public RulesGUI() {
@@ -26,9 +43,10 @@ public class RulesGUI {
 		nextMainButton = new JButton("Next");
 
 
-		rules.setLayout(new FlowLayout());
+		//rules.setLayout(new FlowLayout());
+		rules.setLayout(new BorderLayout());
 		rules.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		rules.setSize(300, 200);
+		rules.setSize(600, 600);
 		rules.setVisible(true);
 		
 		buildRulesGUI();
@@ -40,326 +58,126 @@ public class RulesGUI {
 		
 
 		
-		backMainButton.addActionListener((ActionListener) new ButtonListener());
-		nextMainButton.addActionListener(new ButtonListener());
+		backMainButton.addActionListener(new RuleButtonListener());
+		nextMainButton.addActionListener(new RuleButtonListener());
 		
-		rules.add(rulesMessage);
-		rules.add(link);
-		rules.add(backMainButton);
-		rules.add(nextMainButton);
+		//rules.add(rulesMessage);
+		//rules.add(link);
+		rules.add(backMainButton, BorderLayout.WEST);
+		rules.add(nextMainButton, BorderLayout.EAST);
+		board = new Board();
+		gui = new GUI(board);
+		gui.setMaximumSize(new Dimension(300, 300));
+		rules.add(gui, BorderLayout.CENTER);
+		i = 0;
+		Configuration king = new Configuration();
+		ConfigElement kingElement = king.new ConfigElement(Color.WHITE, PieceName.KING, "e1");
+		king.elements.add(kingElement);
 		
+		Configuration queen = new Configuration();
+		ConfigElement queenElement = queen.new ConfigElement(Color.WHITE, PieceName.QUEEN, "e4");
+		queen.elements.add(queenElement);
 		
-	}
-	
-	private JFrame pawnFrame;
-	private JButton nextPawnButton;
-	private JButton backPawnButton;
-	private JTextArea pawnRules;
-	
-	public void makePawnFrame() {
+		Configuration rook = new Configuration();
+		ConfigElement rookElement = rook.new ConfigElement(Color.WHITE, PieceName.ROOK, "h1");
+		rook.elements.add(rookElement);
+		king.elements.add(rookElement);
 		
-		this.pawnFrame = new JFrame("Pawn Rules");
-		this.nextPawnButton = new JButton("Next");
-		this.backPawnButton = new JButton("Back");
-		this.pawnRules = new JTextArea("Rules for Pawn\n"
+		Configuration bishop = new Configuration();
+		ConfigElement bishopElement = bishop.new ConfigElement(Color.WHITE, PieceName.BISHOP, "e4");
+		bishop.elements.add(bishopElement);
+		
+		Configuration knight = new Configuration();
+		ConfigElement knightElement = knight.new ConfigElement(Color.WHITE, PieceName.KNIGHT, "e4");
+		knight.elements.add(knightElement);
+		
+		Configuration pawn = new Configuration();
+		ConfigElement pawnElement = pawn.new ConfigElement(Color.WHITE, PieceName.PAWN, "e2");
+		pawn.elements.add(pawnElement);
+		configurations = new ArrayList<Configuration>();
+		configurations.addAll(Arrays.asList(king, queen, rook, bishop, knight, pawn));
+		current = configurations.get(i);
+		board.loadConfiguration(current);
+		board.setCurrentState(current);
+		gui.updateBoard(board);
+		descriptions = new ArrayList<String>();
+		descriptions.add(new String("Rules for King\n"
+				+ "The King can only move to the spaces adjacent to it\n"
+				+ "Once the King is taken by your opponent, the game\n"
+				+ " is over. Be sure you protect your King while trying\n"
+				+ " to take your opponents King!"));
+		descriptions.add(new String("Rules for Queen\n"
+				+ "The Queen has the greatest movement amongst the game\n"
+				+ "pieces. The Queen is allowed to move in any direction\n"
+				+ " (forward, backwards, left,right,diagonal) while being\n"
+				+ " able to move as far as she wants."));
+		descriptions.add(new String("Rules for Rook\n"
+				+"The Rook can only move forwards, backwards,\n"
+				+"left, or right (not diagonally). The Rook \n"
+				+"can travel as it can in one move."));
+		descriptions.add(new String("Rules for Bishop\n"
+				+ "The Bishop can only move diagonally, but can travel\n"
+				+ "as far as it wants."));
+		descriptions.add(new String("Rules for Knight\n"
+				+ "The Knight has a strange movement pattern.\n"
+				+ "The Knight has to move 2 tiles in any direction\n"
+				+ "and then 1 tile next to that. The Knight is allowed to \n"
+				+ "\"Jump Over\" other pieces when executing its move."));
+		descriptions.add(new String("Rules for Pawn\n"
 				+"The Pawn can only move forward one space\n"
 				+"unless it has never been moved before. In this\n"
 				+"case you can move the pawn two spaces forward.\n"
 				+"In order to take another piece, the Pawn must move\n"
 				+"diagonaly forward one step. It cannot take any pieces\n"
-				+"dirctly in front of it."
-				);
-		
-		nextPawnButton.addActionListener(new ButtonListener());
-		backPawnButton.addActionListener(new ButtonListener());
-		
-		pawnFrame.add(pawnRules);
-		pawnFrame.add(backPawnButton);
-		pawnFrame.add(nextPawnButton);
-		
-		pawnFrame.setVisible(true);
-		
-		pawnFrame.setLayout(new FlowLayout());
-		pawnFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		pawnFrame.setSize(350, 200);
-		pawnFrame.setVisible(true);
-		
-		
-		
-	}
-	
-	private JFrame rookFrame;
-	private JButton nextRookButton;
-	private JButton backRookButton;
-	private JTextArea rookRules;
-	
-	public void makeRookFrame() {
-		
-		this.rookFrame = new JFrame("Rook Rules");
-		this.nextRookButton = new JButton("Next");
-		this.backRookButton = new JButton("Back");
-		this.rookRules = new JTextArea("Rules for Rook\n"
-				+"The Rook can only move forwards, backwards,\n"
-				+"left, or right(Cannot move diagonally). The Rook \n"
-				+"can travel as it can in one move."
-				);
-		
-		nextRookButton.addActionListener(new ButtonListener());
-		backRookButton.addActionListener(new ButtonListener());
-		
-		rookFrame.add(rookRules);
-		rookFrame.add(backRookButton);
-		rookFrame.add(nextRookButton);
-		
-		rookFrame.setVisible(true);
-		
-		rookFrame.setLayout(new FlowLayout());
-		rookFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		rookFrame.setSize(350, 200);
-		rookFrame.setVisible(true);
-
-	}
-	
-	private JFrame knightFrame;
-	private JButton nextKnightButton;
-	private JButton backKnightButton;
-	private JTextArea knightRules;
-	
-	public void makeKnightFrame() {
-		
-		this.knightFrame = new JFrame("Knight Rules");
-		this.nextKnightButton = new JButton("Next");
-		this.backKnightButton = new JButton("Back");
-		this.knightRules = new JTextArea("Rules for Knight\n"
-				+ "The Knight has a strange movement pattern.\n"
-				+ "The Knight has to move 2 tiles in any direction\n"
-				+ "and then 1 tile next to that. The Knight is allowed to \n"
-				+ "\"Jump Over\" other pieces when executing its move.");
-		
-		nextKnightButton.addActionListener(new ButtonListener());
-		backKnightButton.addActionListener(new ButtonListener());
-		
-		knightFrame.add(knightRules);
-		knightFrame.add(backKnightButton);
-		knightFrame.add(nextKnightButton);
-		
-		knightFrame.setVisible(true);
-		
-		knightFrame.setLayout(new FlowLayout());
-		knightFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		knightFrame.setSize(350, 200);
-		knightFrame.setVisible(true);
-
+				+"dirctly in front of it."));
+		console = new Console();
+		rules.add(console, BorderLayout.NORTH);
+		console.setVisible(true);
+		console.setMinimumSize(new Dimension(100, 100));
 	}
 	
 	
-	private JFrame bishopFrame;
-	private JButton nextBishopButton;
-	private JButton backBishopButton;
-	private JTextArea bishopRules;
-	
-	public void makeBishopFrame() {
-		
-		this.bishopFrame = new JFrame("Bishop Rules");
-		this.nextBishopButton = new JButton("Next");
-		this.backBishopButton = new JButton("Back");
-		this.bishopRules = new JTextArea("Rules for Bishop\n"
-				+ "The Bishop can only move diagonally, but can travel\n"
-				+ "as far as it wants.");
-		
-		nextBishopButton.addActionListener(new ButtonListener());
-		backBishopButton.addActionListener(new ButtonListener());
-		
-		bishopFrame.add(bishopRules);
-		bishopFrame.add(backBishopButton);
-		bishopFrame.add(nextBishopButton);
-		
-		bishopFrame.setLayout(new FlowLayout());
-		bishopFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		bishopFrame.setSize(350, 200);
-		bishopFrame.setVisible(true);
-
-	}
-	
-	private JFrame queenFrame;
-	private JButton nextQueenButton;
-	private JButton backQueenButton;
-	private JTextArea queenRules;
-	
-	public void makeQueenFrame() {
-		
-		this.queenFrame = new JFrame("Queen Rules");
-		this.nextQueenButton = new JButton("Next");
-		this.backQueenButton = new JButton("Back");
-		this.queenRules = new JTextArea("Rules for Queen\n"
-				+ "The Queen has the greatest movement amongst the game\n"
-				+ "pieces. The Queen is allowed to move in any direction\n"
-				+ " (forward, backwards, left,right,diagonal) while being\n"
-				+ " able to move as far as she wants.");
-		
-		nextQueenButton.addActionListener(new ButtonListener());
-		backQueenButton.addActionListener(new ButtonListener());
-		
-		queenFrame.add(queenRules);
-		queenFrame.add(backQueenButton);
-		queenFrame.add(nextQueenButton);
-		
-		queenFrame.setLayout(new FlowLayout());
-		queenFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		queenFrame.setSize(350, 200);
-		queenFrame.setVisible(true);
-
-	}
-	
-	
-	private JFrame kingFrame;
-	private JButton nextKingButton;
-	private JButton backKingButton;
-	private JTextArea kingRules;
-	
-	public void makeKingFrame() {
-		
-		this.kingFrame = new JFrame("King Rules");
-		this.nextKingButton = new JButton("Main Menu");
-		this.backKingButton = new JButton("Back");
-		this.kingRules = new JTextArea("Rules for King\n"
-				+ "The King can only move to the spaces adjacent to it\n"
-				+ "Once the King is taken by your opponent, the game\n"
-				+ " is over. Be sure you protect your King while trying\n"
-				+ " to take your opponents King!");
-		
-		nextKingButton.addActionListener(new ButtonListener());
-		backKingButton.addActionListener(new ButtonListener());
-		
-		kingFrame.add(kingRules);
-		kingFrame.add(backKingButton);
-		kingFrame.add(nextKingButton);
-		
-		kingFrame.setLayout(new FlowLayout());
-		kingFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		kingFrame.setSize(350, 200);
-		kingFrame.setVisible(true);
-
-	}
-	
-	
-	
-	
-	
-	
-	private class ButtonListener implements ActionListener
+	private class RuleButtonListener implements ActionListener
 	{
 		@Override
-		public void actionPerformed(ActionEvent e) //this is the method MenuListener must implement, as it comes from the ActionListener interface.
-		{
+		public void actionPerformed(ActionEvent e) {
 
 			JButton source = (JButton)(e.getSource());
 			
 			
-			
-			
-			
-			if(source.equals(nextMainButton))
-			{
+			if(source.equals(nextMainButton)) {
 				
-				makePawnFrame();
-				rules.setVisible(false);
-				
-			
-			}
-			if(source.equals(backMainButton))
-			{
-				
-				StartMenuGUI s = new StartMenuGUI();
-				rules.dispose();
-				
-			
-			}
-			if(source.equals(nextPawnButton))
-			{
-				
-				makeRookFrame();
-				pawnFrame.dispose();
+				i++;
+				if (i > 5) {
+					StartMenuGUI s = new StartMenuGUI();
+					rules.dispose();
+					return;
+				}
+				current = configurations.get(i);
+				board.loadConfiguration(current);
+				board.setCurrentState(current);
+				gui.updateBoard(board);
+				console.setText("");
+				System.out.println(descriptions.get(i));
+				//makePawnFrame();
+				//rules.setVisible(false);
 				
 			
 			}
-			if(source.equals(backPawnButton)) {
-				
-				
-				rules.setVisible(true);
-				pawnFrame.dispose();
-				
-			}
-			if(source.equals(nextRookButton))
-			{
-				
-				makeKnightFrame();
-				rookFrame.dispose();
-				
+			if(source.equals(backMainButton)) {
+				i--;
+				if (i < 0) {
+					StartMenuGUI s = new StartMenuGUI();
+					rules.dispose();
+					return;
+				}
+				current = configurations.get(i);
+				board.loadConfiguration(current);
+				board.setCurrentState(current);
+				gui.updateBoard(board);
+				console.setText("");
+				System.out.println(descriptions.get(i));
 			
-			}
-			if(source.equals(backRookButton)) {
-				
-				makePawnFrame();
-				rookFrame.dispose();
-				
-			}
-			if(source.equals(nextKnightButton))
-			{
-				
-				makeBishopFrame();
-				knightFrame.dispose();
-				
-			
-			}
-			if(source.equals(backKnightButton)) {
-				
-				makeRookFrame();
-				knightFrame.dispose();
-				
-			}
-			if(source.equals(nextBishopButton))
-			{
-				
-				makeQueenFrame();
-				bishopFrame.dispose();
-				
-			
-			}
-			if(source.equals(backBishopButton)) {
-				
-				makeKnightFrame();
-				bishopFrame.dispose();
-				
-			}
-			if(source.equals(nextQueenButton))
-			{
-				
-				makeKingFrame();
-				queenFrame.dispose();
-				
-			
-			}
-			if(source.equals(backQueenButton)) {
-				
-				makeBishopFrame();
-				queenFrame.dispose();
-				
-			}
-			if(source.equals(nextKingButton))
-			{
-				
-				StartMenuGUI s = new StartMenuGUI();
-				kingFrame.dispose();
-				rules.dispose();
-				
-			
-			}
-			if(source.equals(backKingButton)) {
-				
-				makeQueenFrame();
-				kingFrame.dispose();
-				
 			}
 			
 			
