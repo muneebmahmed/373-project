@@ -14,7 +14,8 @@ public class StartMenuGUI {
 	private JFrame startFrame;
 	private JButton startGameButton;
 	private JButton rulesButton;
-	private JTextArea welcomeMessage;
+	private JLabel welcomeMessage;
+	private JLabel message2;
 	private RulesGUI rules;
 	
 	private volatile Board b;
@@ -29,18 +30,21 @@ public class StartMenuGUI {
 		super();
 		
 		this.startFrame = new JFrame("Play Chess!");
-		this.startGameButton = new JButton("Start Game!");
+		this.startGameButton = new JButton("Start New Game");
 		this.rulesButton = new JButton("Rules");
-		this.welcomeMessage = new JTextArea("Welcome to Chess");
+		//this.welcomeMessage = new JTextArea("Welcome to the Chess Launcher!\nClick below to start a new game or learn the rules.");
+		//welcomeMessage.setEditable(false);
+		welcomeMessage = new JLabel("Welcome to the Chess Launcher!");
+		message2 = new JLabel("Click below to start a new game or learn the rules");
 		
-		startFrame.setSize(200, 200);
+		startFrame.setSize(320, 200);
 		startFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		startFrame.setLayout(new FlowLayout());
 		
 		buildStartGUI();
 	}
 	
-	public synchronized void waitForStuff() {
+	public synchronized void waitForNewGame() {
 		while (!fire) {
 			try {
 				wait();
@@ -75,6 +79,7 @@ public class StartMenuGUI {
 		rulesButton.addActionListener(new StartListener());
 		
 		startFrame.add(welcomeMessage);
+		startFrame.add(message2);
 		startFrame.add(startGameButton);
 		startFrame.add(rulesButton);
 		
@@ -99,14 +104,14 @@ public class StartMenuGUI {
 				cb = new GUI(b);
 				cb.setMaximumSize(new Dimension(400, 400));
 				int mode = 0, players = 0;
-				players = JOptionPane.showConfirmDialog(null, "Is white a Human?");
+				players = JOptionPane.showConfirmDialog(null, "Is a person (not a computer) playing white?");
 				if (players == JOptionPane.YES_OPTION) {
 					mode = 0;
 				}
 				else {
 					mode = 2;
 				}
-				players = JOptionPane.showConfirmDialog(null, "Is black human?");
+				players = JOptionPane.showConfirmDialog(null, "Is a person (not a computer) playing black?");
 				if (players != JOptionPane.YES_OPTION) {
 					mode++;
 				}
@@ -116,10 +121,7 @@ public class StartMenuGUI {
 				setFire(true);
 			}
 			if(source.equals(rulesButton)) {
-				
-				//makeRuleFrame();
 				rules = new RulesGUI();
-				
 			}	
 			
 		}

@@ -22,6 +22,7 @@ public class SquareButton extends JButton {
 	public static final java.awt.Color LIGHTER_GREEN = new java.awt.Color(0, 150, 75);
 	public static final java.awt.Color GREY = new java.awt.Color(200, 200, 200);
 	public static final java.awt.Color BLUE = new java.awt.Color(124, 215, 250);
+	public static final java.awt.Color DARKER_BLUE = new java.awt.Color(100, 170, 200);
 	
 	public SquareButton() {
 		// TODO Auto-generated constructor stub
@@ -83,7 +84,15 @@ public class SquareButton extends JButton {
 	}
 	
 	public void setBlue() {
-		this.setBackground(BLUE);
+		switch (source.getColor()) {
+		case WHITE:
+			this.setBackground(BLUE);
+			break;
+		case BLACK:
+		default:
+			this.setBackground(DARKER_BLUE);
+			break;
+		}
 	}
 	
 	public static ImageIcon getIconFromPiece(Piece piece) {

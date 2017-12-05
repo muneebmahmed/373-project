@@ -16,14 +16,17 @@ public class Evaluator {
 	
 	public Evaluator() {
 		board = new Board();
+		evaluations = new ArrayList<Evaluation>();
 	}
 	
 	public Evaluator(Board b) {
 		board = b.clone();
+		evaluations = new ArrayList<Evaluation>();
 	}
 	
 	public Evaluator(Configuration c) {
 		board = new Board(c);
+		evaluations = new ArrayList<Evaluation>();
 	}
 	
 	public Board getBoard() {
@@ -44,7 +47,6 @@ public class Evaluator {
 		}
 		
 		public Evaluation(Board b, Command c) {
-			c = command;
 			Board testBoard = b.clone();
 			Command formatted = testBoard.formatCommand(c);
 			testBoard.Move(formatted);
@@ -75,6 +77,7 @@ public class Evaluator {
 	 * @return Command unformatted version of a good move
 	 */
 	public Command getBestMove(Color sideToMove) {
+		evaluations.clear();	 count = 0;
 		ArrayList<Piece> pieces = board.getPieces();
 		ArrayList<Command> commands = new ArrayList<Command>();
 		ArrayList<Square> squares = new ArrayList<Square>();
@@ -89,14 +92,67 @@ public class Evaluator {
 			}
 			if (flag) { break; }
 		}
+		for (Command c : commands) {
+			Evaluation e = new Evaluation(board, c);
+			if (commands.size() > 1) {
+				adjustEvaluation(e, sideToMove);
+			}
+			evaluations.add(e);
+		}
+		Collections.sort(evaluations);
+		Collections.reverse(evaluations);
 		Command c = commands.get((int)(Math.random()*commands.size()));
-		//System.out.println("Moves searched: " + count);
+		int max = evaluations.get(0).value;
+		for (int i = evaluations.size() - 1; i >= 0; i--) {
+			if (evaluations.get(i).value < max) {
+				evaluations.remove(i);
+			}
+		}
+		c = evaluations.get((int)(Math.random()*evaluations.size())).command;
+		System.out.println("Moves searched: " + count);
 		return c;
+	}
+	
+	public void adjustEvaluation(Evaluation e, Color sideToMove) {
+		Board testBoard = board.clone();
+		Command c = testBoard.formatCommand(e.command);
+		testBoard.Move(c);
+		Configuration state = new Configuration(testBoard);
+		testBoard.setCurrentState(state);
+		ArrayList<Piece> pieces = testBoard.getPieces();
+		ArrayList<Command> commands = new ArrayList<Command>();
+		ArrayList<Square> squares = new ArrayList<Square>();
+		boolean flag = false;
+		for (Piece p : pieces) {
+			if (p.getColor() != sideToMove) { flag = p.getGoodLegalMoves(squares); }
+			else { squares.clear(); }
+			if (flag) {
+				commands.clear();
+				e.value = -1000;
+				return;
+			}
+			for (Square s : squares) { commands.add(new Command(p, p.getSquare(), s)); }
+			if (flag) { break; }
+		}
+		for (Command com : commands) {
+			Command formatted = testBoard.formatCommand(com);
+			try {
+				testBoard.Move(formatted);
+			} catch (NullPointerException e1) {
+				e1.printStackTrace();
+			}
+			
+			int tempMin = EvaluateBoard(testBoard, sideToMove);
+			if (tempMin < e.value) {
+				e.value = tempMin;
+			}
+			testBoard.loadConfiguration(state);
+		}
 	}
 	
 	public static int EvaluateBoard(Board b, Color moved) {
 		//TODO
-		//check for checkmate?
+		//assign pieces different values based on position for better evaluation?
 		int sum = 0, currentValue = 0;
 		for (Piece p : b.getPieces()) {
 			currentValue = p.getValue();

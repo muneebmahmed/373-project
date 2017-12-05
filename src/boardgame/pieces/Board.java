@@ -23,6 +23,7 @@ public class Board implements Cloneable {
 	private ArrayList<Piece> whitePieces, blackPieces;
 	HashMap<String, Square> squares;	//easy access to squares
 	private int moveCount; //used for 50 move rule
+	public static final Configuration DEFAULT = new Configuration(new Board());
 	
 	private int mateFlag; //0 = game running, 1 = white wins, 2 = black wins, 3 = stalemate, 4,5 = draw
 	private ArrayList<Piece> capturedPieces;
@@ -448,8 +449,9 @@ public class Board implements Cloneable {
 	
 	/**
 	 * Undoes n moves
-	 * 
+	 * <br>
 	 * Is more efficient than calling undoMove() n times
+	 * as a configuration is only loaded once
 	 * 
 	 * @param n number of moves to undo
 	 */
@@ -474,19 +476,20 @@ public class Board implements Cloneable {
 	}
 	
 	public void redoMove() {
+		/*
 		Command move = new Command(undoneMoves.pop());
 		Move(move);
 		history.add(currentState);
 		currentState = future.pop();
 		moves.add(move.toString());
+		*/
 		
-		//Use code above, since it should be more efficient than below for one move
-		/*
+		//Use code below, since the Command(String) constructor is deprecated
 		history.add(currentState);
 		currentState = future.pop();
 		loadConfiguration(currentState);
 		moves.add(undoneMoves.pop());
-		*/
+		
 		return;
 	}
 	
@@ -498,7 +501,6 @@ public class Board implements Cloneable {
 	 * @param n, number of moves to redo
 	 */
 	public void redoMove(int n) {
-		//TODO
 		for (int i = 0; i < n; i++) {
 			history.add(currentState);
 			currentState = future.pop();
@@ -680,6 +682,12 @@ public class Board implements Cloneable {
 		Command command;
 		StringTokenizer alpha;
 		boolean done = false;
+		history.clear();
+		undoneMoves.clear();
+		future.clear();
+		moves.clear();
+		loadConfiguration(DEFAULT);		//fixes read issue
+		currentState = DEFAULT;
 		Scanner fileScanner = new Scanner(file);
 		while (fileScanner.hasNextLine()) {
 			lineFromFile = fileScanner.nextLine();
@@ -716,7 +724,7 @@ public class Board implements Cloneable {
 		PrintWriter writer = new PrintWriter(file);
 		for (int i = 0; i < moves.size(); i++) {
 			if (i%2 == 0) {
-				writer.print(Integer.toString(i/2 + 1) + ". " + moves.get(i) + "\t");
+				writer.print(Integer.toString(i/2 + 1) + ". " + moves.get(i));
 			}
 			else {
 				writer.println("\t" + moves.get(i));

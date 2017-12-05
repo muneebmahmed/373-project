@@ -9,7 +9,9 @@ import java.io.PrintStream;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 
-
+/*
+ * Class to create a custom output stream as a text area
+ */
 public class Console extends JTextArea{
 	
 	private PrintStream out;
@@ -18,7 +20,6 @@ public class Console extends JTextArea{
 		
 		this.setEditable(false);
 		out = new PrintStream( new CustomOutputStream(this));
-		System.setOut(out);		//uncomment this?
 		
 	}
 	
@@ -26,7 +27,6 @@ public class Console extends JTextArea{
 		super(text);
 		this.setEditable(false);
 		out = new PrintStream( new CustomOutputStream(this));
-		System.setOut(out);
 	}
 	
 	public PrintStream getPrintStream() {
@@ -49,7 +49,8 @@ public class Console extends JTextArea{
 
 	
 	public class CustomOutputStream extends OutputStream {
-	    private JTextArea textArea;
+	    
+		private JTextArea textArea;
 	     
 	    public CustomOutputStream(JTextArea textArea) {
 	        this.textArea = textArea;

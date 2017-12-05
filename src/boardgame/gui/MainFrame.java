@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -44,7 +45,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem rules;
 	
 	private JFileChooser chooser;
-	private JTextArea text;
+	private Console console;
 	
 	private JPanel buttons;
 	private JButton redo;
@@ -54,6 +55,9 @@ public class MainFrame extends JFrame {
 	public Color toMove;
 	private JScrollPane boardScroller;
 	private JScrollPane textScroller;
+	
+	private JTextArea movesHistory;
+	private JScrollPane movesScroller;
 	
 	//private JMenuItem newGame;
 
@@ -127,14 +131,20 @@ public class MainFrame extends JFrame {
 		add(boardScroller, BorderLayout.CENTER);
 		//add(this.gui, BorderLayout.CENTER);
 		
-		text = new Console();
-		textScroller = new CustomScroller(this.text);
+		console = new Console();
+		System.setOut(console.getPrintStream());
+		textScroller = new CustomScroller(this.console);
 		//textScroller.setMaximumSize(new Dimension(500, 100));
 
 		//textScroller.setAutoscrolls(true);
 		textScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		//text.setMaximumSize(new Dimension (500, 100));
 		this.add(textScroller, BorderLayout.SOUTH);
+		
+		movesHistory = new Console();
+		movesScroller = new CustomScroller(this.movesHistory);
+		movesScroller.setAutoscrolls(true);
+		this.add(movesScroller, BorderLayout.EAST);
 		
 		chooser = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("*.pgn, *.txt", "pgn", "txt");
@@ -162,6 +172,20 @@ public class MainFrame extends JFrame {
 		return;
 	}
 	
+	public void printMovesHistory() {
+		StringBuilder text = new StringBuilder();
+		ArrayList<String> moveList = game.getBoard().getMoves();
+		for (int i = 0; i < moveList.size(); i++) {
+			if (i%2 == 0) {
+				text.append(Integer.toString(i/2 + 1) + ". " + moveList.get(i));
+			}
+			else {
+				text.append("\t" + moveList.get(i) + "\n");
+			}
+		}
+		movesHistory.setText(text.toString());
+	}
+	
 	private class MenuListener implements ActionListener {
 
 		@Override
@@ -179,8 +203,8 @@ public class MainFrame extends JFrame {
 						toMove = gui.getBoard().ReadFile(is);
 						is.close();
 						gui.updateBoard(gui.getBoard());
-						//game.setToMove(toMove);		//this breaks the game for some reason
-						gui.setError(true);
+						//game.setToMove(toMove);	//this breaks the game for some reason
+						gui.setError(true);			//this works around it by making game figure it out
 						return;
 					} catch (IOException e1) {
 						e1.printStackTrace();
@@ -216,6 +240,9 @@ public class MainFrame extends JFrame {
 				}
 				else {
 					game.gameOver = true;
+					if (game.getBoard().getMateFlag() != 0) {
+						game.setGameOver(true);		//Fixes issue when game over window won't close
+					}
 				}
 			}
 			else if (source.equals(renameWhite)) {
@@ -231,7 +258,7 @@ public class MainFrame extends JFrame {
 				return;
 			}
 			else if (source.equals(setWhite)) {
-				int confirm = JOptionPane.showConfirmDialog(menu.getParent(), "Is white a human?");
+				int confirm = JOptionPane.showConfirmDialog(menu.getParent(), "Is a person playing white?");
 				String name;
 				Player whitePlayer;
 				if (confirm == JOptionPane.CANCEL_OPTION) {
@@ -254,7 +281,7 @@ public class MainFrame extends JFrame {
 				game.renamed = true;
 			}
 			else if (source.equals(setBlack)) {
-				int confirm = JOptionPane.showConfirmDialog(menu.getParent(), "Is black a human?");
+				int confirm = JOptionPane.showConfirmDialog(menu.getParent(), "Is a person playing black?");
 				String name;
 				Player blackPlayer;
 				if (confirm == JOptionPane.CANCEL_OPTION) {
@@ -331,6 +358,9 @@ public class MainFrame extends JFrame {
 			}
 			else {
 				game.gameOver = true;
+				if (game.getBoard().getMateFlag() != 0) {
+					game.setGameOver(true);		//Fixes issue when game over window won't close
+				}
 			}
 		}
 		

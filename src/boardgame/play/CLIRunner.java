@@ -13,8 +13,8 @@ import java.util.*;
 /*
  * Run from command line
  * 
- * Is NOT the CLI class. That will be added later
- * The CLIRunner just runs the CLI, which will be added later
+ * Is NOT the CLI class
+ * The CLIRunner just runs the CLI
  * Also used for testing
  */
 public class CLIRunner {
@@ -90,7 +90,7 @@ public class CLIRunner {
 					builder.append(" ");
 				}
 				builder.append("  "); //removed space
-				if (j%2 == 1) {	//change the '==' to  '<=' if not using Eclipse on Mac
+				if (j%2 <= 1) {	//change the '==' to  '<=' if not using Eclipse on Mac
 					builder.append(' '); //for spacing in Eclipse on Mac
 				}
 			}
@@ -152,7 +152,7 @@ public class CLIRunner {
 				toMove = testBoard.ReadFile(file);
 				file.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("Error opening file!");
 			}
 		}
 		//This is for general testing purposes

@@ -27,7 +27,7 @@ public class ChessGame implements Runnable {
 	public volatile boolean gameOver;
 	public volatile boolean redo;
 	public volatile boolean undo;
-	public volatile boolean renamed;
+	public volatile boolean renamed;		//if the frame was renamed by editing the players
 	
 	public ChessGame() {
 		board = new Board();
@@ -200,6 +200,7 @@ public class ChessGame implements Runnable {
 			ui.updateBoard(board);
 			current = (toMove == Color.WHITE)? black : white;
 			toMove = current.getColor();
+			mf.printMovesHistory();
 		}
 		switch (board.getMateFlag()) {
 		case 1:
@@ -216,6 +217,9 @@ public class ChessGame implements Runnable {
 			break;
 		case 5:
 			System.out.println("Draw by insufficient material");
+			break;
+		default:
+			break;
 		}
 		System.out.println("Entering game over mode...");
 		System.out.println("You can replay the game with the undo/redo buttons, but not change moves");
@@ -227,11 +231,13 @@ public class ChessGame implements Runnable {
 				board.undoMove();
 				undo = false;
 				ui.updateBoard(board);
+				mf.printMovesHistory();
 			}
 			else if (redo && board.canRedo()) {
 				board.redoMove(1);
 				redo = false;
 				ui.updateBoard(board);
+				mf.printMovesHistory();
 			}
 		}
 		mf.dispose();

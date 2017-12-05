@@ -41,7 +41,7 @@ public class GUI extends JPanel implements UserInterface {
 	private volatile PieceName promotion;	//in case of pawn promotion
 	//TODO implement pawn promotion
 	private SquareButton keySquare;
-	public int ruleMode;
+	public int ruleMode;			//for use in the rules gui
 
 	
 	public GUI() throws HeadlessException {
@@ -221,9 +221,11 @@ public class GUI extends JPanel implements UserInterface {
 			if (origin != null) {
 				if (origin.equals(square)) {
 					if (moving != null) {
+						try {
 						for (Square s : moving.getLegalMoves()) {
 							squares.get(s.getName()).resetBackground();
 						}
+						} catch (Exception except) {}
 					}
 					origin = null;
 					moving = null;
@@ -334,6 +336,8 @@ public class GUI extends JPanel implements UserInterface {
 	public synchronized Command getCommand(Player player, Board b) {
 		// TODO Auto-generated method stub
 		destination = null;
+		moving = null;
+		origin = null;
 		toMove = player.getColor();
 		if (undo) {
 			undo = quit = redo = false;
@@ -368,7 +372,6 @@ public class GUI extends JPanel implements UserInterface {
 			}
 			else if (redo) {
 				redo = false;
-				//TODO implement redo
 				return new Command(toMove, "redo", board);
 			}
 			else if (error) {
@@ -393,8 +396,7 @@ public class GUI extends JPanel implements UserInterface {
 	
 	@Override
 	public String getPlayerName(Color player) {
-		//TODO
-		String name = JOptionPane.showInputDialog(this, "Enter the name for " + player);
+		String name = JOptionPane.showInputDialog(this, "Enter the name for " + player + ":");
 		return name;
 	}
 	

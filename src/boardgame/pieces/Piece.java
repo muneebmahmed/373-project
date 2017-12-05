@@ -234,7 +234,7 @@ public abstract class Piece {
 			testBoard.loadConfiguration(currentState);
 			Command validMoveCommand = new Command(this, this.square, dest);
 			validMoveCommand = testBoard.formatCommand(validMoveCommand);
-			testBoard.Move(validMoveCommand);	//Evaluator.count++;
+			testBoard.Move(validMoveCommand);	Evaluator.count++;
 			if (!testBoard.KingInCheck(this.color)) {
 				legalMoves.add(dest);
 				if (testBoard.KingInCheck(opponent)) {

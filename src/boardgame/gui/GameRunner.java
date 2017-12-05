@@ -33,7 +33,7 @@ public class GameRunner {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				s.waitForStuff();
+				s.waitForNewGame();
 			}
 			
 		};
@@ -79,8 +79,6 @@ public class GameRunner {
 		System.out.println("Thread dead");
 		System.exit(0);
 		
-				
-		//EndMenuGUI e = new EndMenuGUI();
 	}
 
 }

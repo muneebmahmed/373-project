@@ -5,6 +5,10 @@ import java.awt.Dimension;
 
 import javax.swing.JScrollPane;
 
+/*
+ * Custom JScrollPane with a fixed preferred size
+ * Used for setting boundaries in main frame
+ */
 public class CustomScroller extends JScrollPane {
 
 	public CustomScroller() {
@@ -28,7 +32,7 @@ public class CustomScroller extends JScrollPane {
 	
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension(500, 100);
+		return new Dimension(160, 110);
 	}
 
 }

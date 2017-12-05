@@ -105,12 +105,24 @@ public class Command {
 		piece = origin.getPiece();
 		if (copy.destString == null) { destination = b.getSquares().get(copy.destination.getName()); }
 		else { destination = b.getSquares().get(copy.destString); }
-		if (copy.capturePiece == null && copy.captureSquare == null) { capturePiece = null; }
+		if (copy.captureSquare != null) {
+			captureSquare = copy.captureSquare;
+			capturePiece = b.getSquares().get(copy.captureSquare).getPiece();
+		}
+		else if (copy.capturePiece != null) {
+			capturePiece = b.getSquares().get(copy.capturePiece.getSquare().getName()).getPiece();
+			captureSquare = capturePiece.getSquare().getName();
+		}
+		else {
+			capturePiece = null;
+			captureSquare = null;
+		}
+		/*if (copy.capturePiece == null && copy.captureSquare == null) { capturePiece = null; captureSquare = null;} //changed
 		else if (copy.captureSquare != null) {
 			capturePiece = b.getSquares().get(copy.captureSquare).getPiece();
 			captureSquare = copy.captureSquare;
 		}
-		else {capturePiece = b.getSquares().get(copy.capturePiece.getSquare().getName()).getPiece();}
+		else {capturePiece = b.getSquares().get(copy.capturePiece.getSquare().getName()).getPiece();}*/
 		promotion = copy.promotion;
 		capture = copy.capture;
 		castleMode = copy.castleMode;
