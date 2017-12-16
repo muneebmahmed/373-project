@@ -15,6 +15,20 @@ public class Configuration implements Cloneable {
 	public ArrayList<ConfigElement> elements;
 	public int plyCount;
 	
+//	public long whiteKing;
+//	public long whiteQueen;
+//	public long whiteRooks;
+//	public long whiteBishops;
+//	public long whiteKnights;
+//	public long whitePawns;
+//	public long blackKing;
+//	public long blackQueen;
+//	public long blackRooks;
+//	public long blackBishops;
+//	public long blackKnights;
+//	public long blackPawns;
+//	public long specialFlags;
+	
 	/*
 	 * New class will have data:
 	 * PieceName pieceName (which piece)
@@ -132,9 +146,70 @@ public class Configuration implements Cloneable {
 		ArrayList<Piece> pieces = b.getPieces();
 		for (Piece p : pieces) {
 			elements.add(new ConfigElement(p));
+			//addPiece(p);
 		}
 		plyCount = b.getMoveCount();
 	}
+	
+	public static byte getOffset(Square s) {
+		byte offset = 0;
+		offset += s.getColumn();
+		offset += s.getRow()*8;
+		return offset;
+	}
+	
+//	public void addPiece(Piece p) {
+//		byte offset = getOffset(p.getSquare());
+//		if (p.getColor() == Color.WHITE) {
+//			switch (p.getPieceName()) {
+//			case KING:
+//				whiteKing |= (1 << offset);
+//				break;
+//			case QUEEN:
+//				whiteQueen |= (1 << offset);
+//				break;
+//			case ROOK:
+//				whiteRooks |= (1 << offset);
+//				break;
+//			case BISHOP:
+//				whiteBishops |= (1 << offset);
+//				break;
+//			case KNIGHT:
+//				whiteKnights |= (1 << offset);
+//				break;
+//			case PAWN:
+//				whitePawns |= (1 << offset);
+//				break;
+//			default:
+//				break;
+//			}
+//		}
+//		else {
+//			switch (p.getPieceName()) {
+//			case KING:
+//				blackKing |= (1 << offset);
+//				break;
+//			case QUEEN:
+//				blackQueen |= (1 << offset);
+//				break;
+//			case ROOK:
+//				blackRooks |= (1 << offset);
+//				break;
+//			case BISHOP:
+//				blackBishops |= (1 << offset);
+//				break;
+//			case KNIGHT:
+//				blackKnights |= (1 << offset);
+//				break;
+//			case PAWN:
+//				blackPawns |= (1 << offset);
+//				break;
+//			default:
+//				break;
+//			}
+//		}
+//		if (p.getSpecialFlags()) { specialFlags |= (1 << offset); }
+//	}
 	
 	public void setNewConfig(Board b) {
 		elements.clear();
@@ -159,7 +234,21 @@ public class Configuration implements Cloneable {
 		for (ConfigElement e : elements) {
 			config.elements.add(new ConfigElement(e));
 		}
-		config.plyCount = plyCount;
+//		config.plyCount = plyCount;
+//		config.whiteKing = whiteKing;
+//		config.whiteQueen = whiteQueen;
+//		config.whiteRooks = whiteRooks;
+//		config.whiteBishops = whiteBishops;
+//		config.whiteKnights = whiteKnights;
+//		config.whitePawns = whitePawns;
+//		config.blackKing = blackKing;
+//		config.blackQueen = blackQueen;
+//		config.blackRooks = blackRooks;
+//		config.blackBishops = blackBishops;
+//		config.blackKnights = blackKnights;
+//		config.blackPawns = blackPawns;
+//		config.specialFlags = specialFlags;
+		
 		return config;
 	}
 	

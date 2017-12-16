@@ -14,10 +14,10 @@ import javax.swing.*;
 public class Promoter extends JFrame {
 
 	private JPanel pieces;
-	private PieceButton queen;
-	private PieceButton rook;
-	private PieceButton bishop;
-	private PieceButton knight;
+	public PieceButton queen;
+	public PieceButton rook;
+	public PieceButton bishop;
+	public PieceButton knight;
 	private volatile PieceName promotion;
 	
 	public Promoter() throws HeadlessException {
@@ -33,10 +33,6 @@ public class Promoter extends JFrame {
 		rook = PieceButton.createPieceButton(r);
 		bishop = PieceButton.createPieceButton(b);
 		knight = PieceButton.createPieceButton(k);
-		queen.addActionListener(new PromotionListener());
-		rook.addActionListener(new PromotionListener());
-		bishop.addActionListener(new PromotionListener());
-		knight.addActionListener(new PromotionListener());
 		
 		pieces = new JPanel();
 		pieces.setLayout(new GridLayout(2, 2));
@@ -46,8 +42,9 @@ public class Promoter extends JFrame {
 		pieces.add(knight);
 		
 		add(pieces);
-		setMinimumSize(new Dimension (150, 150));
+		setMinimumSize(new Dimension (150, 170));
 		promotion = PieceName.PAWN;
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.setLocation(200, 200);
 		
 	}
@@ -75,17 +72,6 @@ public class Promoter extends JFrame {
 		PieceName prom = p.promote();
 		p.dispose();
 		return prom;
-	}
-	
-	private class PromotionListener implements ActionListener {
-
-		@Override
-		public synchronized void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			PieceButton source = (PieceButton)e.getSource();
-			setPromotion(source.source.getPieceName());
-		}
-		
 	}
 
 }

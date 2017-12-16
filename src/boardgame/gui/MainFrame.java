@@ -59,7 +59,11 @@ public class MainFrame extends JFrame {
 	private JTextArea movesHistory;
 	private JScrollPane movesScroller;
 	
-	//private JMenuItem newGame;
+	private JColorChooser colorChooser;
+	private JMenuItem colorWhite;
+	private JMenuItem colorBlack;
+	
+	private JMenuItem newGame;
 
 	public MainFrame() throws HeadlessException {
 		// TODO Auto-generated constructor stub
@@ -102,18 +106,24 @@ public class MainFrame extends JFrame {
 		setBlack.addActionListener(new MenuListener());
 		renameWhite.addActionListener(new MenuListener());
 		renameBlack.addActionListener(new MenuListener());
+		colorWhite = new JMenuItem("Recolor Light Squares...");
+		colorBlack = new JMenuItem("Recolor Dark Squares...");
+		colorWhite.addActionListener(new MenuListener());
+		colorBlack.addActionListener(new MenuListener());
+		newGame = new JMenuItem("New");
+		newGame.addActionListener(new MenuListener());
+		file.add(newGame);
 		file.add(open);
 		file.add(save);
 		file.add(exit);
-//		newGame = new JMenuItem("New");
-//		newGame.addActionListener(new MenuListener());
-//		file.add(newGame);
 		white.add(renameWhite);
 		white.add(setWhite);
 		black.add(renameBlack);
 		black.add(setBlack);
 		edit.add(white);
 		edit.add(black);
+		edit.add(colorWhite);
+		edit.add(colorBlack);
 		help = new JMenu("Help");
 		rules = new JMenuItem("Rules");
 		rules.addActionListener(new MenuListener());
@@ -149,6 +159,7 @@ public class MainFrame extends JFrame {
 		chooser = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("*.pgn, *.txt", "pgn", "txt");
 		chooser.setFileFilter(filter);
+		colorChooser = new JColorChooser();
 		
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new ExitListener());
@@ -258,6 +269,10 @@ public class MainFrame extends JFrame {
 				return;
 			}
 			else if (source.equals(setWhite)) {
+				int prevMode = game.getMode();
+				if (prevMode == 3) {
+					game.pause = true;
+				}
 				int confirm = JOptionPane.showConfirmDialog(menu.getParent(), "Is a person playing white?");
 				String name;
 				Player whitePlayer;
@@ -279,8 +294,15 @@ public class MainFrame extends JFrame {
 				}
 				game.setWhite(whitePlayer);
 				game.renamed = true;
+				if (prevMode == 3) {
+					game.setPause(false);
+				}
 			}
 			else if (source.equals(setBlack)) {
+				int prevMode = game.getMode();
+				if (prevMode == 3) {
+					game.pause = true;
+				}
 				int confirm = JOptionPane.showConfirmDialog(menu.getParent(), "Is a person playing black?");
 				String name;
 				Player blackPlayer;
@@ -302,9 +324,37 @@ public class MainFrame extends JFrame {
 				}
 				game.setBlack(blackPlayer);
 				game.renamed = true;
+				if (prevMode == 3) {
+					game.setPause(false);
+				}
 			}
 			else if (source.equals(rules)) {
 				RulesGUI r = new RulesGUI();
+			}
+			else if (source.equals(colorWhite)) {
+				java.awt.Color selected = JColorChooser.showDialog(getParent(), "Choose a color", SquareButton.WHITE);
+				if (selected == null) { return; }
+				SquareButton.adjustWhite(selected);
+				gui.updateBoard(gui.board);
+			}
+			else if (source.equals(colorBlack)) {
+				java.awt.Color selected = JColorChooser.showDialog(getParent(), "Choose a color", SquareButton.GREEN);
+				if (selected == null) { return; }
+				SquareButton.adjustGreen(selected);
+				gui.updateBoard(gui.board);
+			}
+			else if (source.equals(newGame)) {
+				game.immediateStart = true;
+				if (game.getMode() != 3) {
+					gui.setQuit(true);
+					game.setGameOver(true);
+				}
+				else {
+					game.gameOver = true;
+					if (game.getBoard().getMateFlag() != 0) {
+						game.setGameOver(true);		//Fixes issue when game over window won't close
+					}
+				}
 			}
 			else {
 				

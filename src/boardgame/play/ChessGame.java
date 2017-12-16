@@ -29,6 +29,12 @@ public class ChessGame implements Runnable {
 	public volatile boolean undo;
 	public volatile boolean renamed;		//if the frame was renamed by editing the players
 	
+	public boolean hasNames;
+	public String whiteName;
+	public String blackName;
+	public boolean immediateStart;
+	public volatile boolean pause;		//to pause the game?
+	
 	public ChessGame() {
 		board = new Board();
 		white = null;
@@ -123,6 +129,11 @@ public class ChessGame implements Runnable {
 		redo = b;
 		setGameOver(false);
 	}
+	
+	public synchronized void setPause(boolean b) {
+		pause = b;
+		notifyAll();
+	}
 
 	@Override
 	public synchronized void run() {
@@ -133,26 +144,33 @@ public class ChessGame implements Runnable {
 		mf.pack();
 		mf.setMinimumSize(mf.getSize());
 		mf.setGame(this);
-		String name;
+		//String name;
 		if (mode == 0 || mode == 1) {
-			name = ui.getPlayerName(Color.WHITE);
-			white = new Human(name, Color.WHITE, ui);
+			if (!hasNames)
+			whiteName = ui.getPlayerName(Color.WHITE);
+			white = new Human(whiteName, Color.WHITE, ui);
 		}
-		else {
-			white = new Computer("White Computer", Color.WHITE);
+		else if (mode < 4){
+			white = new Computer(whiteName, Color.WHITE);
 		}
 		if (mode == 0 || mode == 2) {
-			name = ui.getPlayerName(Color.BLACK);
-			black = new Human(name, Color.BLACK, ui);
+			if (!hasNames)
+			blackName = ui.getPlayerName(Color.BLACK);
+			black = new Human(blackName, Color.BLACK, ui);
 		}
-		else {
-			black = new Computer("Black Computer", Color.BLACK);
+		else if (mode < 4){
+			black = new Computer(blackName, Color.BLACK);
 		}
 		Player current = (toMove == Color.WHITE)? white : black;
 		mf.setTitle(white + "-" + black);
 		int i = 0, move;
 		while (board.isGameOver(toMove) == 0 && !gameOver) {
 			ui.requestFocus();
+			while (pause) {
+				try {
+					wait();
+				}catch (InterruptedException e2) {}
+			}
 			if (renamed) {
 				mf.setTitle(white + "-" + black);
 				renamed = false;

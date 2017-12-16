@@ -238,39 +238,16 @@ public class GUI extends JPanel implements UserInterface {
 						//destination = square;
 						squares.get(origin.getName()).resetBackground();
 						if (moving instanceof Pawn && (square.getRank() == 8 || square.getRank() == 1)) {
-//							Runnable promoter = new Runnable() {
-//								@Override
-//								public void run() {
-//									if (square.getRank() == 8) {
-//										pawnPromoter = new Promoter(Color.WHITE);
-//									}
-//									else {
-//										pawnPromoter = new Promoter(Color.BLACK);
-//									}
-//									//pawnPromoter.setLocation(source.getLocation());
-//									pawnPromoter.setVisible(true);
-//									promotion = pawnPromoter.promote();
-//									pawnPromoter.dispose();
-//								}
-//							};
-//							Thread t1 = new Thread(promoter);
-//							t1.start();
-//							try {
-//								t1.join();
-//							} catch (InterruptedException e1) {
-//								// TODO Auto-generated catch block
-//								e1.printStackTrace();
-//							}
-//							if (square.getRank() == 8) {
-//								pawnPromoter = new Promoter(Color.WHITE);
-//							}
-//							else {
-//								pawnPromoter = new Promoter(Color.BLACK);
-//							}
-//							//pawnPromoter.setLocation(source.getLocation());
-//							pawnPromoter.setVisible(true);
-//							promotion = pawnPromoter.promote();
-//							pawnPromoter.dispose();
+							pawnPromoter = new Promoter((square.getRank() == 8)? Color.WHITE : Color.BLACK);
+							pawnPromoter.queen.addActionListener(new PromotionListener());
+							pawnPromoter.rook.addActionListener(new PromotionListener());
+							pawnPromoter.bishop.addActionListener(new PromotionListener());
+							pawnPromoter.knight.addActionListener(new PromotionListener());
+							pawnPromoter.setLocation(source.getLocation());
+							pawnPromoter.setVisible(true);
+							destination = square;
+							return;
+							/*
 							String pName = JOptionPane.showInputDialog("Enter Promotion Piece: ");
 							switch (pName) {
 							case "Rook":
@@ -293,7 +270,7 @@ public class GUI extends JPanel implements UserInterface {
 							default:
 								promotion = PieceName.QUEEN;
 								break;
-							}
+							}*/
 						}
 						if (ruleMode == 1) {
 							Command c = new Command(moving, origin, square);
@@ -431,6 +408,9 @@ public class GUI extends JPanel implements UserInterface {
 
 	public synchronized void setDestination(Square destination) {
 		this.destination = destination;
+		if (pawnPromoter != null) {
+			pawnPromoter.dispose();
+		}
 		notifyAll();
 	}
 	
@@ -547,6 +527,19 @@ public class GUI extends JPanel implements UserInterface {
 		@Override
 		public void keyReleased(KeyEvent e) {
 			// TODO Auto-generated method stub
+		}
+		
+	}
+	
+	private class PromotionListener implements ActionListener {
+
+		@Override
+		public synchronized void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			PieceButton source = (PieceButton)e.getSource();
+			promotion = source.source.getPieceName();
+			pawnPromoter.dispose();
+			setDestination(destination);
 		}
 		
 	}

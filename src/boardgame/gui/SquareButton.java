@@ -18,9 +18,10 @@ public class SquareButton extends JButton {
 	public Square source;		//The Square the button points to
 	public int paintCount;		//when to repaint
 	
-	public static final java.awt.Color GREEN = new java.awt.Color(0, 90, 45);
-	public static final java.awt.Color LIGHTER_GREEN = new java.awt.Color(0, 150, 75);
-	public static final java.awt.Color GREY = new java.awt.Color(200, 200, 200);
+	public static java.awt.Color GREEN = new java.awt.Color(0, 90, 45);
+	public static java.awt.Color LIGHTER_GREEN = new java.awt.Color(0, 150, 75);
+	public static java.awt.Color GREY = new java.awt.Color(200, 200, 200);
+	public static java.awt.Color WHITE = java.awt.Color.WHITE;
 	public static final java.awt.Color BLUE = new java.awt.Color(124, 215, 250);
 	public static final java.awt.Color DARKER_BLUE = new java.awt.Color(100, 170, 200);
 	
@@ -51,7 +52,7 @@ public class SquareButton extends JButton {
 	public SquareButton(Square square) {
 		super();
 		source = square;
-		java.awt.Color bg = (square.getColor() == Color.WHITE)? java.awt.Color.WHITE : GREEN;
+		java.awt.Color bg = (square.getColor() == Color.WHITE)? WHITE : GREEN;
 		this.setBackground(bg);
 		paintCount = 0;
 		this.setIcon(getIconFromPiece(square.getPiece()));
@@ -74,7 +75,7 @@ public class SquareButton extends JButton {
 	}
 	
 	public void resetBackground() {
-		java.awt.Color bg = (source.getColor() == Color.WHITE)? java.awt.Color.WHITE : GREEN;
+		java.awt.Color bg = (source.getColor() == Color.WHITE)? WHITE : GREEN;
 		this.setBackground(bg);
 	}
 	
@@ -112,6 +113,17 @@ public class SquareButton extends JButton {
 	
 	public static SquareButton createSquareButton(Square square) {
 		return new SquareButton(square);
+	}
+	
+	public static void adjustGreen(java.awt.Color newGreen) {
+		GREEN = newGreen;
+		LIGHTER_GREEN = newGreen.brighter();
+		return;
+	}
+	
+	public static void adjustWhite(java.awt.Color newWhite) {
+		WHITE = newWhite;
+		GREY = newWhite.darker();
 	}
 
 }
