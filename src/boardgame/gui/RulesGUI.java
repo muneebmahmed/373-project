@@ -163,6 +163,8 @@ public class RulesGUI {
 					rules.dispose();
 					return;
 				}
+				gui.setOrigin(null);			//fixes null pointer issue
+				gui.setMoving(null);
 				current = configurations.get(i);
 				board.loadConfiguration(current);
 				board.setCurrentState(current);
@@ -179,6 +181,8 @@ public class RulesGUI {
 					rules.dispose();
 					return;
 				}
+				gui.setOrigin(null);
+				gui.setMoving(null);
 				current = configurations.get(i);
 				board.loadConfiguration(current);
 				board.setCurrentState(current);

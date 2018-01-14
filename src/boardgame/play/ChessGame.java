@@ -220,6 +220,14 @@ public class ChessGame implements Runnable {
 			toMove = current.getColor();
 			mf.printMovesHistory();
 		}
+		if ((board.getMateFlag() == 1 || board.getMateFlag() == 2) && board.getMoves().size() > 0) {		//adds checkmate symbol
+			int checkmateIndex = board.getMoves().size()-1;
+			String checkmateString = board.getMoves().get(checkmateIndex);
+			checkmateString += '#';
+			board.getMoves().remove(checkmateIndex);
+			board.getMoves().add(checkmateString);
+			mf.printMovesHistory();
+		}
 		switch (board.getMateFlag()) {
 		case 1:
 			System.out.println(white + " wins!");
