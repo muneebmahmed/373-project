@@ -82,6 +82,7 @@ public class Evaluator {
 		ArrayList<Command> commands = new ArrayList<Command>();
 		ArrayList<Square> squares = new ArrayList<Square>();
 		boolean flag = false; //count = 0;
+		int alpha = -1001, tempEval = 0;
 		for (Piece p : pieces) {
 			if (p.getColor() == sideToMove) {
 				flag = p.getGoodLegalMoves(squares);}
@@ -95,7 +96,8 @@ public class Evaluator {
 		for (Command c : commands) {
 			Evaluation e = new Evaluation(board, c);
 			if (commands.size() > 1) {
-				adjustEvaluation(e, sideToMove);
+				tempEval = adjustEvaluation(e, sideToMove, alpha);
+				if (tempEval > alpha) { alpha = tempEval; }
 			}
 			evaluations.add(e);
 		}
@@ -113,7 +115,7 @@ public class Evaluator {
 		return c;
 	}
 	
-	public void adjustEvaluation(Evaluation e, Color sideToMove) {
+	public int adjustEvaluation(Evaluation e, Color sideToMove, int alpha) {
 		Board testBoard = board.clone();
 		Command c = testBoard.formatCommand(e.command);
 		testBoard.Move(c);
@@ -129,7 +131,7 @@ public class Evaluator {
 			if (flag) {
 				commands.clear();
 				e.value = -1000;
-				return;
+				return -1000;
 			}
 			for (Square s : squares) { commands.add(new Command(p, p.getSquare(), s)); }
 			if (flag) { break; }
@@ -146,8 +148,12 @@ public class Evaluator {
 			if (tempMin < e.value) {
 				e.value = tempMin;
 			}
+			if (tempMin < alpha) {
+				return tempMin;		//beta cutoff
+			}
 			testBoard.loadConfiguration(state);
 		}
+		return e.value;
 	}
 	
 	public static int EvaluateBoard(Board b, Color moved) {

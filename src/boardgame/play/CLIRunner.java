@@ -178,8 +178,8 @@ public class CLIRunner {
 				if (testBoard.getHistory().size() != 0 && c.castleMode == 100) {
 					testBoard.undoMove();
 					System.out.print(printBoard(testBoard));
-					i--;
-					current = players[i%2];
+					//i--;
+					current = players[++i%2];
 				}
 				else if (c.castleMode == 25 && testBoard.canRedo()) {
 					testBoard.redoMove(1);
@@ -221,7 +221,27 @@ public class CLIRunner {
 			}
 		}
 		System.out.println("");
-        if (testBoard.getMateFlag() == 1 || testBoard.getMateFlag() == 2) { System.out.println("Checkmate\n"); }
+		if (testBoard.getMateFlag() == 1 || testBoard.getMateFlag() == 2) {
+			System.out.println("Checkmate\n");
+			System.out.println("Would you like to save the history to a file?");
+        		String yesno = scanner.nextLine();
+			if (yesno.equals("yes") || yesno.equals("y")) {
+				System.out.println("Enter fileName: ");
+				input = scanner.nextLine();
+				if (!input.contains(".pgn")) {
+					input = input + ".pgn";
+				}
+				try {
+					FileOutputStream os = new FileOutputStream(input);
+					testBoard.SaveFile(os);
+					System.out.println("File saved");
+					os.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					// e.printStackTrace();
+				}
+			}
+		}
         else if (testBoard.getMateFlag() == 3) { System.out.println("Stalemate\n"); }
         else if (testBoard.getMateFlag() == 0) {
         		System.out.println("Would you like to save the history to a file?");

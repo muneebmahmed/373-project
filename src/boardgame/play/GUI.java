@@ -481,21 +481,33 @@ public class GUI extends JPanel implements UserInterface {
 			// TODO Auto-generated method stub
 			if (e.getKeyCode() == KeyEvent.VK_UP) {
 				keySquare.resetBackground();
+				if (moving != null && origin != null) {
+					for (Square s : moving.getLegalMoves()) { squares.get(s.getName()).setBlue(); }
+				}
 				keySquare = getButtonAbove(keySquare, 1);
 				keySquare.emphasizeBackground();
 			}
 			else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
 				keySquare.resetBackground();
+				if (moving != null && origin != null) {
+					for (Square s : moving.getLegalMoves()) { squares.get(s.getName()).setBlue(); }
+				}
 				keySquare = getButtonAbove(keySquare, -1);
 				keySquare.emphasizeBackground();
 			}
 			else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 				keySquare.resetBackground();
+				if (moving != null && origin != null) {
+					for (Square s : moving.getLegalMoves()) { squares.get(s.getName()).setBlue(); }
+				}
 				keySquare = getButtonRight(keySquare, 1);
 				keySquare.emphasizeBackground();
 			}
 			else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 				keySquare.resetBackground();
+				if (moving != null && origin != null) {
+					for (Square s : moving.getLegalMoves()) { squares.get(s.getName()).setBlue(); }
+				}
 				keySquare = getButtonRight(keySquare, -1);
 				keySquare.emphasizeBackground();
 			}
